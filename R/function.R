@@ -63,20 +63,26 @@ prepare.data.matrices <- function(Y,X){
 #' @description
 #' This function adjusts exon expression data for different library sizes.
 #' 
-#' @param y
+#' @param Y
 #' matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)
 #' 
 #' @examples
 #' NA
 #' 
-adjust.library.sizes <- function(y){
-    n <- nrow(y); p <- ncol(y)
-    lib.size <- rowSums(y)
-    norm.factors <- edgeR::calcNormFactors(object=t(y),lib.size=lib.size)
+adjust.library.sizes <- function(Y){
+    if(!is.matrix(Y)){
+        stop("Argument Y is no matrix.",call.=FALSE)
+    }
+    if(!is.numeric(Y)){
+        stop("Argument Y is not numeric.",call.=FALSE)
+    }
+    n <- nrow(Y); p <- ncol(Y)
+    lib.size <- rowSums(Y)
+    norm.factors <- edgeR::calcNormFactors(object=t(Y),lib.size=lib.size)
     gamma <- norm.factors*lib.size/mean(lib.size)
     gamma <- matrix(gamma,nrow=n,ncol=p,byrow=FALSE)
-    y <- y/gamma
-    return(y)
+    Y <- Y/gamma
+    return(Y)
 }
 
 #' @export
@@ -86,7 +92,7 @@ adjust.library.sizes <- function(y){
 #' @description
 #' This function adjusts exon expression data for different exon lengths.
 #' 
-#' @param y
+#' @param Y
 #' matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)
 #' 
 #' @param gene
@@ -104,14 +110,23 @@ adjust.library.sizes <- function(y){
 #' @examples
 #' NA
 #' 
-adjust.exon.length <- function(y,gene,start,end){
-    n <- nrow(y); p <- ncol(y); names <- dimnames(y)
-    y <- as.numeric(y)
-    x <- rep(end-start,times=n)
-    gene <- rep(gene,times=n)
-    lmer <- lme4::lmer(y ~ x + (1|gene))
-    y <- matrix(stats::residuals(lmer),nrow=p,ncol=n,dimnames=names)
-    return(y - min(y))
+adjust.exon.length <- function(Y,gene,start,end){
+    if(!is.matrix(Y)){
+        stop("Argument Y is no matrix.",call.=FALSE)
+    }
+    if(any(ncol(Y)!=c(length(gene),length(start),length(end)))){
+        stop("Contradictory dimensions.",call.=FALSE)
+    }
+    n <- nrow(Y); p <- ncol(Y); names <- dimnames(Y)
+    Y <- as.numeric(Y) # wrong?
+    x <- rep(end-start,each=n)
+    gene <- strsplit(gene,split=",")
+    gene <- sapply(gene,function(x) x[[1]][1])
+    gene <- rep(gene,each=n)
+    lmer <- lme4::lmer(Y ~ x + (1|gene))
+    Y <- matrix(stats::residuals(lmer),nrow=n,ncol=p,dimnames=names)
+    Y <- Y-min(Y)
+    return(Y)
 }
 
 #' @export

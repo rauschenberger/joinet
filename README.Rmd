@@ -13,17 +13,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Scope
-
-spliceQTL
-
-## Installation
 
 ```{r,eval=FALSE}
 #install.packages("devtools")
 devtools::install_github("rauschenberger/spliceQTL")
 ```
 
-## Reference
 
 

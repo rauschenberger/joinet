@@ -4,10 +4,10 @@
 \alias{adjust.exon.length}
 \title{Adjust exon length}
 \usage{
-adjust.exon.length(y, gene, start, end)
+adjust.exon.length(Y, gene, start, end)
 }
 \arguments{
-\item{y}{matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)}
+\item{Y}{matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)}
 
 \item{gene}{gene (not exon) names\strong{:} vector of length \eqn{p}}
 
