@@ -120,26 +120,23 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>adjust.exon.length</span>(<span class='no'>Y</span>, <span class='no'>gene</span>, <span class='no'>start</span>, <span class='no'>end</span>)</pre>
+    <pre class="usage"><span class='fu'>adjust.exon.length</span>(<span class='no'>x</span>, <span class='no'>group</span>, <span class='no'>offset</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>Y</th>
+      <th>x</th>
       <td><p>matrix with \(n\) rows (samples) and \(p\) columns (exons)</p></td>
     </tr>
     <tr>
-      <th>gene</th>
+      <th>group</th>
       <td><p>gene (not exon) names<strong>:</strong> vector of length \(p\)</p></td>
     </tr>
     <tr>
-      <th>start</th>
-      <td><p>exon start positions<strong>:</strong> vector of length \(p\)</p></td>
-    </tr>
-    <tr>
-      <th>end</th>
-      <td><p>exon end positions<strong>:</strong> vector of length \(p\)</p></td>
+      <th>offset</th>
+      <td><p>exon start positions<strong>:</strong> vector of length \(p\)
+exon end positions<strong>:</strong> vector of length \(p\)</p></td>
     </tr>
     </table>
     

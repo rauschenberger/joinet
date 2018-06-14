@@ -63,26 +63,32 @@ prepare.data.matrices <- function(Y,X){
 #' @description
 #' This function adjusts exon expression data for different library sizes.
 #' 
-#' @param Y
-#' matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)
+#' @param x
+#' matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)
 #' 
 #' @examples
 #' NA
 #' 
-adjust.library.sizes <- function(Y){
-    if(!is.matrix(Y)){
-        stop("Argument Y is no matrix.",call.=FALSE)
+adjust.library.sizes <- function(x){
+    if(!is.matrix(x)){
+        stop("no matrix argument",call.=FALSE)
     }
-    if(!is.numeric(Y)){
-        stop("Argument Y is not numeric.",call.=FALSE)
+    if(!is.numeric(x)){
+        stop("no numeric argument",call.=FALSE)
     }
-    n <- nrow(Y); p <- ncol(Y)
-    lib.size <- rowSums(Y)
-    norm.factors <- edgeR::calcNormFactors(object=t(Y),lib.size=lib.size)
+    if(!is.integer(x)){
+        warning("non-integer values",call.=FALSE)
+    }
+    if(any(x)<0){
+        warning("negative values",call.=FALSE)
+    }
+    n <- nrow(x); p <- ncol(x)
+    lib.size <- rowSums(x)
+    norm.factors <- edgeR::calcNormFactors(object=t(x),lib.size=lib.size)
     gamma <- norm.factors*lib.size/mean(lib.size)
     gamma <- matrix(gamma,nrow=n,ncol=p,byrow=FALSE)
-    Y <- Y/gamma
-    return(Y)
+    x <- x/gamma
+    return(x)
 }
 
 #' @export
@@ -92,16 +98,14 @@ adjust.library.sizes <- function(Y){
 #' @description
 #' This function adjusts exon expression data for different exon lengths.
 #' 
-#' @param Y
+#' @param x
 #' matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)
 #' 
-#' @param gene
+#' @param group
 #' gene (not exon) names\strong{:} vector of length \eqn{p}
 #' 
-#' @param start
+#' @param offset
 #' exon start positions\strong{:} vector of length \eqn{p}
-#' 
-#' @param end
 #' exon end positions\strong{:} vector of length \eqn{p}
 #' 
 #' @details
@@ -110,23 +114,28 @@ adjust.library.sizes <- function(Y){
 #' @examples
 #' NA
 #' 
-adjust.exon.length <- function(Y,gene,start,end){
-    if(!is.matrix(Y)){
-        stop("Argument Y is no matrix.",call.=FALSE)
+adjust.exon.length <- function(x,group,offset){
+    if(!is.numeric(x)|!is.matrix(x)){
+        stop("Argument \"x\" is no numeric matrix.",call.=FALSE)
     }
-    if(any(ncol(Y)!=c(length(gene),length(start),length(end)))){
+    if(!is.character(group)|!is.vector(group)){
+        stop("Argument \"group\" is no character vector.",call.=FALSE)
+    }
+    if(!is.numeric(offset)|!is.vector(offset)){
+        stop("Argument \"offset\" is no numeric vector.",call.=FALSE)
+    }
+    if(ncol(x)!=length(group)|ncol(x)!=length(offset)){
         stop("Contradictory dimensions.",call.=FALSE)
     }
-    n <- nrow(Y); p <- ncol(Y); names <- dimnames(Y)
-    Y <- as.numeric(Y) # wrong?
-    x <- rep(end-start,each=n)
-    gene <- strsplit(gene,split=",")
-    gene <- sapply(gene,function(x) x[[1]][1])
-    gene <- rep(gene,each=n)
-    lmer <- lme4::lmer(Y ~ x + (1|gene))
-    Y <- matrix(stats::residuals(lmer),nrow=n,ncol=p,dimnames=names)
-    Y <- Y-min(Y)
-    return(Y)
+    n <- nrow(x); p <- ncol(x); names <- dimnames(x)
+    x <- as.numeric(x)
+    group <- strsplit(group,split=",")
+    group <- sapply(group,function(x) x[[1]][1])
+    group <- rep(group,each=n)
+    lmer <- lme4::lmer(x ~ offset + (1|group))
+    x <- matrix(stats::residuals(lmer),nrow=n,ncol=p,dimnames=names)
+    x <- x-min(x)
+    return(x)
 }
 
 #' @export

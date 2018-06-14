@@ -4,16 +4,15 @@
 \alias{adjust.exon.length}
 \title{Adjust exon length}
 \usage{
-adjust.exon.length(Y, gene, start, end)
+adjust.exon.length(x, group, offset)
 }
 \arguments{
-\item{Y}{matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)}
+\item{x}{matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)}
 
-\item{gene}{gene (not exon) names\strong{:} vector of length \eqn{p}}
+\item{group}{gene (not exon) names\strong{:} vector of length \eqn{p}}
 
-\item{start}{exon start positions\strong{:} vector of length \eqn{p}}
-
-\item{end}{exon end positions\strong{:} vector of length \eqn{p}}
+\item{offset}{exon start positions\strong{:} vector of length \eqn{p}
+exon end positions\strong{:} vector of length \eqn{p}}
 }
 \description{
 This function adjusts exon expression data for different exon lengths.

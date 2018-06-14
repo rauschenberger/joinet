@@ -4,10 +4,10 @@
 \alias{adjust.library.sizes}
 \title{Adjust library sizes}
 \usage{
-adjust.library.sizes(Y)
+adjust.library.sizes(x)
 }
 \arguments{
-\item{Y}{matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)}
+\item{x}{matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)}
 }
 \description{
 This function adjusts exon expression data for different library sizes.
