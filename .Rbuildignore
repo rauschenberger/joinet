@@ -1,0 +1,6 @@
+^Readme\.Rmd$
+^\.travis\.yml$
+^_pkgdown\.yml$
+^docs$
+^cran-comments\.md$
+^appveyor\.yml$

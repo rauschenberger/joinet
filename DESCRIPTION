@@ -1,0 +1,15 @@
+Package: spliceQTL
+Version: 0.0.0
+Title: Alternative Splicing
+Description: Implements test for alternative splicing.
+Depends: R (>= 3.0.0)
+Imports: lme4, globaltest, edgeR, snpStats, refGenome, R.utils, methods
+Suggests: knitr, testthat
+Authors@R: c(person("Armin","Rauschenberger",email="a.rauschenberger@vumc.nl",role=c("aut","cre")),
+             person("Renee","Menezes",role=c("aut")))
+VignetteBuilder: knitr
+License: GPL-3
+LazyData: true
+RoxygenNote: 6.0.1
+URL: https://github.com/rauschenberger/spliceQTL
+BugReports: https://github.com/rauschenberger/spliceQTL/issues

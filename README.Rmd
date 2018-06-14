@@ -1,0 +1,29 @@
+
+---
+output: github_document
+---
+
+<!-- Modify xxx.Rmd, not xxx.md! -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+## Scope
+
+spliceQTL
+
+## Installation
+
+```{r,eval=FALSE}
+#install.packages("devtools")
+devtools::install_github("rauschenberger/spliceQTL")
+```
+
+## Reference
+
+
