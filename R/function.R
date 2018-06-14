@@ -29,15 +29,15 @@ prepare.data.matrices <- function(Y,X){
     # remove duplicate samples
     dup_y <- duplicated(rownames(Y))
     dup_x <- duplicated(rownames(X))
-    message("Duplicates: removing ",round(mean(dup_y),2),"% of Y.")
-    message("Duplicates: removing ",round(mean(dup_x),2),"% of X.")
+    message("Duplicates: removing ",round(100*mean(dup_y)),"% of Y.")
+    message("Duplicates: removing ",round(100*mean(dup_x)),"% of X.")
     Y <- Y[!dup_y,]
     X <- X[!dup_x,]
     
     # retain overlapping samples
     both <- intersect(x=rownames(Y),y=rownames(X))
-    message("Overlap: retaining ",round(mean(rownames(Y) %in% both),2),"% of Y.")
-    message("Overlap: retaining ",round(mean(rownames(X) %in% both),2),"% of X.")
+    message("Overlap: retaining ",round(100*mean(rownames(Y) %in% both)),"% of Y.")
+    message("Overlap: retaining ",round(100*mean(rownames(X) %in% both)),"% of X.")
     Y <- Y[both,]
     X <- X[both,]
     
@@ -71,11 +71,12 @@ prepare.data.matrices <- function(Y,X){
 #' 
 adjust.library.sizes <- function(y){
     n <- nrow(y); p <- ncol(y)
-    lib.size <- colSums(y)
-    norm.factors <- edgeR::calcNormFactors(object=y,lib.size=lib.size)
+    lib.size <- rowSums(y)
+    norm.factors <- edgeR::calcNormFactors(object=t(y),lib.size=lib.size)
     gamma <- norm.factors*lib.size/mean(lib.size)
-    gamma <- matrix(gamma,nrow=p,ncol=n,byrow=TRUE)
-    return(y/gamma)
+    gamma <- matrix(gamma,nrow=n,ncol=p,byrow=FALSE)
+    y <- y/gamma
+    return(y)
 }
 
 #' @export
