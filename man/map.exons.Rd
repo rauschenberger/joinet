@@ -7,9 +7,10 @@
 map.exons(gene_id, exon_id)
 }
 \arguments{
-\item{gene_id}{gene names\strong{:} vector with one entry per gene}
+\item{gene_id}{gene names\strong{:} vector with one entry per gene (gene names!)}
 
-\item{exon_id}{exon names\strong{:} vector with one entry per exon}
+\item{exon_id}{exon names\strong{:} vector with one entry per exon
+(also gene names! separated by comma if multiple genes)}
 }
 \description{
 This function

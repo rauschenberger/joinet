@@ -22,7 +22,11 @@ match.samples <- function(...,message=TRUE){
     
     list <- list(...)
     if(length(list)==1 & is.list(list[[1]])){list <- list[[1]]}
-    names <- sapply(substitute(list(...))[-1],deparse)
+    if(is.null(names(list))){
+        names(list) <- sapply(substitute(list(...))[-1],deparse)
+    }
+    names <- names(list)
+    
 
     # check input
     cond <- sapply(list,function(x) !is.matrix(x))
@@ -38,7 +42,7 @@ match.samples <- function(...,message=TRUE){
     duplic <- lapply(list,function(x) duplicated(x))
     for(i in seq_along(list)){
         percent <- round(100*mean(duplic[[i]]))
-        if(message){message(percent,"% duplicates in ",names[i])}
+        if(message){message(percent,"% duplicates in \"",names[i],"\"")}
         list[[i]] <- list[[i]][!duplic[[i]],]
     }
     
@@ -46,7 +50,7 @@ match.samples <- function(...,message=TRUE){
     all <- Reduce(f=intersect,x=lapply(list,rownames))
     for(i in seq_along(list)){
         percent <- round(100*mean(rownames(list[[i]]) %in% all))
-        if(message){message(percent,"% overlap in",names[i])}
+        if(message){message(percent,"% overlap in \"",names[i],"\"")}
         list[[i]] <- list[[i]][all,]
     }
     
@@ -217,8 +221,8 @@ adjust.covariates <- function(x,offset,group){
 #' NA
 #' 
 map.genes <- function(chr,path=getwd(),release="GRCh37",build="71"){
-    file <- paste0("Homo_sampiens.",release,".",build,".gtf")
-    if(!file.exists(file)){
+    file <- paste0("Homo_sapiens.",release,".",build,".gtf")
+    if(!file.exists(file.path(path,file))){
         url <- paste0("ftp://ftp.ensembl.org/pub/release-",build,
                       "/gtf/homo_sapiens/",file,".gz")
         destfile <- file.path(path,paste0(file,".gz"))
@@ -231,6 +235,7 @@ map.genes <- function(chr,path=getwd(),release="GRCh37",build="71"){
     genes <- refGenome::getGenePositions(object=object,by="gene_id")
     genes <- genes[genes$seqid==chr & genes$gene_biotype=="protein_coding",]
     genes <- genes[,c("gene_id","seqid","start","end")]
+    rownames(genes) <- NULL
     colnames(genes)[colnames(genes)=="seqid"] <- "chr"
     return(genes)
 }
@@ -243,10 +248,11 @@ map.genes <- function(chr,path=getwd(),release="GRCh37",build="71"){
 #' This function
 #' 
 #' @param gene_id
-#' gene names\strong{:} vector with one entry per gene
+#' gene names\strong{:} vector with one entry per gene (gene names!)
 #' 
 #' @param exon_id
 #' exon names\strong{:} vector with one entry per exon
+#' (also gene names! separated by comma if multiple genes)
 #' 
 #' @details
 #' The exon names should contain the gene names. For each gene, this function
@@ -256,13 +262,12 @@ map.genes <- function(chr,path=getwd(),release="GRCh37",build="71"){
 #' NA
 #'
 map.exons <- function(gene_id,exon_id){
-    if(length(gene_id)!=length(exon_id)){stop("Invalid.",call.=FALSE)}
     p <- length(gene_id)
     exons <- list()
     pb <- utils::txtProgressBar(min=0,max=p,style=3)
     for(i in seq_len(p)){
         utils::setTxtProgressBar(pb=pb,value=i)
-        which <- as.integer(grep(pattern=gene_id[i],x=exon_id)) # Why not "=="?
+        which <- as.integer(grep(pattern=gene_id[i],x=exon_id))
         exons[[i]] <- which
     }
     return(exons)
