@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prepare data matrices — prepare.data.matrices • spliceQTL</title>
+<title>Prepare data matrices — match.samples • spliceQTL</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,10 +28,11 @@
 
 
 
-<meta property="og:title" content="Prepare data matrices — prepare.data.matrices" />
+<meta property="og:title" content="Prepare data matrices — match.samples" />
 
-<meta property="og:description" content="This function removes duplicate samples, retains overlapping samples, and
-orders samples." />
+<meta property="og:description" content="This function removes duplicate samples from each matrix,
+only retains samples appearing in all matrices,
+and brings them into the same order." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,28 +113,30 @@ orders samples." />
     <div class="page-header">
     <h1>Prepare data matrices</h1>
     <small class="dont-index">Source: <a href='https://github.com/rauschenberger/spliceQTL/blob/master/R/function.R'><code>R/function.R</code></a></small>
-    <div class="hidden name"><code>prepare.data.matrices.Rd</code></div>
+    <div class="hidden name"><code>match.samples.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function removes duplicate samples, retains overlapping samples, and
-orders samples.</p>
+    <p>This function removes duplicate samples from each matrix,
+only retains samples appearing in all matrices,
+and brings them into the same order.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>prepare.data.matrices</span>(<span class='no'>Y</span>, <span class='no'>X</span>)</pre>
+    <pre class="usage"><span class='fu'>match.samples</span>(<span class='no'>...</span>, <span class='kw'>message</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>Y</th>
-      <td><p>matrix with \(n_y\) rows (samples) and \(p_y\) columns (exons)</p></td>
+      <th>...</th>
+      <td><p>matrices with samples in the rows and variables in the columns
+(separated by commas)</p></td>
     </tr>
     <tr>
-      <th>X</th>
-      <td><p>matrix with \(n_x\) rows (samples) and \(p_x\) columns (SNPs)</p></td>
+      <th>message</th>
+      <td><p>display messages<strong>:</strong> logical</p></td>
     </tr>
     </table>
     

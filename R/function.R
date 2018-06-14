@@ -4,56 +4,108 @@
 #' Prepare data matrices
 #' 
 #' @description
-#' This function removes duplicate samples, retains overlapping samples, and
-#' orders samples.
+#' This function removes duplicate samples from each matrix,
+#' only retains samples appearing in all matrices,
+#' and brings them into the same order.
 #' 
-#' @param Y
-#' matrix with \eqn{n_y} rows (samples) and \eqn{p_y} columns (exons)
+#' @param ...
+#' matrices with samples in the rows and variables in the columns
+#' (separated by commas)
 #' 
-#' @param X
-#' matrix with \eqn{n_x} rows (samples) and \eqn{p_x} columns (SNPs)
+#' @param message
+#' display messages\strong{:} logical
 #' 
 #' @examples
 #' NA
 #' 
-prepare.data.matrices <- function(Y,X){
+match.samples <- function(...,message=TRUE){
     
+    list <- list(...)
+    if(length(list)==1 & is.list(list[[1]])){list <- list[[1]]}
+    names <- names(list)
+
     # check input
-    if(!is.matrix(Y)|!is.matrix(X)){
-        stop("Provide X and Y as matrices!",call.=FALSE)
+    cond <- sapply(list,function(x) !is.matrix(x))
+    if(any(cond)){
+        stop("Provide matrices!",call.=FALSE)
     }
-    if(is.null(rownames(Y))|is.null(rownames(X))){
-        stop("Missing sample names!",call.=FALSE)
+    cond <- sapply(list,function(x) is.null(rownames(x)))
+    if(any(cond)){
+        stop("Provide row names!",call.=FALSE)
     }
     
-    # remove duplicate samples
-    dup_y <- duplicated(rownames(Y))
-    dup_x <- duplicated(rownames(X))
-    message("Duplicates: removing ",round(100*mean(dup_y)),"% of Y.")
-    message("Duplicates: removing ",round(100*mean(dup_x)),"% of X.")
-    Y <- Y[!dup_y,]
-    X <- X[!dup_x,]
+    # remove duplicated samples
+    duplic <- lapply(list,function(x) duplicated(x))
+    for(i in seq_along(list)){
+        percent <- round(100*mean(duplic[[i]]))
+        if(message){message(percent,"% duplicates in ",names[i])}
+        list[[i]] <- list[[i]][!duplic[[i]],]
+    }
     
     # retain overlapping samples
-    both <- intersect(x=rownames(Y),y=rownames(X))
-    message("Overlap: retaining ",round(100*mean(rownames(Y) %in% both)),"% of Y.")
-    message("Overlap: retaining ",round(100*mean(rownames(X) %in% both)),"% of X.")
-    Y <- Y[both,]
-    X <- X[both,]
+    all <- Reduce(f=intersect,x=lapply(list,rownames))
+    for(i in seq_along(list)){
+        percent <- round(100*mean(rownames(list[[i]]) %in% all))
+        if(message){message(percent,"% overlap in",names[i])}
+        list[[i]] <- list[[i]][all,]
+    }
     
     # check output
-    if(any(duplicated(rownames(Y))) | any(duplicated(rownames(X)))){
+    cond <- sapply(list,function(x) any(duplicated(rownames(x))))
+    if(any(cond)){
         stop("Duplicate samples!",call.=FALSE)
     }
-    if(nrow(Y)!=nrow(X)){
+    cond <- sapply(list,function(x) nrow(x)!=nrow(list[[1]]))
+    if(any(cond)){
         stop("Different sample sizes!",call.=FALSE)
     }
-    if(any(rownames(Y)!=rownames(X))){
+    cond <- sapply(list,function(x) any(rownames(x)!=rownames(list[[1]])))
+    if(any(cond)){
         stop("Different sample names!",call.=FALSE)
     }
     
-    return(list(Y=Y,X=X))
+    return(list)
 }
+
+
+# prepare.data.matrices <- function(Y,X){
+#     
+#     # check input
+#     if(!is.matrix(Y)|!is.matrix(X)){
+#         stop("Provide X and Y as matrices!",call.=FALSE)
+#     }
+#     if(is.null(rownames(Y))|is.null(rownames(X))){
+#         stop("Missing sample names!",call.=FALSE)
+#     }
+#     
+#     # remove duplicate samples
+#     dup_y <- duplicated(rownames(Y))
+#     dup_x <- duplicated(rownames(X))
+#     message("Duplicates: removing ",round(100*mean(dup_y)),"% of Y.")
+#     message("Duplicates: removing ",round(100*mean(dup_x)),"% of X.")
+#     Y <- Y[!dup_y,]
+#     X <- X[!dup_x,]
+#     
+#     # retain overlapping samples
+#     both <- intersect(x=rownames(Y),y=rownames(X))
+#     message("Overlap: retaining ",round(100*mean(rownames(Y) %in% both)),"% of Y.")
+#     message("Overlap: retaining ",round(100*mean(rownames(X) %in% both)),"% of X.")
+#     Y <- Y[both,]
+#     X <- X[both,]
+#     
+#     # check output
+#     if(any(duplicated(rownames(Y))) | any(duplicated(rownames(X)))){
+#         stop("Duplicate samples!",call.=FALSE)
+#     }
+#     if(nrow(Y)!=nrow(X)){
+#         stop("Different sample sizes!",call.=FALSE)
+#     }
+#     if(any(rownames(Y)!=rownames(X))){
+#         stop("Different sample names!",call.=FALSE)
+#     }
+#     
+#     return(list(Y=Y,X=X))
+# }
 
 
 #' @export
@@ -61,7 +113,7 @@ prepare.data.matrices <- function(Y,X){
 #' Adjust library sizes
 #' 
 #' @description
-#' This function adjusts exon expression data for different library sizes.
+#' This function adjusts RNA-seq expression data for different library sizes.
 #' 
 #' @param x
 #' matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)
@@ -69,7 +121,7 @@ prepare.data.matrices <- function(Y,X){
 #' @examples
 #' NA
 #' 
-adjust.library.sizes <- function(x){
+adjust.samples <- function(x){
     if(!is.matrix(x)){
         stop("no matrix argument",call.=FALSE)
     }
@@ -114,21 +166,22 @@ adjust.library.sizes <- function(x){
 #' @examples
 #' NA
 #' 
-adjust.exon.length <- function(x,group,offset){
+adjust.covariates <- function(x,offset,group){
     if(!is.numeric(x)|!is.matrix(x)){
         stop("Argument \"x\" is no numeric matrix.",call.=FALSE)
     }
+    if(!is.numeric(offset)|!is.vector(offset)|any(offset<0)){
+        stop("Argument \"offset\" is no (positive) numeric vector.",call.=FALSE)
+    }
     if(!is.character(group)|!is.vector(group)){
         stop("Argument \"group\" is no character vector.",call.=FALSE)
-    }
-    if(!is.numeric(offset)|!is.vector(offset)){
-        stop("Argument \"offset\" is no numeric vector.",call.=FALSE)
     }
     if(ncol(x)!=length(group)|ncol(x)!=length(offset)){
         stop("Contradictory dimensions.",call.=FALSE)
     }
     n <- nrow(x); p <- ncol(x); names <- dimnames(x)
     x <- as.numeric(x)
+    offset <- rep(offset,each=n)
     group <- strsplit(group,split=",")
     group <- sapply(group,function(x) x[[1]][1])
     group <- rep(group,each=n)

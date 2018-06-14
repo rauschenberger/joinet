@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Adjust exon length — adjust.exon.length • spliceQTL</title>
+<title>Adjust library sizes — adjust.samples • spliceQTL</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Adjust exon length — adjust.exon.length" />
+<meta property="og:title" content="Adjust library sizes — adjust.samples" />
 
-<meta property="og:description" content="This function adjusts exon expression data for different exon lengths." />
+<meta property="og:description" content="This function adjusts RNA-seq expression data for different library sizes." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -109,40 +109,27 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Adjust exon length</h1>
+    <h1>Adjust library sizes</h1>
     <small class="dont-index">Source: <a href='https://github.com/rauschenberger/spliceQTL/blob/master/R/function.R'><code>R/function.R</code></a></small>
-    <div class="hidden name"><code>adjust.exon.length.Rd</code></div>
+    <div class="hidden name"><code>adjust.samples.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function adjusts exon expression data for different exon lengths.</p>
+    <p>This function adjusts RNA-seq expression data for different library sizes.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>adjust.exon.length</span>(<span class='no'>x</span>, <span class='no'>group</span>, <span class='no'>offset</span>)</pre>
+    <pre class="usage"><span class='fu'>adjust.samples</span>(<span class='no'>x</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>matrix with \(n\) rows (samples) and \(p\) columns (exons)</p></td>
-    </tr>
-    <tr>
-      <th>group</th>
-      <td><p>gene (not exon) names<strong>:</strong> vector of length \(p\)</p></td>
-    </tr>
-    <tr>
-      <th>offset</th>
-      <td><p>exon start positions<strong>:</strong> vector of length \(p\)
-exon end positions<strong>:</strong> vector of length \(p\)</p></td>
+      <td><p>matrix with \(n\) rows (samples) and \(p\) columns (variables)</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>No information on chromosomes required.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -153,9 +140,7 @@ exon end positions<strong>:</strong> vector of length \(p\)</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#details">Details</a></li>
-      
+            
       <li><a href="#examples">Examples</a></li>
     </ul>
 
