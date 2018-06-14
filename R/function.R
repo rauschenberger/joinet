@@ -22,7 +22,7 @@ match.samples <- function(...,message=TRUE){
     
     list <- list(...)
     if(length(list)==1 & is.list(list[[1]])){list <- list[[1]]}
-    names <- names(list)
+    names <- sapply(substitute(list(...))[-1],deparse)
 
     # check input
     cond <- sapply(list,function(x) !is.matrix(x))
