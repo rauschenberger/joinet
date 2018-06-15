@@ -305,7 +305,17 @@ map.snps <- function(gene.chr,gene.start,gene.end,snp.chr,snp.pos){
 #' NA
 #' 
 drop.trivial.genes <- function(map){
-    p <- length(map$genes)
+    
+    # check input
+    if(length(map)!=3){
+        stop("Unexpected argument length.",call.=FALSE)
+    }
+    if(any(names(map)!=c("genes","exons","snps"))){
+        stop("Unexpected argument names.",call.=FALSE)
+    }
+    
+    # search
+    p <- nrow(map$genes)
     pass <- rep(NA,times=p)
     pb <- utils::txtProgressBar(min=0,max=p,style=3)
     for(i in seq_len(p)){
@@ -319,6 +329,15 @@ drop.trivial.genes <- function(map){
         check[3] <- length(ys) > 1
         pass[i] <- all(check)
     }
+    
+    # check output
+    if(any(pass[map$snps$to==0 & map$snps$from==0])){
+        stop("Genes without any SNPs.",call.=FALSE)
+    }
+    if(any(pass[sapply(map$exons,length)<2])){
+        stop("Genes without multiple exons.",call.=FALSE)
+    }
+    
     #map$genes <- map$genes[pass,]
     #map$exons <- map$exons[pass]
     #map$snps <- map$snps[pass,]
@@ -364,50 +383,84 @@ drop.trivial.genes <- function(map){
 #' @examples
 #' NA
 #' 
-spliceQTL <- function(Y,X,map,i,limit,steps){
+test.single <- function(Y,X,map,i,limit,steps){
     
     ### extraction ###
     ys <- map$exons[[i]]
-    y <- list()
-    y$norm <- t(as.matrix(Y$norm[ys,,drop=FALSE]))
-    y$counts <- t(Y$counts[ys,,drop=FALSE])
+    y <- Y[,ys,drop=FALSE]
     xs <- seq(from=map$snps$from[i],to=map$snps$to[i],by=1)
-    x <- methods::as(X$genotypes[,xs],"numeric")
+    x <- X[,xs,drop=FALSE]
     pvalue <- list()
     
     ### level 1: spliceQTL test ###
-    for(type in c("norm","counts")){
-        for(rho in c(0,0.2,0.5,1)){
-            tstat <- G2.multin(dep.data=y[[type]],indep.data=x,
-                               nperm=steps[1]-1,rho=rho)$Sg
-            for(nperm in steps[-1]){
-                tstat <- c(tstat,G2.multin(dep.data=y[[type]],indep.data=x,
-                                           nperm=nperm,rho=rho)$Sg[-1])
-                if(sum(tstat >= tstat[1]) >= limit){break}
-            }
-            pvalue[[paste(type,rho,sep="")]] <- 
-                mean(tstat >= tstat[1],na.rm=TRUE)
+    for(rho in c(0,0.2,0.5,1)){
+        tstat <- spliceQTL:::G2.multin(dep.data=y,indep.data=x,
+                              nperm=steps[1]-1,rho=rho)$Sg
+        for(nperm in steps[-1]){
+            tstat <- c(tstat,spliceQTL:::G2.multin(dep.data=y,indep.data=x,
+                                       nperm=nperm,rho=rho)$Sg[-1])
+            if(sum(tstat >= tstat[1]) >= limit){break}
         }
+        pvalue[[paste("splice",rho,sep="")]] <- mean(tstat >= tstat[1],na.rm=TRUE)
     }
-    
+
     #### level 2: global test ###
     pvalue$global <- rep(NA,times=length(ys))
+    names(pvalue$global) <- colnames(y)
     for(j in seq_along(ys)){
-        gt <- globaltest::gt(response=y$norm[,j],alternative=x)
+        gt <- globaltest::gt(response=y[,j],alternative=x)
         pvalue$global[j] <- globaltest::p.value(gt)
     }
     
     ### level 3: pairwise test ###
     pvalue$pair <- matrix(NA,nrow=length(ys),ncol=length(xs))
+    rownames(pvalue$pair) <- colnames(y)
+    colnames(pvalue$pair) <- colnames(x)
     for(j in seq_along(ys)){
         for(k in seq_along(xs)){
-            lm <- stats::lm(y$norm[,j] ~ x[,k])
+            lm <- stats::lm(y[,j] ~ x[,k])
             pvalue$pair[j,k] <- summary(lm)$coef["x[, k]","Pr(>|t|)"]
         }
     }
     
     return(pvalue)
 }
+
+
+test.multiple <- function(Y,X,map){
+    p <- nrow(map$genes)
+    
+    # permutations
+    min <- 100
+    max <- p/0.05+1
+    limit <- ceiling(0.05*max/p)
+    base <- 1.5 # adjust sequence
+    from <- log(min,base=base)
+    to <- log(max,base=base)
+    steps <- c(min,diff(unique(round(base^(seq(from=from,to=to,length.out=20))))))
+    if(max != sum(steps)){stop()}
+    
+    # parallel computation
+    type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
+    cluster <- parallel::makeCluster(spec=8,type=type)
+    parallel::clusterSetRNGStream(cl=cluster,iseed=1)
+    test.single <- spliceQTL::test.single
+    parallel::clusterExport(cl=cluster,varlist=c("test.single","Y","X","map","limit","steps"),envir=environmnet())
+    parallel::clusterEvalQ(cl=cluster,expr=library(spliceQTL))
+    parallel::clusterEvalQ(cl=cluster,expr=library(globaltest))
+    start <- Sys.time()
+    pvalue <- parallel::parLapply(cl=cluster,X=1:p,fun=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps))
+    end <- Sys.time()
+    parallel::stopCluster(cluster)
+    rm(cluster)
+    
+    # tyding up
+    names <- names(pvalue[[1]])
+    pvalue <- lapply(names,function(x) lapply(pvalue,function(y) y[[x]]))
+    names(pvalue) <- names
+    attributes(pvalue)$time <- end - start
+}
+
 
 
 
@@ -432,7 +485,7 @@ spliceQTL <- function(Y,X,map,i,limit,steps){
 ### G2 p.values : G2T$G2p
 ### G2 TS : G2T$$Sg
 
-G2.multin <- function(dep.data,indep.data,stand = TRUE, nperm=100,grouping=F,rho=0,mu=0){
+G2.multin <- function(dep.data,indep.data,stand=TRUE,nperm=100,grouping=F,rho=0,mu=0){
     
     nperm = nperm
     ## check for the number of samples in dep and indep data
@@ -500,7 +553,7 @@ G2.multin <- function(dep.data,indep.data,stand = TRUE, nperm=100,grouping=F,rho
         tau.mat.perm = tau.mat[perm_samp[,perm],,,drop=FALSE]          # permute rows
         tau.mat.perm = tau.mat.perm[,perm_samp[,perm],,drop=FALSE]     # permute columns
         
-        Sg = c(Sg, get.g2stat.multin(U, mu=mu,rho=rho,tau.mat.perm) )
+        Sg = c(Sg,spliceQTL:::get.g2stat.multin(U, mu=mu,rho=rho,tau.mat.perm) )
     }
     
     
@@ -513,7 +566,7 @@ G2.multin <- function(dep.data,indep.data,stand = TRUE, nperm=100,grouping=F,rho
     colnames(Sg) <- paste(rep("rho",ncol(Sg)),rep(1:length(rho),each=length(mu)),rep("mu",ncol(Sg)),rep(1:length(mu),length(rho)) )
     
     ### Calculte G2 pval
-    G2p =  apply(Sg,2,get.pval.percol) 
+    G2p =  apply(Sg,2,spliceQTL:::get.pval.percol) 
     
     return (list(perm = perm_samp,G2p = G2p,Sg = Sg))
 }
