@@ -378,6 +378,8 @@ drop.trivial.genes <- function(map){
 #' size of permutation chunks\strong{:}
 #' integer vector
 #' 
+#' @param 
+#' 
 #' @details
 #' The maximum number of permutations equals \code{sum(steps)}. Permutations is
 #' interrupted if at least \code{limit} test statistics for the permuted data
@@ -386,8 +388,12 @@ drop.trivial.genes <- function(map){
 #' @examples
 #' NA
 #' 
-test.single <- function(Y,X,map,i,limit,steps){
+test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5)){
     
+    if(is.null(limit)){limit <- 5}
+    if(is.null(steps)){steps <- c(10,20,20,50)}
+    
+    # check input
     if(!is.numeric(limit)){
         stop("Argument \"limit\" is not numeric.",call.=FALSE)
     }
@@ -401,45 +407,25 @@ test.single <- function(Y,X,map,i,limit,steps){
         stop("Too few permutations \"sum(steps)\".",call.=FALSE)
     }
     
+    # extract data
     ys <- map$exons[[i]]
     y <- Y[,ys,drop=FALSE]
     xs <- seq(from=map$snps$from[i],to=map$snps$to[i],by=1)
     x <- X[,xs,drop=FALSE]
     
-    rho <- c(0,0.2,0.5,1)
+    # test effects
     pvalue <- rep(x=NA,times=length(rho))
-    
-    ### spliceQTL test ###
     for(j in seq_along(rho)){
-        tstat <- spliceQTL:::G2.multin(dep.data=y,indep.data=x,
-                              nperm=steps[1]-1,rho=rho[j])$Sg
+        tstat <- spliceQTL:::G2.multin(
+            dep.data=y,indep.data=x,nperm=steps[1]-1,rho=rho[j])$Sg
         for(nperm in steps[-1]){
-            tstat <- c(tstat,spliceQTL:::G2.multin(dep.data=y,indep.data=x,
-                                       nperm=nperm,rho=rho[j])$Sg[-1])
+            tstat <- c(tstat,spliceQTL:::G2.multin(
+                dep.data=y,indep.data=x,nperm=nperm,rho=rho[j])$Sg[-1])
             if(sum(tstat >= tstat[1]) >= limit){break}
         }
         pvalue[j] <- mean(tstat >= tstat[1],na.rm=TRUE)
     }
 
-    #### level 2: global test ###
-    #pvalue$global <- rep(NA,times=length(ys))
-    #names(pvalue$global) <- colnames(y)
-    #for(j in seq_along(ys)){
-    #    gt <- globaltest::gt(response=y[,j],alternative=x)
-    #    pvalue$global[j] <- globaltest::p.value(gt)
-    #}
-    
-    ### level 3: pairwise test ###
-    #pvalue$pair <- matrix(NA,nrow=length(ys),ncol=length(xs))
-    #rownames(pvalue$pair) <- colnames(y)
-    #colnames(pvalue$pair) <- colnames(x)
-    #for(j in seq_along(ys)){
-    #    for(k in seq_along(xs)){
-    #        lm <- stats::lm(y[,j] ~ x[,k])
-    #        pvalue$pair[j,k] <- summary(lm)$coef["x[,k]","Pr(>|t|)"]
-    #    }
-    #}
-    
     return(pvalue)
 }
 
@@ -455,7 +441,7 @@ test.multiple <- function(Y,X,map){
     from <- log(min,base=base)
     to <- log(max,base=base)
     steps <- c(min,diff(unique(round(base^(seq(from=from,to=to,length.out=20))))))
-    if(max != sum(steps)){stop()}
+    if(max != sum(steps)){stop("Invalid combination?",call.=FALSE)}
     
     # parallel computation
     type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
@@ -464,7 +450,6 @@ test.multiple <- function(Y,X,map){
     test.single <- spliceQTL::test.single
     parallel::clusterExport(cl=cluster,varlist=c("test.single","Y","X","map","limit","steps"),envir=environment())
     parallel::clusterEvalQ(cl=cluster,expr=library(spliceQTL))
-    #parallel::clusterEvalQ(cl=cluster,expr=library(globaltest))
     start <- Sys.time()
     pvalue <- parallel::parLapply(cl=cluster,X=1:p,fun=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps))
     end <- Sys.time()
