@@ -8,5 +8,6 @@ vignette: >
 ---
 
 ```{r}
+set.seed(1)
 stats::rnorm(10)
 ```

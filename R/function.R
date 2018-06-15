@@ -182,7 +182,7 @@ adjust.covariates <- function(x,offset,group){
 map.genes <- function(chr,path=getwd(),release="GRCh37",build=71){
     
     # check input
-    if(chr %in% 1:22){
+    if(!chr %in% 1:22){
         stop("Invalid argument \"chr\".",call.=FALSE)
     }
     if(!release %in% c("NCBI36","GRCh37","GRCh38")){
@@ -316,7 +316,7 @@ map.snps <- function(gene.chr,gene.start,gene.end,snp.chr,snp.pos,dist=10^3){
 
 #' @export
 #' @title
-#' Drop "trivial" genes
+#' Drop trivial test
 #' 
 #' @description
 #' This function
@@ -326,12 +326,12 @@ map.snps <- function(gene.chr,gene.start,gene.end,snp.chr,snp.pos,dist=10^3){
 #' (output from \code{map.genes}, \code{map.exons}, and \code{map.snps})
 #' 
 #' @details
-#' This functions drops genes without SNPs or with a single exon.
+#' This functions drops tests for genes without SNPs or with a single exon.
 #' 
 #' @examples
 #' NA
 #' 
-drop.trivial.genes <- function(map){
+drop.trivial <- function(map){
     
     # check input
     if(length(map)!=3){
@@ -366,10 +366,10 @@ drop.trivial.genes <- function(map){
         stop("Genes without multiple exons.",call.=FALSE)
     }
     
-    #map$genes <- map$genes[pass,]
-    #map$exons <- map$exons[pass]
-    #map$snps <- map$snps[pass,]
-    return(pass) # temporary
+    map$genes <- map$genes[pass,]
+    map$exons <- map$exons[pass]
+    map$snps <- map$snps[pass,]
+    return(map)
 }
 
 

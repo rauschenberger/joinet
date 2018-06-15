@@ -2,7 +2,7 @@
 
 export(adjust.covariates)
 export(adjust.samples)
-export(drop.trivial.genes)
+export(drop.trivial)
 export(map.exons)
 export(map.genes)
 export(map.snps)
