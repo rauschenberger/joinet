@@ -71,47 +71,6 @@ match.samples <- function(...,message=TRUE){
     return(list)
 }
 
-
-# prepare.data.matrices <- function(Y,X){
-#     
-#     # check input
-#     if(!is.matrix(Y)|!is.matrix(X)){
-#         stop("Provide X and Y as matrices!",call.=FALSE)
-#     }
-#     if(is.null(rownames(Y))|is.null(rownames(X))){
-#         stop("Missing sample names!",call.=FALSE)
-#     }
-#     
-#     # remove duplicate samples
-#     dup_y <- duplicated(rownames(Y))
-#     dup_x <- duplicated(rownames(X))
-#     message("Duplicates: removing ",round(100*mean(dup_y)),"% of Y.")
-#     message("Duplicates: removing ",round(100*mean(dup_x)),"% of X.")
-#     Y <- Y[!dup_y,]
-#     X <- X[!dup_x,]
-#     
-#     # retain overlapping samples
-#     both <- intersect(x=rownames(Y),y=rownames(X))
-#     message("Overlap: retaining ",round(100*mean(rownames(Y) %in% both)),"% of Y.")
-#     message("Overlap: retaining ",round(100*mean(rownames(X) %in% both)),"% of X.")
-#     Y <- Y[both,]
-#     X <- X[both,]
-#     
-#     # check output
-#     if(any(duplicated(rownames(Y))) | any(duplicated(rownames(X)))){
-#         stop("Duplicate samples!",call.=FALSE)
-#     }
-#     if(nrow(Y)!=nrow(X)){
-#         stop("Different sample sizes!",call.=FALSE)
-#     }
-#     if(any(rownames(Y)!=rownames(X))){
-#         stop("Different sample names!",call.=FALSE)
-#     }
-#     
-#     return(list(Y=Y,X=X))
-# }
-
-
 #' @export
 #' @title
 #' Adjust library sizes
@@ -349,7 +308,7 @@ drop.trivial.genes <- function(map){
     p <- length(map$genes)
     pass <- rep(NA,times=p)
     pb <- utils::txtProgressBar(min=0,max=p,style=3)
-    for(i in seq_len(p)){ # seq_len(p)
+    for(i in seq_len(p)){
         utils::setTxtProgressBar(pb=pb,value=i)
         ys <- map$exons[[i]]
         check <- logical()
@@ -360,10 +319,10 @@ drop.trivial.genes <- function(map){
         check[3] <- length(ys) > 1
         pass[i] <- all(check)
     }
-    map$genes <- map$genes[pass,]
-    map$exons <- map$exons[pass]
-    map$snps <- map$snps[pass,]
-    return(map)
+    #map$genes <- map$genes[pass,]
+    #map$exons <- map$exons[pass]
+    #map$snps <- map$snps[pass,]
+    return(pass) # temporary
 }
 
 
