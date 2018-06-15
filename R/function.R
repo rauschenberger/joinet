@@ -6,17 +6,19 @@
 #' @description
 #' This function removes duplicate samples from each matrix,
 #' only retains samples appearing in all matrices,
-#' and brings them into the same order.
+#' and brings samples into the same order.
 #' 
 #' @param ...
-#' matrices with samples in the rows and variables in the columns
-#' (separated by commas)
+#' matrices with samples in the rows and variables in the columns,
+#' with sample identifiers as rows names
 #' 
 #' @param message
 #' display messages\strong{:} logical
 #' 
 #' @examples
-#' NA
+#' X <- matrix(rnorm(6),nrow=3,ncol=2,dimnames=list(c("A","B","C")))
+#' Z <- matrix(rnorm(9),nrow=3,ncol=3,dimnames=list(c("B","A","B")))
+#' match.samples(X,Z)
 #' 
 match.samples <- function(...,message=TRUE){
     
@@ -27,7 +29,6 @@ match.samples <- function(...,message=TRUE){
     }
     names <- names(list)
     
-
     # check input
     cond <- sapply(list,function(x) !is.matrix(x))
     if(any(cond)){
@@ -39,11 +40,11 @@ match.samples <- function(...,message=TRUE){
     }
     
     # remove duplicated samples
-    duplic <- lapply(list,function(x) duplicated(x))
+    duplic <- lapply(list,function(x) duplicated(rownames(x)))
     for(i in seq_along(list)){
-        percent <- round(100*mean(duplic[[i]]))
-        if(message){message(percent,"% duplicates in \"",names[i],"\"")}
-        list[[i]] <- list[[i]][!duplic[[i]],]
+        number <- round(100*mean(duplic[[i]]))
+        if(message){message(number," duplicates in \"",names[i],"\"")}
+        list[[i]] <- list[[i]][!duplic[[i]],,drop=FALSE]
     }
     
     # retain overlapping samples
@@ -51,7 +52,7 @@ match.samples <- function(...,message=TRUE){
     for(i in seq_along(list)){
         percent <- round(100*mean(rownames(list[[i]]) %in% all))
         if(message){message(percent,"% overlap in \"",names[i],"\"")}
-        list[[i]] <- list[[i]][all,]
+        list[[i]] <- list[[i]][all,,drop=FALSE]
     }
     
     # check output
@@ -82,7 +83,10 @@ match.samples <- function(...,message=TRUE){
 #' matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)
 #' 
 #' @examples
-#' NA
+#' n <- 5; p <- 10
+#' x <- matrix(rnbinom(n=n*p,mu=5,size=1/0.5),nrow=n,ncol=p)
+#' x[1,] <- 10*x[1,]
+#' adjust.samples(x)
 #' 
 adjust.samples <- function(x){
     if(!is.matrix(x)){
@@ -91,10 +95,10 @@ adjust.samples <- function(x){
     if(!is.numeric(x)){
         stop("no numeric argument",call.=FALSE)
     }
-    if(!is.integer(x)){
+    if(!is.integer(x)&&any(round(x)!=x)){
         warning("non-integer values",call.=FALSE)
     }
-    if(any(x)<0){
+    if(any(x<0)){
         warning("negative values",call.=FALSE)
     }
     n <- nrow(x); p <- ncol(x)
@@ -116,15 +120,11 @@ adjust.samples <- function(x){
 #' @param x
 #' matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)
 #' 
-#' @param group
-#' gene (not exon) names\strong{:} vector of length \eqn{p}
-#' 
 #' @param offset
-#' exon start positions\strong{:} vector of length \eqn{p}
-#' exon end positions\strong{:} vector of length \eqn{p}
+#' exon length\strong{:} vector of length \eqn{p}
 #' 
-#' @details
-#' No information on chromosomes required.
+#' @param group
+#' gene names\strong{:} vector of length \eqn{p}
 #' 
 #' @examples
 #' NA
@@ -182,7 +182,19 @@ adjust.covariates <- function(x,offset,group){
 #' @examples
 #' NA
 #' 
-map.genes <- function(chr,path=getwd(),release="GRCh37",build="71"){
+map.genes <- function(chr,path=getwd(),release="GRCh37",build=71){
+    
+    # check input
+    if(chr %in% 1:22){
+        stop("Invalid argument \"chr\".",call.=FALSE)
+    }
+    if(!release %in% c("NCBI36","GRCh37","GRCh38")){
+        stop("Invalid argument \"release\".",call.=FALSE)
+    }
+    if(!build %in% 49:91){
+        stop("Invalid argument \"build\".",call.=FALSE)
+    }
+    
     file <- paste0("Homo_sapiens.",release,".",build,".gtf")
     if(!file.exists(file.path(path,file))){
         url <- paste0("ftp://ftp.ensembl.org/pub/release-",build,
@@ -194,12 +206,12 @@ map.genes <- function(chr,path=getwd(),release="GRCh37",build="71"){
     object <- refGenome::ensemblGenome()
     refGenome::basedir(object) <- path
     refGenome::read.gtf(object,filename=file)
-    genes <- refGenome::getGenePositions(object=object,by="gene_id")
-    genes <- genes[genes$seqid==chr & genes$gene_biotype=="protein_coding",]
-    genes <- genes[,c("gene_id","seqid","start","end")]
-    rownames(genes) <- NULL
-    colnames(genes)[colnames(genes)=="seqid"] <- "chr"
-    return(genes)
+    x <- refGenome::getGenePositions(object=object,by="gene_id")
+    x <- x[x$seqid==chr & x$gene_biotype=="protein_coding",]
+    x <- x[,c("gene_id","seqid","start","end")]
+    rownames(x) <- NULL
+    colnames(x)[colnames(x)=="seqid"] <- "chr"
+    return(x)
 }
 
 #' @export
@@ -210,29 +222,35 @@ map.genes <- function(chr,path=getwd(),release="GRCh37",build="71"){
 #' This function
 #' 
 #' @param gene_id
-#' gene names\strong{:} vector with one entry per gene (gene names!)
+#' gene names\strong{:} vector with one entry per gene,
+#' including the gene names
 #' 
 #' @param exon_id
-#' exon names\strong{:} vector with one entry per exon
-#' (also gene names! separated by comma if multiple genes)
+#' exon names\strong{:} vector with one entry per exon,
+#' including the corresponding \emph{gene} names
+#' (separated by comma if multiple gene names)
 #' 
 #' @details
 #' The exon names should contain the gene names. For each gene, this function
 #' returns the indices of the exons.
 #' 
 #' @examples
-#' NA
+#' gene <- c("A","B","C")
+#' exon <- c("A","A,B","B","B,C","C")
+#' map.exons(gene,exon)
 #'
-map.exons <- function(gene_id,exon_id){
-    p <- length(gene_id)
-    exons <- list()
+map.exons <- function(gene,exon){
+    p <- length(gene)
+    x <- list()
     pb <- utils::txtProgressBar(min=0,max=p,style=3)
     for(i in seq_len(p)){
         utils::setTxtProgressBar(pb=pb,value=i)
-        which <- as.integer(grep(pattern=gene_id[i],x=exon_id))
-        exons[[i]] <- which
+        which <- as.integer(grep(pattern=gene[i],x=exon))
+        x[[i]] <- which
     }
-    return(exons)
+    close(con=pb)
+    names(x) <- gene
+    return(x)
 }
 
 #' @export
@@ -261,33 +279,45 @@ map.exons <- function(gene_id,exon_id){
 #' chromosomal position of SNPs\strong{:}
 #' numeric vector with one entry per SNP
 #' 
+#' @param dist
+#' number of base pairs before start position\strong{:}
+#' integer
+#' 
 #' @details
-#' This functions ...
+#' This function ...
 #' 
 #' @examples
-#' NA
+#' gene.chr <- rep(1,times=5)
+#' gene.start <- 1:5
+#' gene.end <- 2:6
 #' 
-map.snps <- function(gene.chr,gene.start,gene.end,snp.chr,snp.pos){
+#' snp.chr <- rep(1,times=100)
+#' snp.pos <- seq(from=1,to=4.9,length.out=100)
+#' 
+#' map.snps(gene.chr,gene.start,gene.end,snp.chr,snp.pos,dist=0)
+#'
+map.snps <- function(gene.chr,gene.start,gene.end,snp.chr,snp.pos,dist=10^3){
     if(length(gene.chr)!=length(gene.start)|length(gene.chr)!=length(gene.end)){
         stop("Invalid.",call.=FALSE)
     }
     p <- length(gene.start)
-    snps <- data.frame(from=integer(length=p),to=integer(length=p))
+    x <- data.frame(from=integer(length=p),to=integer(length=p))
     pb <- utils::txtProgressBar(min=0,max=p,style=3)
     for(i in seq_len(p)){ # 
         utils::setTxtProgressBar(pb=pb,value=i)
         chr <- snp.chr == gene.chr[i]
         if(!any(chr)){next}
-        start <- snp.pos >= gene.start[i] - 1*10^3
+        start <- snp.pos >= (gene.start[i] - dist)
         end <- snp.pos <= gene.end[i] + 0
         which <- as.integer(which(chr & start & end))
         if(length(which)==0){next}
-        snps$from[i] <- min(which)
-        snps$to[i] <- max(which)
+        x$from[i] <- min(which)
+        x$to[i] <- max(which)
         if(length(which)==1){next}
         if(!all(diff(which)==1)){stop("SNPs are in wrong order!")}
     }
-    return(snps)
+    close(con=pb)
+    return(x)
 }
 
 #' @export
@@ -332,6 +362,7 @@ drop.trivial.genes <- function(map){
         check[3] <- length(ys) > 1
         pass[i] <- all(check)
     }
+    close(con=pb)
     
     # check output
     if(any(pass[map$snps$to==0 & map$snps$from==0])){
@@ -430,40 +461,62 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 }
 
 
+#' @export
+#' @title
+#' Conduct tests
+#' 
+#' @description
+#' This function
+#' 
+#' @param Y
+#' exon expression\strong{:}
+#' matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)
+#' 
+#' @param X
+#' SNP genotype\strong{:}
+#' matrix with \eqn{n} rows (samples) and \eqn{q} columns (SNPs)
+#' 
+#' @param rho
+#' correlation\strong{:}
+#' numeric vector with values between \eqn{0} and \eqn{1}
+#' 
+#' @details
+#' Automatic adjustment of the number of permutations
+#' such that Bonferroni-significant p-values are possible.
+#' 
+#' @examples
+#' NA
+#' 
 test.multiple <- function(Y,X,map,rho=c(0,0.5,1)){
     
     p <- nrow(map$genes)
     
     # permutations
-    min <- 5
-    max <- p/0.05+1
-    limit <- ceiling(0.05*max/p)
-    base <- 1.5 # adjust sequence
-    from <- log(min,base=base)
-    to <- log(max,base=base)
-    steps <- c(min,diff(unique(round(base^(seq(from=from,to=to,length.out=20))))))
+    if(FALSE){
+        min <- 5
+        max <- p/0.05+1
+        limit <- ceiling(0.05*max/p)
+        base <- 1.5 # adjust sequence
+        from <- log(min,base=base)
+        to <- log(max,base=base)
+        steps <- c(min,diff(unique(round(base^(seq(from=from,to=to,length.out=20))))))
+    }
     
-    #max <- p/0.05+1
-    #limit <- ceiling(0.05*max/p)
-    #perms <- exp(seq(from=log(limit),to=log(max),by=0.5*log(limit)))
-    #perms[length(steps)] <- max
-    #diff(perms)
-
-    ##steps <- c(min,exp(seq(from=from,to=to,length.out=20)))
-    ##steps <- seq(from=0,to=log(exp(1)),length.out=20)
-    ##steps <- diff(exp(seq(from=log(min),to=log(max),length.out=20)))
-    ##steps[1] <- min
-    ##rev(steps)[1] <- max-sum(rev(steps)[-1])
+    if(TRUE){
+        max <- p/0.05+1
+        limit <- ceiling(0.05*max/p)
+        steps <- diff(limit^seq(from=1,to=log(max)/log(limit),length.out=pmin(p,20)))
+        steps <- c(limit,round(steps))
+        steps[length(steps)] <- max-sum(steps[-length(steps)])
+    }
+    
     if(max != sum(steps)){stop("Invalid combination?",call.=FALSE)}
     
     # parallel computation
     type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
     cluster <- parallel::makeCluster(spec=8,type=type)
     parallel::clusterSetRNGStream(cl=cluster,iseed=1)
-    #test.single <- spliceQTL::test.single
-    #parallel::clusterExport(cl=cluster,varlist="test.single")
     parallel::clusterExport(cl=cluster,varlist=c("Y","X","map","limit","steps","rho"),envir=environment())
-    #parallel::clusterEvalQ(cl=cluster,expr=library(spliceQTL))
     start <- Sys.time()
     pvalue <- parallel::parLapply(cl=cluster,X=seq_len(p),fun=function(i) spliceQTL::test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
     end <- Sys.time()
@@ -471,16 +524,14 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1)){
     rm(cluster)
     
     # tyding up
-    #names <- names(pvalue[[1]])
-    #pvalue <- lapply(names,function(x) lapply(pvalue,function(y) y[[x]]))
-    #names(pvalue) <- names
-    #attributes(pvalue)$time <- end - start
     pvalue <- do.call(what=rbind,args=pvalue)
-    colnames(pvalue) <- rho
+    colnames(pvalue) <- paste0("rho=",rho)
     rownames(pvalue) <- map$genes$gene_id
     
     return(pvalue)
 }
+
+
 
 
 
