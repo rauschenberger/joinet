@@ -133,7 +133,21 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fl'>NA</span></div><div class='output co'>#&gt; [1] NA</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>5</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>matrix</span>(<span class='fu'>rnbinom</span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>n</span>*<span class='no'>p</span>,<span class='kw'>mu</span><span class='kw'>=</span><span class='fl'>5</span>,<span class='kw'>size</span><span class='kw'>=</span><span class='fl'>1</span>/<span class='fl'>0.5</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
+<span class='no'>x</span>[<span class='fl'>1</span>,] <span class='kw'>&lt;-</span> <span class='fl'>10</span>*<span class='no'>x</span>[<span class='fl'>1</span>,]
+<span class='fu'>adjust.samples</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt;          [,1]      [,2]      [,3]      [,4]      [,5]     [,6]      [,7]
+#&gt; [1,] 26.34421  5.854269  8.781404 38.052751 20.489943 20.48994 67.324097
+#&gt; [2,] 35.07730  5.011043 15.033129 10.022086  5.011043 10.02209 50.110429
+#&gt; [3,] 11.06749 38.736227 44.269974  0.000000 44.269974 16.60124  5.533747
+#&gt; [4,] 48.24565 18.556021 11.133613 11.133613 11.133613 18.55602  7.422408
+#&gt; [5,] 44.43728 12.119257  8.079505  8.079505 24.238514  0.00000 48.477028
+#&gt;          [,8]      [,9]    [,10]
+#&gt; [1,] 32.19848 23.417077 40.97989
+#&gt; [2,] 60.13251 35.077300  0.00000
+#&gt; [3,] 11.06749 22.134987 77.47245
+#&gt; [4,] 44.53445  3.711204 51.95686
+#&gt; [5,] 16.15901 16.159009  0.00000</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

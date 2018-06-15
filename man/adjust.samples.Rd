@@ -13,6 +13,9 @@ adjust.samples(x)
 This function adjusts RNA-seq expression data for different library sizes.
 }
 \examples{
-NA
+n <- 5; p <- 10
+x <- matrix(rnbinom(n=n*p,mu=5,size=1/0.5),nrow=n,ncol=p)
+x[1,] <- 10*x[1,]
+adjust.samples(x)
 
 }

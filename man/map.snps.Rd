@@ -4,7 +4,7 @@
 \alias{map.snps}
 \title{Search for SNPs}
 \usage{
-map.snps(gene.chr, gene.start, gene.end, snp.chr, snp.pos)
+map.snps(gene.chr, gene.start, gene.end, snp.chr, snp.pos, dist = 10^3)
 }
 \arguments{
 \item{gene.chr}{chromosome\strong{:}
@@ -20,14 +20,21 @@ numeric vector with one entry per gene}
 
 \item{snp.pos}{chromosomal position of SNPs\strong{:}
 numeric vector with one entry per SNP}
+
+\item{dist}{number of base pairs before start position\strong{:}
+integer}
 }
 \description{
 This function
 }
-\details{
-This functions ...
-}
 \examples{
-NA
+gene.chr <- rep(1,times=5)
+gene.start <- 1:5
+gene.end <- 2:6
+
+snp.chr <- rep(1,times=100)
+snp.pos <- seq(from=1,to=4.9,length.out=100)
+
+map.snps(gene.chr,gene.start,gene.end,snp.chr,snp.pos,dist=0)
 
 }

@@ -120,19 +120,21 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>map.exons</span>(<span class='no'>gene_id</span>, <span class='no'>exon_id</span>)</pre>
+    <pre class="usage"><span class='fu'>map.exons</span>(<span class='no'>gene</span>, <span class='no'>exon</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>gene_id</th>
-      <td><p>gene names<strong>:</strong> vector with one entry per gene (gene names!)</p></td>
+      <th>gene</th>
+      <td><p>gene names<strong>:</strong> vector with one entry per gene,
+including the gene names</p></td>
     </tr>
     <tr>
-      <th>exon_id</th>
-      <td><p>exon names<strong>:</strong> vector with one entry per exon
-(also gene names! separated by comma if multiple genes)</p></td>
+      <th>exon</th>
+      <td><p>exon names<strong>:</strong> vector with one entry per exon,
+including the corresponding <em>gene</em> names
+(separated by comma if multiple gene names)</p></td>
     </tr>
     </table>
     
@@ -143,7 +145,17 @@ returns the indices of the exons.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fl'>NA</span></div><div class='output co'>#&gt; [1] NA</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='no'>gene</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"A"</span>,<span class='st'>"B"</span>,<span class='st'>"C"</span>)
+<span class='no'>exon</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"A"</span>,<span class='st'>"A,B"</span>,<span class='st'>"B"</span>,<span class='st'>"B,C"</span>,<span class='st'>"C"</span>)
+<span class='fu'>map.exons</span>(<span class='no'>gene</span>,<span class='no'>exon</span>)</div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |=======================                                               |  33%  |                                                                              |===============================================                       |  67%  |                                                                              |======================================================================| 100%</div><div class='output co'>#&gt; $A
+#&gt; [1] 1 2
+#&gt; 
+#&gt; $B
+#&gt; [1] 2 3 4
+#&gt; 
+#&gt; $C
+#&gt; [1] 4 5
+#&gt; </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

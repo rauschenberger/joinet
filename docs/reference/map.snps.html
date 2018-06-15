@@ -120,7 +120,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>map.snps</span>(<span class='no'>gene.chr</span>, <span class='no'>gene.start</span>, <span class='no'>gene.end</span>, <span class='no'>snp.chr</span>, <span class='no'>snp.pos</span>)</pre>
+    <pre class="usage"><span class='fu'>map.snps</span>(<span class='no'>gene.chr</span>, <span class='no'>gene.start</span>, <span class='no'>gene.end</span>, <span class='no'>snp.chr</span>, <span class='no'>snp.pos</span>, <span class='kw'>dist</span> <span class='kw'>=</span> <span class='fl'>10</span>^<span class='fl'>3</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,24 +149,35 @@ numeric vector with one entry per gene</p></td>
       <td><p>chromosomal position of SNPs<strong>:</strong>
 numeric vector with one entry per SNP</p></td>
     </tr>
+    <tr>
+      <th>dist</th>
+      <td><p>number of base pairs before start position<strong>:</strong>
+integer</p></td>
+    </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>This functions ...</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fl'>NA</span></div><div class='output co'>#&gt; [1] NA</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='no'>gene.chr</span> <span class='kw'>&lt;-</span> <span class='fu'>rep</span>(<span class='fl'>1</span>,<span class='kw'>times</span><span class='kw'>=</span><span class='fl'>5</span>)
+<span class='no'>gene.start</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>5</span>
+<span class='no'>gene.end</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>:<span class='fl'>6</span>
+
+<span class='no'>snp.chr</span> <span class='kw'>&lt;-</span> <span class='fu'>rep</span>(<span class='fl'>1</span>,<span class='kw'>times</span><span class='kw'>=</span><span class='fl'>100</span>)
+<span class='no'>snp.pos</span> <span class='kw'>&lt;-</span> <span class='fu'>seq</span>(<span class='kw'>from</span><span class='kw'>=</span><span class='fl'>1</span>,<span class='kw'>to</span><span class='kw'>=</span><span class='fl'>4.9</span>,<span class='kw'>length.out</span><span class='kw'>=</span><span class='fl'>100</span>)
+
+<span class='fu'>map.snps</span>(<span class='no'>gene.chr</span>,<span class='no'>gene.start</span>,<span class='no'>gene.end</span>,<span class='no'>snp.chr</span>,<span class='no'>snp.pos</span>,<span class='kw'>dist</span><span class='kw'>=</span><span class='fl'>0</span>)</div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</div><div class='output co'>#&gt;   from  to
+#&gt; 1    1  26
+#&gt; 2   27  51
+#&gt; 3   52  77
+#&gt; 4   78 100
+#&gt; 5    0   0</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#details">Details</a></li>
-      
+            
       <li><a href="#examples">Examples</a></li>
     </ul>
 

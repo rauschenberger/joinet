@@ -176,9 +176,6 @@ adjust.covariates <- function(x,offset,group){
 #' @param build
 #' integer 49-91
 #' 
-#' @details
-#' This functions ...
-#' 
 #' @examples
 #' NA
 #' 
@@ -221,11 +218,11 @@ map.genes <- function(chr,path=getwd(),release="GRCh37",build=71){
 #' @description
 #' This function
 #' 
-#' @param gene_id
+#' @param gene
 #' gene names\strong{:} vector with one entry per gene,
 #' including the gene names
 #' 
-#' @param exon_id
+#' @param exon
 #' exon names\strong{:} vector with one entry per exon,
 #' including the corresponding \emph{gene} names
 #' (separated by comma if multiple gene names)
@@ -283,14 +280,11 @@ map.exons <- function(gene,exon){
 #' number of base pairs before start position\strong{:}
 #' integer
 #' 
-#' @details
-#' This function ...
-#' 
 #' @examples
 #' gene.chr <- rep(1,times=5)
 #' gene.start <- 1:5
 #' gene.end <- 2:6
-#' 
+#'
 #' snp.chr <- rep(1,times=100)
 #' snp.pos <- seq(from=1,to=4.9,length.out=100)
 #' 
@@ -381,7 +375,7 @@ drop.trivial.genes <- function(map){
 
 #' @export
 #' @title
-#' Conduct tests
+#' Conduct single tests
 #' 
 #' @description
 #' This function
@@ -409,7 +403,9 @@ drop.trivial.genes <- function(map){
 #' size of permutation chunks\strong{:}
 #' integer vector
 #' 
-#' @param 
+#' @param rho
+#' correlation\strong{:}
+#' numeric vector with values between \eqn{0} and \eqn{1}
 #' 
 #' @details
 #' The maximum number of permutations equals \code{sum(steps)}. Permutations is
@@ -463,10 +459,10 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 
 #' @export
 #' @title
-#' Conduct tests
+#' Conduct multiple tests
 #' 
 #' @description
-#' This function
+#' This function ...
 #' 
 #' @param Y
 #' exon expression\strong{:}
@@ -475,6 +471,10 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 #' @param X
 #' SNP genotype\strong{:}
 #' matrix with \eqn{n} rows (samples) and \eqn{q} columns (SNPs)
+#' 
+#' @param map
+#' list with names "genes", "exons", and "snps"
+#' (output from \code{map.genes}, \code{map.exons}, and \code{map.snps})
 #' 
 #' @param rho
 #' correlation\strong{:}
@@ -530,9 +530,6 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1)){
     
     return(pvalue)
 }
-
-
-
 
 
 
@@ -651,8 +648,7 @@ G2.multin <- function(dep.data,indep.data,stand=TRUE,nperm=100,grouping=F,rho=0,
 #  tau.mat = X' W.rho X, a n*n matrix : both square, symmetric matrices with an equal number of rows
 # Output: test statistic (single value)
 # 
-get.g2stat.multin <- function(U, mu, rho, tau.mat)
-{
+get.g2stat.multin <- function(U, mu, rho, tau.mat){
     g2tstat <- NULL
     for(xk in 1:length(rho))
     {

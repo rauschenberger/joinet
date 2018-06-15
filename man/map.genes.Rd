@@ -4,7 +4,7 @@
 \alias{map.genes}
 \title{Search for genes}
 \usage{
-map.genes(chr, path = getwd(), release = "GRCh37", build = "71")
+map.genes(chr, path = getwd(), release = "GRCh37", build = 71)
 }
 \arguments{
 \item{chr}{chromosome\strong{:} integer 1-22}
@@ -17,9 +17,6 @@ map.genes(chr, path = getwd(), release = "GRCh37", build = "71")
 }
 \description{
 This function retrieves all genes on a chromosome.
-}
-\details{
-This functions ...
 }
 \examples{
 NA

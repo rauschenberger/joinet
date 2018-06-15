@@ -9,16 +9,12 @@ adjust.covariates(x, offset, group)
 \arguments{
 \item{x}{matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)}
 
-\item{offset}{exon start positions\strong{:} vector of length \eqn{p}
-exon end positions\strong{:} vector of length \eqn{p}}
+\item{offset}{exon length\strong{:} vector of length \eqn{p}}
 
-\item{group}{gene (not exon) names\strong{:} vector of length \eqn{p}}
+\item{group}{gene names\strong{:} vector of length \eqn{p}}
 }
 \description{
 This function adjusts exon expression data for different exon lengths.
-}
-\details{
-No information on chromosomes required.
 }
 \examples{
 NA

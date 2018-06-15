@@ -4,13 +4,15 @@
 \alias{map.exons}
 \title{Search for exons}
 \usage{
-map.exons(gene_id, exon_id)
+map.exons(gene, exon)
 }
 \arguments{
-\item{gene_id}{gene names\strong{:} vector with one entry per gene (gene names!)}
+\item{gene}{gene names\strong{:} vector with one entry per gene,
+including the gene names}
 
-\item{exon_id}{exon names\strong{:} vector with one entry per exon
-(also gene names! separated by comma if multiple genes)}
+\item{exon}{exon names\strong{:} vector with one entry per exon,
+including the corresponding \emph{gene} names
+(separated by comma if multiple gene names)}
 }
 \description{
 This function
@@ -20,6 +22,8 @@ The exon names should contain the gene names. For each gene, this function
 returns the indices of the exons.
 }
 \examples{
-NA
+gene <- c("A","B","C")
+exon <- c("A","A,B","B","B,C","C")
+map.exons(gene,exon)
 
 }
