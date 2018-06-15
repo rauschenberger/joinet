@@ -388,7 +388,7 @@ drop.trivial.genes <- function(map){
 #' @examples
 #' NA
 #' 
-test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5)){
+test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
     
     if(is.null(limit)){limit <- 5}
     if(is.null(steps)){steps <- c(10,20,20,50)}
@@ -400,7 +400,7 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5)){
     if(limit<1){
         stop("Argument \"limit\" is below one.",call.=FALSE)
     }
-    if(!is.numeric(step)|!is.vector(steps)){
+    if(!is.numeric(steps)|!is.vector(steps)){
         stop("Argument \"steps\" is no numeric vector.",call.=FALSE)
     }
     if(sum(steps)<2){
@@ -430,28 +430,42 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5)){
 }
 
 
-test.multiple <- function(Y,X,map){
+test.multiple <- function(Y,X,map,rho=c(0,0.5,1)){
+    
     p <- nrow(map$genes)
     
     # permutations
-    min <- 100
+    min <- 5
     max <- p/0.05+1
     limit <- ceiling(0.05*max/p)
     base <- 1.5 # adjust sequence
     from <- log(min,base=base)
     to <- log(max,base=base)
     steps <- c(min,diff(unique(round(base^(seq(from=from,to=to,length.out=20))))))
+    
+    #max <- p/0.05+1
+    #limit <- ceiling(0.05*max/p)
+    #perms <- exp(seq(from=log(limit),to=log(max),by=0.5*log(limit)))
+    #perms[length(steps)] <- max
+    #diff(perms)
+
+    ##steps <- c(min,exp(seq(from=from,to=to,length.out=20)))
+    ##steps <- seq(from=0,to=log(exp(1)),length.out=20)
+    ##steps <- diff(exp(seq(from=log(min),to=log(max),length.out=20)))
+    ##steps[1] <- min
+    ##rev(steps)[1] <- max-sum(rev(steps)[-1])
     if(max != sum(steps)){stop("Invalid combination?",call.=FALSE)}
     
     # parallel computation
     type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
     cluster <- parallel::makeCluster(spec=8,type=type)
     parallel::clusterSetRNGStream(cl=cluster,iseed=1)
-    test.single <- spliceQTL::test.single
-    parallel::clusterExport(cl=cluster,varlist=c("test.single","Y","X","map","limit","steps"),envir=environment())
-    parallel::clusterEvalQ(cl=cluster,expr=library(spliceQTL))
+    #test.single <- spliceQTL::test.single
+    #parallel::clusterExport(cl=cluster,varlist="test.single")
+    parallel::clusterExport(cl=cluster,varlist=c("Y","X","map","limit","steps","rho"),envir=environment())
+    #parallel::clusterEvalQ(cl=cluster,expr=library(spliceQTL))
     start <- Sys.time()
-    pvalue <- parallel::parLapply(cl=cluster,X=1:p,fun=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps))
+    pvalue <- parallel::parLapply(cl=cluster,X=seq_len(p),fun=function(i) spliceQTL::test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
     end <- Sys.time()
     parallel::stopCluster(cluster)
     rm(cluster)
@@ -461,6 +475,10 @@ test.multiple <- function(Y,X,map){
     #pvalue <- lapply(names,function(x) lapply(pvalue,function(y) y[[x]]))
     #names(pvalue) <- names
     #attributes(pvalue)$time <- end - start
+    pvalue <- do.call(what=rbind,args=pvalue)
+    colnames(pvalue) <- rho
+    rownames(pvalue) <- map$genes$gene_id
+    
     return(pvalue)
 }
 
