@@ -3,7 +3,7 @@ Version: 0.0.0
 Title: Alternative Splicing
 Description: Implements test for alternative splicing.
 Depends: R (>= 3.0.0)
-Imports: lme4, globaltest, edgeR, snpStats, refGenome, R.utils, methods
+Imports: lme4, globaltest, edgeR, snpStats, refGenome, R.utils, methods, SummarizedExperiment, vcfR
 Suggests: knitr, testthat
 Authors@R: c(person("Armin","Rauschenberger",email="a.rauschenberger@vumc.nl",role=c("aut","cre")),
              person("Renee","Menezes",role=c("aut")))

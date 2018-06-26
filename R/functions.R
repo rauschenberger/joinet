@@ -1,6 +1,291 @@
 
 #' @export
 #' @title
+#' Get SNP data (Geuvadis)
+#' 
+#' @description
+#' This function transforms SNP data (local machine).
+#' 
+#' @param chr
+#' chromosome: integer \eqn{1-22}
+#' 
+#' @param path
+#' local directory for VCF (variant call format) and SDRF (sample and data relationship format) files
+#' 
+#' @examples
+#' path <- "C:/Users/a.rauschenbe/Desktop/spliceQTL/data"
+#' 
+get.snps.geuvadis <- function(chr,path=getwd()){
+    
+    # download SNP data
+    file <- paste0("GEUVADIS.chr",chr,".PH1PH2_465.IMPFRQFILT_BIALLELIC_PH.annotv2.genotypes.vcf.gz")
+    url <- paste0("http://www.ebi.ac.uk/arrayexpress/files/E-GEUV-1/genotypes/",file)
+    destfile <- file.path(path,file)
+    if(!file.exists(destfile)){
+        utils::download.file(url=url,destfile=destfile,method="auto")
+    }
+    
+    # transform with PLINK
+    setwd(path)
+    system(paste0("plink --vcf GEUVADIS.chr",chr,".PH1PH2_465.IMPFRQFILT_BIALLELIC_PH.annotv2.genotypes.vcf.gz",
+                  " --maf 0.05 --geno 0 --make-bed --out snps",chr),invisible=FALSE)
+    
+    # read into R
+    bed <- file.path(path,paste("snps",chr,".bed",sep=""))
+    bim <- file.path(path,paste("snps",chr,".bim",sep=""))
+    fam <- file.path(path,paste("snps",chr,".fam",sep=""))
+    X <- snpStats::read.plink(bed=bed,bim=bim,fam=fam)
+    X$fam <- NULL; all(diff(X$map$position) > 0)
+    
+    # fitler MAF
+    maf <- snpStats::col.summary(X$genotypes)$MAF
+    cond <- maf >= 0.05
+    X$genotypes <- X$genotypes[,cond]
+    X$map <- X$map[cond,]
+    
+    # format
+    colnames(X$genotypes) <- paste0(X$map$chromosome,":",X$map$position)
+    snps <- methods::as(object=X$genotypes,Class="numeric")
+    class(snps) <- "integer"
+    
+    # change identifiers
+    file <- "E-GEUV-1.sdrf.txt"
+    url <- paste("http://www.ebi.ac.uk/arrayexpress/files/E-GEUV-1/",file,sep="")
+    destfile <- file.path(path$data,file)
+    if(!file.exists(destfile)){
+        utils::download.file(url=url,destfile=destfile,method="auto")
+    }
+    samples <- utils::read.delim(file=file.path(path,"E-GEUV-1.sdrf.txt"))
+    match <- match(rownames(snps),samples$Source.Name)
+    rownames(snps) <- samples$Comment.ENA_RUN.[match]
+    snps <- snps[!is.na(rownames(snps)),]
+    
+    save(object=snps,file=file.path(path,paste0("Geuvadis.chr",chr,".RData")))
+}
+
+
+#' @export
+#' @title
+#' Get SNP data (BBMRI)
+#' 
+#' @description
+#' This function transforms SNP data (virtual machine).
+#' 
+#' @param chr
+#' chromosome: integer \eqn{1-22}
+#' 
+#' @param biobank
+#' character "CODAM", "LL", "LLS", "NTR", "PAN", "RS", or NULL (all)
+#' 
+#' @param path
+#' data directory
+#' 
+#' @examples
+#' path <- "/virdir/Scratch/arauschenberger/trial"
+#'
+get.snps.bbmri <- function(chr,biobank=NULL,path=getwd()){
+
+    start <- Sys.time()
+    message(rep("-",times=20)," chromosome ",chr," ",rep("-",times=20))
+    
+    p <- 5*10^6 # (maximum number of SNPs per chromosome, before filtering)
+    size <- 60*10^3 # (originally 100*10^3, decrease: slower but less memory)
+    skip <- seq(from=0,to=p,by=size)
+    if(is.null(biobank)){
+        study <- c("CODAM","LL","LLS0","LLS1","NTR0","NTR1","PAN","RS")
+    } else if(biobank=="LLS"){
+        study <- c("LLS0","LLS1")
+    } else if(biobank=="NTR"){
+        study <- c("NTR0","NTR1")
+    } else if(!biobank %in% c("CODAM","LL","PAN","RS")){
+        study <- biobank
+    } else{
+        stop("Invalid biobank.",call.=FALSE)
+    }
+    collect <- matrix(list(),nrow=length(skip),ncol=length(study))
+    colnames(collect) <- study
+    
+    for(i in seq_along(skip)){
+        message("\n","chunk ",i,": ",appendLF=FALSE)
+        for(j in seq_along(study)){
+            message(study[j],"  ",appendLF=FALSE)
+            
+            # Locating files on virtual machine.
+            dir <- study[j]
+            if(study[j]=="LLS0"){dir <- "LLS/660Q"}
+            if(study[j]=="LLS1"){dir <- "LLS/OmniExpr"}
+            if(study[j]=="NTR0"){dir <- "NTR/Affy6"}
+            if(study[j]=="NTR1"){dir <- "NTR/GoNL"}
+            path0 <- file.path("/mnt/virdir/Backup/RP3_data/HRCv1.1_Imputation",dir)
+            path1 <- "/virdir/Scratch/arauschenberger/trial"
+            file0 <- paste0("chr",chr,".dose.vcf.gz")
+            file1 <- paste0(study[j],".chr",chr,".dose.vcf.gz")
+            file2 <- paste0(study[j],".chr",chr,".dose.vcf")
+            
+            # Decompressing missing files in personal folder.
+            if(!file.exists(file.path(path1,file2))){
+                file.copy(from=file.path(path0,file0),to=file.path(path1,file1))
+                R.utils::gunzip(filename=file.path(path1,file1),remove=TRUE,overwrite=TRUE)
+            }
+            
+            # Reading in files.
+            vcf <- vcfR::read.vcfR(file=file.path(path1,file2),skip=skip[i],nrows=size,verbose=FALSE)
+            vcf <- vcf[vcf@fix[,"CHROM"]!="",] # bug fix
+            vcf@fix[,"ID"] <- paste0(vcf@fix[,"ID"],"_",seq_len(dim(vcf)["variants"]))
+            collect[i,j][[1]] <- vcf
+            stop <- dim(vcf)["variants"]==0
+            final <- dim(vcf)["variants"]<size
+            if(stop){break}
+        }
+        print(utils::object.size(collect),units="Gb")
+        end <- Sys.time()
+        if(stop){break}
+        
+        # Calculating minor allele frequency.
+        num <- numeric(); maf <- list()
+        for(j in seq_along(study)){
+            num[j] <- dim(collect[i,j][[1]])["gt_cols"] # replace by adjusted sample sizes?
+            maf[[j]] <- num[j]*vcfR::maf(collect[i,j][[1]])[,"Frequency"]
+        }
+        cond <- rowSums(do.call(what="cbind",args=maf))/sum(num)>0.05
+        if(sum(cond)==0){if(final){break}else{next}}
+        
+        # Filtering out genotypes.
+        for(j in seq_along(study)){
+            gt <- vcfR::extract.gt(collect[i,j][[1]][cond,])
+            gt[gt=="0|0"] <- 0
+            gt[gt=="0|1"|gt=="1|0"] <- 1
+            gt[gt=="1|1"] <- 2
+            storage.mode(gt) <- "integer"
+            collect[i,j][[1]] <- gt
+        }
+        
+        if(final){break}
+    }
+    
+    # Removing empty rows.
+    cond <- apply(collect,1,function(x) all(sapply(x,length)==0))
+    collect <- collect[!cond,,drop=FALSE]
+    save(object=collect,file=file.path(path1,paste0("temp.chr",chr,".RData")))
+    #load(file.path(path1,paste0("temp.chr",chr,".RData")))
+    
+    # Fusing all matrices.
+    snps <- NULL
+    for(i in seq_len(nrow(collect))){
+        inner <- NULL
+        for(j in seq_len(ncol(collect))){
+            add <- collect[i,j][[1]]
+            colnames(add) <- paste0(colnames(collect)[j],":",colnames(add))
+            inner <- cbind(inner,add)
+        }
+        snps <- rbind(snps,inner)
+    }
+    attributes(snps)$time <- end-start
+    rownames(snps) <- sapply(strsplit(x=rownames(snps),split="_"),function(x) x[[1]])
+    snps <- t(snps)
+    
+    # Filter samples.
+    rownames(snps) <- sub(x=rownames(snps),pattern="LLS0|LLS1",replacement="LLS")
+    rownames(snps) <- sub(x=rownames(snps),pattern="NTR0|NTR1",replacement="NTR")
+    #split <- strsplit(x=colnames(snps),split=":")
+    #bio <- sapply(split,function(x) x[[1]])
+    #id <- sapply(split,function(x) x[[2]])
+    #cond <- rep(NA,times=ncol(snps))
+    #for(j in seq_along(study)){
+    #  cond[bio==study[j]] <- duplicated(id[bio==study[j]])
+    #}
+    
+    if(is.null(biobank)){
+        save(object=snps,file=file.path(path1,paste0("BBMRI.chr",chr,".RData")))
+    } else {
+        save(object=snps,file=file.path(path1,paste0(biobank,".chr",chr,".RData")))
+    }
+}
+
+
+#' @export
+#' @title
+#' Get exon data (Geuvadis)
+#' 
+#' @description
+#' This function transforms exon data (virtual machine).
+#' 
+#' @param path
+#' data directory 
+#' 
+#' @examples
+#' path <- "/virdir/Scratch/arauschenberger/trial"
+#' 
+get.exons.geuvadis <- function(path=getwd()){
+
+    nrows <- 303544
+    file <-"/virdir/Scratch/rmenezes/data_counts.txt"
+    exons <- utils::read.table(file=file,header=TRUE,nrows=nrows)
+    exons <- exons[exons[,"chr"] %in% 1:22,] # autosomes
+    rownames(exons) <- exon_id <- paste0(exons[,"chr"],"_",exons[,"start"],"_",exons[,"end"])
+    gene_id <- as.character(exons[,4])
+    exons <- t(exons[,-c(1:4)])
+
+    save(list=c("exons","exon_id","gene_id"),file=file.path(path,"Geuvadis.exons.RData"))
+}
+
+
+#' @export
+#' @title
+#' Get exon data (BBMRI)
+#' 
+#' @description
+#' This function transforms exon data (virtual machine).
+#' 
+#' @param path
+#' data directory 
+#' 
+#' @examples
+#' path <- "/virdir/Scratch/arauschenberger/trial"
+#' 
+get.exons.bbmri <- function(path=getwd()){
+    
+    # sample identifiers:
+    # (1) loading quality controlled gene expression data 
+    # (2) extracting sample identifiers
+    # (3) removing identifiers without SNP data
+    # (4) translating identifiers
+    utils::data(rnaSeqData_ReadCounts_BIOS_cleaned,package="BBMRIomics") # (1)
+    cd <- SummarizedExperiment::colData(counts)[,c("biobank_id","imputation_id","run_id")]; rm(counts) # (2)
+    names(cd) <- substr(names(cd),start=1,stop=3) # abbreviate names
+    cd <- cd[!is.na(cd$imp),] # (3)
+    cd$id <- NA # (4)
+    cd$id[cd$bio=="CODAM"] <- sapply(strsplit(x=cd$imp[cd$bio=="CODAM"],split="_"),function(x) x[[2]])
+    cd$id[cd$bio=="LL"] <- sub(pattern="1_LLDeep_",replacement="",x=cd$imp[cd$bio=="LL"])
+    cd$id[cd$bio=="LLS"] <- sapply(strsplit(x=cd$imp[cd$bio=="LLS"],split="_"),function(x) x[[2]])
+    cd$id[cd$bio=="NTR"] <- sapply(strsplit(x=cd$imp[cd$bio=="NTR"],split="_"),function(x) x[[2]])
+    cd$id[cd$bio=="PAN"] <- cd$imp[cd$bio=="PAN"]
+    cd$id[cd$bio=="RS"] <- sub(pattern="RS1_|RS2_|RS3_",replacement="",x=cd$imp[cd$bio=="RS"])
+    
+    # Identify individual not with "id" but with "bio:id".
+    any(duplicated(cd$id)) # TRUE
+    sapply(unique(cd$bio),function(x) any(duplicated(cd$id[x]))) # FALSE
+    
+    # exon data:
+    # (1) loading exon expression data
+    # (2) extracting sample identifiers
+    # (3) retaining autosomes
+    # (4) retaining samples from above
+    load("/virdir/Backup/RP3_data/RNASeq/v2.1.3/exon_base/exon_base_counts.RData") # (1)
+    colnames(counts) <- sub(pattern=".exon.base.count.gz",replacement="",x=colnames(counts)) # (2)
+    autosomes <- sapply(strsplit(x=rownames(counts),split="_"),function(x) x[[1]] %in% 1:22) # (3)
+    exons <- counts[autosomes,cd$run] # (3) and (4)
+    exon_id <- exon_id[autosomes] # (3)
+    gene_id <- gene_id[autosomes] # (3)
+    colnames(exons) <- paste0(cd$bio,":",cd$id)
+    exons <- t(exons)
+    
+    save(list=c("exons","exon_id","gene_id"),file=file.path(path,"BBMRI.exons.RData"))
+}
+
+
+#' @export
+#' @title
 #' Prepare data matrices
 #' 
 #' @description
