@@ -80,16 +80,19 @@ get.snps.geuvadis <- function(chr,path=getwd()){
 #' @param path
 #' data directory
 #' 
+#' @param size
+#' maximum number of SNPs to read in at once
+#' 
 #' @examples
 #' path <- "/virdir/Scratch/arauschenberger/trial"
 #'
-get.snps.bbmri <- function(chr,biobank=NULL,path=getwd()){
+get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
 
     start <- Sys.time()
     message(rep("-",times=20)," chromosome ",chr," ",rep("-",times=20))
     
     p <- 5*10^6 # (maximum number of SNPs per chromosome, before filtering)
-    size <- 60*10^3 # (originally 100*10^3, decrease: slower but less memory)
+    # size <- 60*10^3 # (originally 100*10^3, decrease: slower but less memory)
     skip <- seq(from=0,to=p,by=size)
     if(is.null(biobank)){
         study <- c("CODAM","LL","LLS0","LLS1","NTR0","NTR1","PAN","RS")
@@ -251,7 +254,8 @@ get.exons.bbmri <- function(path=getwd()){
     # (3) removing identifiers without SNP data
     # (4) translating identifiers
     utils::data(rnaSeqData_ReadCounts_BIOS_cleaned,package="BBMRIomics") # (1)
-    cd <- SummarizedExperiment::colData(counts)[,c("biobank_id","imputation_id","run_id")]; rm(counts) # (2)
+    cd <- SummarizedExperiment::colData(counts)[,c("biobank_id","imputation_id","run_id")] # (2)
+    counts <- NULL
     names(cd) <- substr(names(cd),start=1,stop=3) # abbreviate names
     cd <- cd[!is.na(cd$imp),] # (3)
     cd$id <- NA # (4)

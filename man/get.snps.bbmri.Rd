@@ -4,7 +4,7 @@
 \alias{get.snps.bbmri}
 \title{Get SNP data (BBMRI)}
 \usage{
-get.snps.bbmri(chr, biobank = NULL, path = getwd())
+get.snps.bbmri(chr, biobank = NULL, path = getwd(), size = 500 * 10^3)
 }
 \arguments{
 \item{chr}{chromosome: integer \eqn{1-22}}
@@ -12,6 +12,8 @@ get.snps.bbmri(chr, biobank = NULL, path = getwd())
 \item{biobank}{character "CODAM", "LL", "LLS", "NTR", "PAN", "RS", or NULL (all)}
 
 \item{path}{data directory}
+
+\item{size}{maximum number of SNPs to read in at once}
 }
 \description{
 This function transforms SNP data (virtual machine).
