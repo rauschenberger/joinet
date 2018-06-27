@@ -81,7 +81,8 @@ get.snps.geuvadis <- function(chr,path=getwd()){
 #' data directory
 #' 
 #' @param size
-#' maximum number of SNPs to read in at once
+#' maximum number of SNPs to read in at once;
+#' trade-off between memory usage (low) and speed (high)
 #' 
 #' @examples
 #' path <- "/virdir/Scratch/arauschenberger/trial"
@@ -92,7 +93,6 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
     message(rep("-",times=20)," chromosome ",chr," ",rep("-",times=20))
     
     p <- 5*10^6 # (maximum number of SNPs per chromosome, before filtering)
-    # size <- 60*10^3 # (originally 100*10^3, decrease: slower but less memory)
     skip <- seq(from=0,to=p,by=size)
     if(is.null(biobank)){
         study <- c("CODAM","LL","LLS0","LLS1","NTR0","NTR1","PAN","RS")
@@ -120,7 +120,7 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
             if(study[j]=="NTR0"){dir <- "NTR/Affy6"}
             if(study[j]=="NTR1"){dir <- "NTR/GoNL"}
             path0 <- file.path("/mnt/virdir/Backup/RP3_data/HRCv1.1_Imputation",dir)
-            path1 <- "/virdir/Scratch/arauschenberger/trial"
+            path1 <- path
             file0 <- paste0("chr",chr,".dose.vcf.gz")
             file1 <- paste0(study[j],".chr",chr,".dose.vcf.gz")
             file2 <- paste0(study[j],".chr",chr,".dose.vcf")
@@ -169,7 +169,7 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
     # Removing empty rows.
     cond <- apply(collect,1,function(x) all(sapply(x,length)==0))
     collect <- collect[!cond,,drop=FALSE]
-    save(object=collect,file=file.path(path1,paste0("temp.chr",chr,".RData")))
+    #save(object=collect,file=file.path(path1,paste0("temp.chr",chr,".RData")))
     #load(file.path(path1,paste0("temp.chr",chr,".RData")))
     
     # Fusing all matrices.
@@ -190,19 +190,20 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
     # Filter samples.
     rownames(snps) <- sub(x=rownames(snps),pattern="LLS0|LLS1",replacement="LLS")
     rownames(snps) <- sub(x=rownames(snps),pattern="NTR0|NTR1",replacement="NTR")
-    #split <- strsplit(x=colnames(snps),split=":")
-    #bio <- sapply(split,function(x) x[[1]])
-    #id <- sapply(split,function(x) x[[2]])
-    #cond <- rep(NA,times=ncol(snps))
-    #for(j in seq_along(study)){
-    #  cond[bio==study[j]] <- duplicated(id[bio==study[j]])
-    #}
-    
+
     if(is.null(biobank)){
         save(object=snps,file=file.path(path1,paste0("BBMRI.chr",chr,".RData")))
     } else {
         save(object=snps,file=file.path(path1,paste0(biobank,".chr",chr,".RData")))
     }
+    
+    # Remove temporary files.
+    for(j in seq_along(study)){
+        file1 <- paste0(study[j],".chr",chr,".dose.vcf.gz")
+        file2 <- paste0(study[j],".chr",chr,".dose.vcf")
+        file.remove(file.path(path1,c(file1,file2)))
+    }
+    
 }
 
 
@@ -605,7 +606,7 @@ map.snps <- function(gene.chr,gene.start,gene.end,snp.chr,snp.pos,dist=10^3){
 
 #' @export
 #' @title
-#' Drop trivial test
+#' Drop trivial tests
 #' 
 #' @description
 #' This function

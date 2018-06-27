@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{drop.trivial}
 \alias{drop.trivial}
-\title{Drop trivial test}
+\title{Drop trivial tests}
 \usage{
 drop.trivial(map)
 }

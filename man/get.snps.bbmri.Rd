@@ -13,7 +13,8 @@ get.snps.bbmri(chr, biobank = NULL, path = getwd(), size = 500 * 10^3)
 
 \item{path}{data directory}
 
-\item{size}{maximum number of SNPs to read in at once}
+\item{size}{maximum number of SNPs to read in at once;
+trade-off between memory usage (low) and speed (high)}
 }
 \description{
 This function transforms SNP data (virtual machine).
