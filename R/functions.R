@@ -199,9 +199,7 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
     
     # Remove temporary files.
     for(j in seq_along(study)){
-        file1 <- paste0(study[j],".chr",chr,".dose.vcf.gz")
-        file2 <- paste0(study[j],".chr",chr,".dose.vcf")
-        file.remove(file.path(path1,c(file1,file2)))
+        file.remove(file.path(path1,paste0(study[j],".chr",chr,".dose.vcf")))
     }
     
 }
