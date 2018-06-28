@@ -9,31 +9,43 @@
 #' @param chr
 #' chromosome: integer \eqn{1-22}
 #' 
-#' @param path
+#' @param data
 #' local directory for VCF (variant call format) and SDRF (sample and data relationship format) files
+#' 
+#' @param path
+#' local directory for output
 #' 
 #' @examples
 #' path <- "C:/Users/a.rauschenbe/Desktop/spliceQTL/data"
 #' 
-get.snps.geuvadis <- function(chr,path=getwd()){
+get.snps.geuvadis <- function(chr,data=NULL,path=getwd()){
     
-    # download SNP data
-    file <- paste0("GEUVADIS.chr",chr,".PH1PH2_465.IMPFRQFILT_BIALLELIC_PH.annotv2.genotypes.vcf.gz")
-    url <- paste0("http://www.ebi.ac.uk/arrayexpress/files/E-GEUV-1/genotypes/",file)
-    destfile <- file.path(path,file)
-    if(!file.exists(destfile)){
-        utils::download.file(url=url,destfile=destfile,method="auto")
+    if(is.null(data)){
+        data <- path
+        # download SNP data
+        file <- paste0("GEUVADIS.chr",chr,".PH1PH2_465.IMPFRQFILT_BIALLELIC_PH.annotv2.genotypes.vcf.gz")
+        url <- paste0("http://www.ebi.ac.uk/arrayexpress/files/E-GEUV-1/genotypes/",file)
+        destfile <- file.path(data,file)
+        if(!file.exists(destfile)){
+            utils::download.file(url=url,destfile=destfile,method="auto")
+        }
+        # transform with PLINK
+        setwd(data)
+        system(paste0("plink --vcf GEUVADIS.chr",chr,".PH1PH2_465.IMPFRQFILT_BIALLELIC_PH.annotv2.genotypes.vcf.gz",
+                  " --maf 0.05 --geno 0 --make-bed --out snps",chr),invisible=FALSE)
+        # obtain identifiers
+        file <- "E-GEUV-1.sdrf.txt"
+        url <- paste("http://www.ebi.ac.uk/arrayexpress/files/E-GEUV-1/",file,sep="")
+        destfile <- file.path(data,file)
+        if(!file.exists(destfile)){
+            utils::download.file(url=url,destfile=destfile,method="auto")
+        }
     }
     
-    # transform with PLINK
-    setwd(path)
-    system(paste0("plink --vcf GEUVADIS.chr",chr,".PH1PH2_465.IMPFRQFILT_BIALLELIC_PH.annotv2.genotypes.vcf.gz",
-                  " --maf 0.05 --geno 0 --make-bed --out snps",chr),invisible=FALSE)
-    
     # read into R
-    bed <- file.path(path,paste("snps",chr,".bed",sep=""))
-    bim <- file.path(path,paste("snps",chr,".bim",sep=""))
-    fam <- file.path(path,paste("snps",chr,".fam",sep=""))
+    bed <- file.path(data,paste("snps",chr,".bed",sep=""))
+    bim <- file.path(data,paste("snps",chr,".bim",sep=""))
+    fam <- file.path(data,paste("snps",chr,".fam",sep=""))
     X <- snpStats::read.plink(bed=bed,bim=bim,fam=fam)
     X$fam <- NULL; all(diff(X$map$position) > 0)
     
@@ -49,13 +61,7 @@ get.snps.geuvadis <- function(chr,path=getwd()){
     class(snps) <- "integer"
     
     # change identifiers
-    file <- "E-GEUV-1.sdrf.txt"
-    url <- paste("http://www.ebi.ac.uk/arrayexpress/files/E-GEUV-1/",file,sep="")
-    destfile <- file.path(path$data,file)
-    if(!file.exists(destfile)){
-        utils::download.file(url=url,destfile=destfile,method="auto")
-    }
-    samples <- utils::read.delim(file=file.path(path,"E-GEUV-1.sdrf.txt"))
+    samples <- utils::read.delim(file=file.path(data,"E-GEUV-1.sdrf.txt"))
     match <- match(rownames(snps),samples$Source.Name)
     rownames(snps) <- samples$Comment.ENA_RUN.[match]
     snps <- snps[!is.na(rownames(snps)),]
@@ -100,7 +106,7 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
         study <- c("LLS0","LLS1")
     } else if(biobank=="NTR"){
         study <- c("NTR0","NTR1")
-    } else if(!biobank %in% c("CODAM","LL","PAN","RS")){
+    } else if(biobank %in% c("CODAM","LL","PAN","RS")){
         study <- biobank
     } else{
         stop("Invalid biobank.",call.=FALSE)

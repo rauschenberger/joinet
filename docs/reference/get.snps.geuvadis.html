@@ -120,7 +120,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>get.snps.geuvadis</span>(<span class='no'>chr</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'>getwd</span>())</pre>
+    <pre class="usage"><span class='fu'>get.snps.geuvadis</span>(<span class='no'>chr</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'>getwd</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -130,8 +130,12 @@
       <td><p>chromosome: integer \(1-22\)</p></td>
     </tr>
     <tr>
-      <th>path</th>
+      <th>data</th>
       <td><p>local directory for VCF (variant call format) and SDRF (sample and data relationship format) files</p></td>
+    </tr>
+    <tr>
+      <th>path</th>
+      <td><p>local directory for output</p></td>
     </tr>
     </table>
     
