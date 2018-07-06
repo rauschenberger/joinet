@@ -176,13 +176,14 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
             file2 <- paste0(study[j],".chr",chr,".dose.vcf")
             
             # Decompressing missing files in personal folder.
-            if(!file.exists(file.path(path1,file2))){
-                file.copy(from=file.path(path0,file0),to=file.path(path1,file1))
-                R.utils::gunzip(filename=file.path(path1,file1),remove=TRUE,overwrite=TRUE)
-            }
+            #if(!file.exists(file.path(path1,file2))){
+            #    file.copy(from=file.path(path0,file0),to=file.path(path1,file1))
+            #    R.utils::gunzip(filename=file.path(path1,file1),remove=TRUE,overwrite=TRUE)
+            #}
             
             # Reading in files.
-            vcf <- vcfR::read.vcfR(file=file.path(path1,file2),skip=skip[i],nrows=size,verbose=FALSE)
+            #vcf <- vcfR::read.vcfR(file=file.path(path1,file2),skip=skip[i],nrows=size,verbose=FALSE)
+            vcf <- vcfR::read.vcfR(file=file.path(path0,file0),skip=skip[i],nrows=size,verbose=FALSE)
             vcf <- vcf[vcf@fix[,"CHROM"]!="",] # bug fix
             vcf@fix[,"ID"] <- paste0(vcf@fix[,"ID"],"_",seq_len(dim(vcf)["variants"]))
             collect[i,j][[1]] <- vcf
@@ -248,9 +249,9 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
     }
     
     # Remove temporary files.
-    for(j in seq_along(study)){
-        file.remove(file.path(path1,paste0(study[j],".chr",chr,".dose.vcf")))
-    }
+    #for(j in seq_along(study)){
+    #    file.remove(file.path(path1,paste0(study[j],".chr",chr,".dose.vcf")))
+    #}
     
 }
 
