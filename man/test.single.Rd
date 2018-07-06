@@ -14,7 +14,8 @@ matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)}
 matrix with \eqn{n} rows (samples) and \eqn{q} columns (SNPs)}
 
 \item{map}{list with names "genes", "exons", and "snps"
-(output from \code{map.genes}, \code{map.exons}, and \code{map.snps})}
+(output from \code{\link{map.genes}}, \code{\link{map.exons}},
+and \code{\link{map.snps}})}
 
 \item{i}{gene index\strong{:}
 integer between \eqn{1} and \code{nrow(map$genes)}}

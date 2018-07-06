@@ -8,7 +8,8 @@ drop.trivial(map)
 }
 \arguments{
 \item{map}{list with names "genes", "exons", and "snps"
-(output from \code{map.genes}, \code{map.exons}, and \code{map.snps})}
+(output from \code{\link{map.genes}}, \code{\link{map.exons}},
+and \code{\link{map.snps}})}
 }
 \description{
 This function

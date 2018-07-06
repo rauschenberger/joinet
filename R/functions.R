@@ -1,4 +1,48 @@
 
+
+#' @name spliceQTL-package
+#' @md
+#' @aliases spliceQTL
+#' 
+#' @title
+#' 
+#' Alternative Splicing
+#' 
+#' @description
+#' 
+#' This R package includes various functions
+#' for applying the global test of alternative splicing.
+#' Some functions only work on the virtual machine (see below).
+#' 
+#' @seealso 
+#' 
+#' Prepare BBMRI and Geuvadis data:
+#' * \code{\link{get.snps.geuvadis}} (not VM)
+#' * \code{\link{get.snps.bbmri}} (only VM)
+#' * \code{\link{get.exons.geuvadis}} (only VM)
+#' * \code{\link{get.exons.bbmri}} (only VM)
+#' 
+#' Process samples and covariates:
+#' * \code{\link{match.samples}}
+#' * \code{\link{adjust.samples}}
+#' * \code{\link{adjust.covariates}}
+#' 
+#' Search for exons and SNPs:
+#' * \code{\link{map.genes}}
+#' * \code{\link{map.exons}}
+#' * \code{\link{map.snps}}
+#' * \code{\link{drop.trivial}}
+#' 
+#' Test for alternative splicing:
+#' * \code{\link{test.single}}
+#' * \code{\link{test.multiple}}
+#'
+#' @keywords documentation
+#' @docType package
+#' 
+NULL
+
+
 #' @export
 #' @title
 #' Get SNP data (Geuvadis)
@@ -209,6 +253,8 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
     }
     
 }
+
+
 
 
 #' @export
@@ -617,7 +663,8 @@ map.snps <- function(gene.chr,gene.start,gene.end,snp.chr,snp.pos,dist=10^3){
 #' 
 #' @param map
 #' list with names "genes", "exons", and "snps"
-#' (output from \code{map.genes}, \code{map.exons}, and \code{map.snps})
+#' (output from \code{\link{map.genes}}, \code{\link{map.exons}},
+#' and \code{\link{map.snps}})
 #' 
 #' @details
 #' This functions drops tests for genes without SNPs or with a single exon.
@@ -684,7 +731,8 @@ drop.trivial <- function(map){
 #' 
 #' @param map
 #' list with names "genes", "exons", and "snps"
-#' (output from \code{map.genes}, \code{map.exons}, and \code{map.snps})
+#' (output from \code{\link{map.genes}}, \code{\link{map.exons}},
+#' and \code{\link{map.snps}})
 #' 
 #' @param i
 #' gene index\strong{:}
