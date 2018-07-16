@@ -197,7 +197,8 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
         
         #### start trial ####
         # ONLY RETAINING SNPS WITH COMPLETE DATA
-        position <- apply(collect[i,,drop=FALSE],2,function(x) x[[1]]@fix[,"POS"])
+        #position <- apply(collect[i,,drop=FALSE],2,function(x) x[[1]]@fix[,"POS"])
+        position <- lapply(seq_along(study),function(j) collect[i,j][[1]]@fix[,"POS"])
         common <- Reduce(f=intersect,x=position)
         for(j in seq_along(study)){
             cond <- match(x=common,table=position[[j]])
