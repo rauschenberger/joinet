@@ -195,9 +195,22 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
         end <- Sys.time()
         if(stop){break}
         
+        #### start trial ####
+        # ONLY RETAINING SNPS WITH COMPLETE DATA
+        position <- apply(collect[i,,drop=FALSE],2,function(x) x[[1]]@fix[,"POS"])
+        common <- Reduce(f=intersect,x=position)
+        for(j in seq_along(study)){
+            cond <- match(x=common,table=position[[j]])
+            collect[i,j][[1]] <- collect[i,j][[1]][cond,]
+        }
+        #### end trial ####
+        
         # Calculating minor allele frequency.
         num <- numeric(); maf <- list()
         for(j in seq_along(study)){
+            #if(dim(collect[i,1][[1]])["variants"]!=dim(collect[i,j][[1]])["variants"]){
+            #    stop("Incompatible dimensions!") # examine this!  
+            #}
             num[j] <- dim(collect[i,j][[1]])["gt_cols"] # replace by adjusted sample sizes?
             maf[[j]] <- num[j]*vcfR::maf(collect[i,j][[1]])[,"Frequency"]
         }
@@ -849,7 +862,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1)){
         max <- p/0.05+1
         limit <- ceiling(0.05*max/p)
         steps <- diff(limit^seq(from=1,to=log(max)/log(limit),length.out=pmin(p,20)))
-        steps <- c(limit,round(steps))
+        steps <- c(limit,round(steps)) # Or replace "limit" by "minimum # of permutations"!
         steps[length(steps)] <- max-sum(steps[-length(steps)])
     }
     
