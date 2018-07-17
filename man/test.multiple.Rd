@@ -4,7 +4,7 @@
 \alias{test.multiple}
 \title{Conduct multiple tests}
 \usage{
-test.multiple(Y, X, map, rho = c(0, 0.5, 1), spec = 4)
+test.multiple(Y, X, map, rho = c(0, 0.5, 1), spec = 1)
 }
 \arguments{
 \item{Y}{exon expression\strong{:}

@@ -813,6 +813,40 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
     return(pvalue)
 }
 
+# test.trial <- function(y,x,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
+#     
+#     if(is.null(limit)){limit <- 5}
+#     if(is.null(steps)){steps <- c(10,20,20,50)}
+#     
+#     # check input
+#     if(!is.numeric(limit)){
+#         stop("Argument \"limit\" is not numeric.",call.=FALSE)
+#     }
+#     if(limit<1){
+#         stop("Argument \"limit\" is below one.",call.=FALSE)
+#     }
+#     if(!is.numeric(steps)|!is.vector(steps)){
+#         stop("Argument \"steps\" is no numeric vector.",call.=FALSE)
+#     }
+#     if(sum(steps)<2){
+#         stop("Too few permutations \"sum(steps)\".",call.=FALSE)
+#     }
+#     
+#     # test effects
+#     pvalue <- rep(x=NA,times=length(rho))
+#     for(j in seq_along(rho)){
+#         tstat <- spliceQTL:::G2.multin(
+#             dep.data=y,indep.data=x,nperm=steps[1]-1,rho=rho[j])$Sg
+#         for(nperm in steps[-1]){
+#             tstat <- c(tstat,spliceQTL:::G2.multin(
+#                 dep.data=y,indep.data=x,nperm=nperm,rho=rho[j])$Sg[-1])
+#             if(sum(tstat >= tstat[1]) >= limit){break}
+#         }
+#         pvalue[j] <- mean(tstat >= tstat[1],na.rm=TRUE)
+#     }
+#     
+#     return(pvalue)
+# }
 
 #' @export
 #' @title
@@ -848,7 +882,7 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 #' @examples
 #' NA
 #' 
-test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=4){
+test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1){
     
     p <- nrow(map$genes)
     
@@ -873,7 +907,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=4){
     
     if(max != sum(steps)){stop("Invalid combination?",call.=FALSE)}
     
-    # parallel computation
+    ## parallel computation
     #type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
     #cluster <- parallel::makeCluster(spec=spec,type=type)
     #parallel::clusterSetRNGStream(cl=cluster,iseed=1)
@@ -881,14 +915,17 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=4){
     #start <- Sys.time()
     #parallel::clusterEvalQ(cl=cluster,library(spliceQTL))
     #pvalue <- parallel::parLapply(cl=cluster,X=seq_len(p),fun=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
+    #pvalue <- parallel::parLapply(cl=cluster,X=seq_len(p),fun=function(i) test.trial(y=Y[,map$exons[[i]],drop=FALSE],x=X[,seq(from=map$snps$from[i],to=map$snps$to[i],by=1),drop=FALSE],limit=limit,steps=steps,rho=rho))
     #end <- Sys.time()
     #parallel::stopCluster(cluster)
     #rm(cluster)
     
+    ## trial
     #pvalue <- parallel::mclapply(X=seq_len(p),FUN=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
     
-    pvalue <- lapply(X=seq_len(p),FUN=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
-    
+    ## sequential computation
+    pvalue <- lapply(X=seq_len(p),FUN=function(i) spliceQTL::test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
+
     # tyding up
     pvalue <- do.call(what=rbind,args=pvalue)
     colnames(pvalue) <- paste0("rho=",rho)

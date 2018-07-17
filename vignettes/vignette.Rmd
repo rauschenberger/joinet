@@ -59,13 +59,13 @@ for(chr in 1:22){
     exons <- list$exons; snps <- list$snps; rm(list)
     
     cat("Adjusting samples:","\n")
-    #exons <- spliceQTL::adjust.samples(x=exons) # slow!
+    exons <- spliceQTL::adjust.samples(x=exons) # slow!
     exons <- asinh(x=exons)
     
     cat("Adjusting covariates:","\n")
     names <- strsplit(x=colnames(exons),split="_") # exon names
     length <- sapply(names,function(x) as.integer(x[[3]])-as.integer(x[[2]])) # exon length
-    #exons <- spliceQTL::adjust.covariates(x=exons,group=gene_id,offset=length) # slow!
+    exons <- spliceQTL::adjust.covariates(x=exons,group=gene_id,offset=length) # slow!
     
     cat("Mapping exons:","\n")
     map <- list()
@@ -86,7 +86,7 @@ for(chr in 1:22){
     
     cat("Testing:",as.character(Sys.time())," -> ")
     rm(list=setdiff(ls(),c("exons","snps","map","data","chr"))); gc()
-    pvalue <- test.multiple(Y=exons,X=snps,map=map,rho=c(0,0.5))
+    #pvalue <- test.multiple(Y=exons,X=snps,map=map,rho=c(0,0.5))
     pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=c(0,0.5),spec=1)
     cat(as.character(Sys.time()),"\n")
     
