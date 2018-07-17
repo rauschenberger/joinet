@@ -59,13 +59,13 @@ for(chr in 1:22){
     exons <- list$exons; snps <- list$snps; rm(list)
     
     cat("Adjusting samples:","\n")
-    exons <- spliceQTL::adjust.samples(x=exons) # slow!
+    #exons <- spliceQTL::adjust.samples(x=exons) # slow!
     exons <- asinh(x=exons)
     
     cat("Adjusting covariates:","\n")
     names <- strsplit(x=colnames(exons),split="_") # exon names
     length <- sapply(names,function(x) as.integer(x[[3]])-as.integer(x[[2]])) # exon length
-    exons <- spliceQTL::adjust.covariates(x=exons,group=gene_id,offset=length) # slow!
+    #exons <- spliceQTL::adjust.covariates(x=exons,group=gene_id,offset=length) # slow!
     
     cat("Mapping exons:","\n")
     map <- list()
@@ -85,7 +85,8 @@ for(chr in 1:22){
     map <- spliceQTL::drop.trivial(map=map)
     
     cat("Testing:",as.character(Sys.time())," -> ")
-    pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=c(0,0.5),spec=4)
+    rm(list=setdiff(ls(),c("exons","snps","map","data","chr"))); gc()
+    pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=c(0,0.5),spec=1)
     cat(as.character(Sys.time()),"\n")
     
     save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData")))
@@ -112,4 +113,8 @@ for(chr in 1:22){
 }
 ```
 
+
+Activate commented out lines (spliceQTL::adjust.samples, spliceQTL::adjust.covariates).
+
+memory usage Linux: ps hax -o rss,user | awk '{a[$2]+=$1;}END{for(i in a)print i" "int(a[i]/1024+0.5);}' | sort -rnk2
 

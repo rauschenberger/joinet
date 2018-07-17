@@ -127,13 +127,13 @@
 <a class="sourceLine" id="cb4-17" data-line-number="17">    exons &lt;-<span class="st"> </span>list<span class="op">$</span>exons; snps &lt;-<span class="st"> </span>list<span class="op">$</span>snps; <span class="kw">rm</span>(list)</a>
 <a class="sourceLine" id="cb4-18" data-line-number="18">    </a>
 <a class="sourceLine" id="cb4-19" data-line-number="19">    <span class="kw">cat</span>(<span class="st">"Adjusting samples:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
-<a class="sourceLine" id="cb4-20" data-line-number="20">    exons &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/adjust.samples">adjust.samples</a></span>(<span class="dt">x=</span>exons) <span class="co"># slow!</span></a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">    <span class="co">#exons &lt;- spliceQTL::adjust.samples(x=exons) # slow!</span></a>
 <a class="sourceLine" id="cb4-21" data-line-number="21">    exons &lt;-<span class="st"> </span><span class="kw">asinh</span>(<span class="dt">x=</span>exons)</a>
 <a class="sourceLine" id="cb4-22" data-line-number="22">    </a>
 <a class="sourceLine" id="cb4-23" data-line-number="23">    <span class="kw">cat</span>(<span class="st">"Adjusting covariates:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
 <a class="sourceLine" id="cb4-24" data-line-number="24">    names &lt;-<span class="st"> </span><span class="kw">strsplit</span>(<span class="dt">x=</span><span class="kw">colnames</span>(exons),<span class="dt">split=</span><span class="st">"_"</span>) <span class="co"># exon names</span></a>
 <a class="sourceLine" id="cb4-25" data-line-number="25">    length &lt;-<span class="st"> </span><span class="kw">sapply</span>(names,<span class="cf">function</span>(x) <span class="kw">as.integer</span>(x[[<span class="dv">3</span>]])<span class="op">-</span><span class="kw">as.integer</span>(x[[<span class="dv">2</span>]])) <span class="co"># exon length</span></a>
-<a class="sourceLine" id="cb4-26" data-line-number="26">    exons &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/adjust.covariates">adjust.covariates</a></span>(<span class="dt">x=</span>exons,<span class="dt">group=</span>gene_id,<span class="dt">offset=</span>length) <span class="co"># slow!</span></a>
+<a class="sourceLine" id="cb4-26" data-line-number="26">    <span class="co">#exons &lt;- spliceQTL::adjust.covariates(x=exons,group=gene_id,offset=length) # slow!</span></a>
 <a class="sourceLine" id="cb4-27" data-line-number="27">    </a>
 <a class="sourceLine" id="cb4-28" data-line-number="28">    <span class="kw">cat</span>(<span class="st">"Mapping exons:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
 <a class="sourceLine" id="cb4-29" data-line-number="29">    map &lt;-<span class="st"> </span><span class="kw">list</span>()</a>
@@ -153,12 +153,13 @@
 <a class="sourceLine" id="cb4-43" data-line-number="43">    map &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/drop.trivial">drop.trivial</a></span>(<span class="dt">map=</span>map)</a>
 <a class="sourceLine" id="cb4-44" data-line-number="44">    </a>
 <a class="sourceLine" id="cb4-45" data-line-number="45">    <span class="kw">cat</span>(<span class="st">"Testing:"</span>,<span class="kw">as.character</span>(<span class="kw">Sys.time</span>()),<span class="st">" -&gt; "</span>)</a>
-<a class="sourceLine" id="cb4-46" data-line-number="46">    pvalue &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/test.multiple">test.multiple</a></span>(<span class="dt">Y=</span>exons,<span class="dt">X=</span>snps,<span class="dt">map=</span>map,<span class="dt">rho=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="fl">0.5</span>),<span class="dt">spec=</span><span class="dv">4</span>)</a>
-<a class="sourceLine" id="cb4-47" data-line-number="47">    <span class="kw">cat</span>(<span class="kw">as.character</span>(<span class="kw">Sys.time</span>()),<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
-<a class="sourceLine" id="cb4-48" data-line-number="48">    </a>
-<a class="sourceLine" id="cb4-49" data-line-number="49">    <span class="kw">save</span>(<span class="dt">object=</span>pvalue,<span class="dt">file=</span><span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval."</span>,data,<span class="st">".chr"</span>,chr,<span class="st">".RData"</span>)))</a>
-<a class="sourceLine" id="cb4-50" data-line-number="50">  }</a>
-<a class="sourceLine" id="cb4-51" data-line-number="51">}</a></code></pre></div>
+<a class="sourceLine" id="cb4-46" data-line-number="46">    <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">setdiff</span>(<span class="kw">ls</span>(),<span class="kw">c</span>(<span class="st">"exons"</span>,<span class="st">"snps"</span>,<span class="st">"map"</span>,<span class="st">"data"</span>,<span class="st">"chr"</span>))); <span class="kw">gc</span>()</a>
+<a class="sourceLine" id="cb4-47" data-line-number="47">    pvalue &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/test.multiple">test.multiple</a></span>(<span class="dt">Y=</span>exons,<span class="dt">X=</span>snps,<span class="dt">map=</span>map,<span class="dt">rho=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="fl">0.5</span>),<span class="dt">spec=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb4-48" data-line-number="48">    <span class="kw">cat</span>(<span class="kw">as.character</span>(<span class="kw">Sys.time</span>()),<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
+<a class="sourceLine" id="cb4-49" data-line-number="49">    </a>
+<a class="sourceLine" id="cb4-50" data-line-number="50">    <span class="kw">save</span>(<span class="dt">object=</span>pvalue,<span class="dt">file=</span><span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval."</span>,data,<span class="st">".chr"</span>,chr,<span class="st">".RData"</span>)))</a>
+<a class="sourceLine" id="cb4-51" data-line-number="51">  }</a>
+<a class="sourceLine" id="cb4-52" data-line-number="52">}</a></code></pre></div>
 <p>On the virtual machine, execute this chunk to compare the results between the Geuvadis and the BBMRI project.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">cor &lt;-<span class="st"> </span>chisq &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>,<span class="dt">length=</span><span class="dv">22</span>)</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="cf">for</span>(chr <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">22</span>){</a>
@@ -174,6 +175,8 @@
 <a class="sourceLine" id="cb5-12" data-line-number="12">    b &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(b[names,<span class="dv">1</span>])<span class="op">&lt;</span><span class="fl">0.05</span></a>
 <a class="sourceLine" id="cb5-13" data-line-number="13">    chisq[chr] &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/chisq.test">chisq.test</a></span>(<span class="kw">table</span>(a,b))</a>
 <a class="sourceLine" id="cb5-14" data-line-number="14">}</a></code></pre></div>
+<p>Activate commented out lines (spliceQTL::adjust.samples, spliceQTL::adjust.covariates).</p>
+<p>memory usage Linux: ps hax -o rss,user | awk ’{a[$2]+=$1;}END{for(i in a)print i" “int(a[i]/1024+0.5);}’ | sort -rnk2</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

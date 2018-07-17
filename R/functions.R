@@ -877,7 +877,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=4){
     type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
     cluster <- parallel::makeCluster(spec=spec,type=type)
     parallel::clusterSetRNGStream(cl=cluster,iseed=1)
-    parallel::clusterExport(cl=cluster,varlist=c("Y","X","map","limit","steps","rho"),envir=environment())
+    #parallel::clusterExport(cl=cluster,varlist=c("Y","X","map","limit","steps","rho"),envir=environment())
     start <- Sys.time()
     pvalue <- parallel::parLapply(cl=cluster,X=seq_len(p),fun=function(i) spliceQTL::test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
     end <- Sys.time()
