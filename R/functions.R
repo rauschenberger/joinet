@@ -793,9 +793,9 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
     
     # extract data
     ys <- map$exons[[i]]
-    y <- Y[,ys,drop=FALSE]
+    y <- Y[,ys,drop=FALSE]; rm(Y)
     xs <- seq(from=map$snps$from[i],to=map$snps$to[i],by=1)
-    x <- X[,xs,drop=FALSE]
+    x <- X[,xs,drop=FALSE]; rm(X)
     
     # test effects
     pvalue <- rep(x=NA,times=length(rho))
