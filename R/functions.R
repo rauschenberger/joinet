@@ -837,6 +837,10 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 #' correlation\strong{:}
 #' numeric vector with values between \eqn{0} and \eqn{1}
 #' 
+#' @param spec
+#' number of cores\strong{:}
+#' positive integer
+#' 
 #' @details
 #' Automatic adjustment of the number of permutations
 #' such that Bonferroni-significant p-values are possible.
@@ -844,7 +848,7 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 #' @examples
 #' NA
 #' 
-test.multiple <- function(Y,X,map,rho=c(0,0.5,1)){
+test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=4){
     
     p <- nrow(map$genes)
     
@@ -871,7 +875,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1)){
     
     # parallel computation
     type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
-    cluster <- parallel::makeCluster(spec=8,type=type)
+    cluster <- parallel::makeCluster(spec=spec,type=type)
     parallel::clusterSetRNGStream(cl=cluster,iseed=1)
     parallel::clusterExport(cl=cluster,varlist=c("Y","X","map","limit","steps","rho"),envir=environment())
     start <- Sys.time()
