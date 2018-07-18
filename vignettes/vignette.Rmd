@@ -52,8 +52,6 @@ for(chr in 1:22){
       cond <- sapply(strsplit(x=rownames(exons),split=":"),function(x) x[[1]]==data)
       exons <- exons[cond,]
     }
-    cond <- sapply(strsplit(x=colnames(exons),split="_"),function(x) x[[1]]==chr)
-    exons <- exons[,cond]
     load(file.path(path,paste0(data,".chr",chr,".RData")),verbose=TRUE)
     
     cat("Matching samples:","\n")
@@ -61,13 +59,18 @@ for(chr in 1:22){
     exons <- list$exons; snps <- list$snps; rm(list)
     
     cat("Adjusting samples:","\n")
-    exons <- spliceQTL::adjust.samples(x=exons) # slow!
+    #exons <- spliceQTL::adjust.samples(x=exons) # slow!
     exons <- asinh(x=exons)
     
     cat("Adjusting covariates:","\n")
     names <- strsplit(x=colnames(exons),split="_") # exon names
     length <- sapply(names,function(x) as.integer(x[[3]])-as.integer(x[[2]])) # exon length
-    exons <- spliceQTL::adjust.covariates(x=exons,group=gene_id,offset=length) # slow!
+    #exons <- spliceQTL::adjust.covariates(x=exons,group=gene_id,offset=length) # slow!
+    
+    # subset chromosome
+    cond <- sapply(strsplit(x=colnames(exons),split="_"),function(x) x[[1]]==chr)
+    exons <- exons[,cond]
+    gene_id = gene_id[cond] # correct?
     
     cat("Mapping exons:","\n")
     map <- list()
@@ -116,4 +119,10 @@ for(chr in 1:22){
 ```
 
 
-memory usage Linux: ps hax -o rss,user | awk '{a[$2]+=$1;}END{for(i in a)print i" "int(a[i]/1024+0.5);}' | sort -rnk2
+memory usage Linux:
+
+ps hax -o rss,user | awk '{a[$2]+=$1;}END{for(i in a)print i" "int(a[i]/1024+0.5);}' | sort -rnk2
+
+ps -U root --no-headers -o rss | awk '{ sum+=$1} END {print int(sum/1024) "MB"}'
+
+
