@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{test.single}
 \alias{test.single}
-\title{Conduct single tests}
+\title{Conduct single test}
 \usage{
 test.single(Y, X, map, i, limit = NULL, steps = NULL, rho = c(0, 0.5, 1))
 }
@@ -29,7 +29,7 @@ integer vector}
 numeric vector with values between \eqn{0} and \eqn{1}}
 }
 \description{
-This function
+This function tests for alternative splicing.
 }
 \details{
 The maximum number of permutations equals \code{sum(steps)}. Permutations is

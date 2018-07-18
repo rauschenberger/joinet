@@ -44,7 +44,7 @@ for(chr in 1:22){
   for(data in c("Geuvadis","LLS")){
     set.seed(1)
     
-    cat("Analysing",data,"data:",as.character(Sys.time()),"\n")
+    cat("Analysing",data,chr,":",as.character(Sys.time()),"\n")
     if(data=="Geuvadis"){
       load(file.path(path,"Geuvadis.exons.RData"),verbose=TRUE)
     } else {
@@ -52,6 +52,8 @@ for(chr in 1:22){
       cond <- sapply(strsplit(x=rownames(exons),split=":"),function(x) x[[1]]==data)
       exons <- exons[cond,]
     }
+    cond <- sapply(strsplit(x=colnames(exons),split="_"),function(x) x[[1]]==chr)
+    exons <- exons[,cond]
     load(file.path(path,paste0(data,".chr",chr,".RData")),verbose=TRUE)
     
     cat("Matching samples:","\n")
@@ -86,8 +88,7 @@ for(chr in 1:22){
     
     cat("Testing:",as.character(Sys.time())," -> ")
     rm(list=setdiff(ls(),c("exons","snps","map","data","chr"))); gc()
-    #pvalue <- test.multiple(Y=exons,X=snps,map=map,rho=c(0,0.5))
-    pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=c(0,0.5),spec=1)
+    pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=c(0,0.5),spec=1) # slow!
     cat(as.character(Sys.time()),"\n")
     
     save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData")))
@@ -115,7 +116,4 @@ for(chr in 1:22){
 ```
 
 
-Activate commented out lines (spliceQTL::adjust.samples, spliceQTL::adjust.covariates).
-
 memory usage Linux: ps hax -o rss,user | awk '{a[$2]+=$1;}END{for(i in a)print i" "int(a[i]/1024+0.5);}' | sort -rnk2
-

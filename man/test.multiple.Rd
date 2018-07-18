@@ -23,7 +23,7 @@ numeric vector with values between \eqn{0} and \eqn{1}}
 positive integer}
 }
 \description{
-This function ...
+This function tests for alternative splicing.
 }
 \details{
 Automatic adjustment of the number of permutations

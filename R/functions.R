@@ -54,7 +54,8 @@ NULL
 #' chromosome: integer \eqn{1-22}
 #' 
 #' @param data
-#' local directory for VCF (variant call format) and SDRF (sample and data relationship format) files
+#' local directory for VCF (variant call format)
+#' and SDRF (sample and data relationship format) files
 #' 
 #' @param path
 #' local directory for output
@@ -731,10 +732,10 @@ drop.trivial <- function(map){
 
 #' @export
 #' @title
-#' Conduct single tests
+#' Conduct single test
 #' 
 #' @description
-#' This function
+#' This function tests for alternative splicing.
 #' 
 #' @param Y
 #' exon expression\strong{:}
@@ -853,7 +854,7 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 #' Conduct multiple tests
 #' 
 #' @description
-#' This function ...
+#' This function tests for alternative splicing.
 #' 
 #' @param Y
 #' exon expression\strong{:}
@@ -908,13 +909,13 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1){
     if(max != sum(steps)){stop("Invalid combination?",call.=FALSE)}
     
     ## parallel computation
-    #type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
-    #cluster <- parallel::makeCluster(spec=spec,type=type)
-    #parallel::clusterSetRNGStream(cl=cluster,iseed=1)
+    type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
+    cluster <- parallel::makeCluster(spec=spec,type=type)
+    parallel::clusterSetRNGStream(cl=cluster,iseed=1)
     ##parallel::clusterExport(cl=cluster,varlist=c("Y","X","map","limit","steps","rho"),envir=environment())
     #start <- Sys.time()
     #parallel::clusterEvalQ(cl=cluster,library(spliceQTL))
-    #pvalue <- parallel::parLapply(cl=cluster,X=seq_len(p),fun=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
+    pvalue <- parallel::parLapply(cl=cluster,X=seq_len(p),fun=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
     #pvalue <- parallel::parLapply(cl=cluster,X=seq_len(p),fun=function(i) test.trial(y=Y[,map$exons[[i]],drop=FALSE],x=X[,seq(from=map$snps$from[i],to=map$snps$to[i],by=1),drop=FALSE],limit=limit,steps=steps,rho=rho))
     #end <- Sys.time()
     #parallel::stopCluster(cluster)
@@ -924,7 +925,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1){
     #pvalue <- parallel::mclapply(X=seq_len(p),FUN=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
     
     ## sequential computation
-    pvalue <- lapply(X=seq_len(p),FUN=function(i) spliceQTL::test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
+    #pvalue <- lapply(X=seq_len(p),FUN=function(i) spliceQTL::test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
 
     # tyding up
     pvalue <- do.call(what=rbind,args=pvalue)

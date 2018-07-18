@@ -9,7 +9,8 @@ get.snps.geuvadis(chr, data = NULL, path = getwd())
 \arguments{
 \item{chr}{chromosome: integer \eqn{1-22}}
 
-\item{data}{local directory for VCF (variant call format) and SDRF (sample and data relationship format) files}
+\item{data}{local directory for VCF (variant call format)
+and SDRF (sample and data relationship format) files}
 
 \item{path}{local directory for output}
 }
