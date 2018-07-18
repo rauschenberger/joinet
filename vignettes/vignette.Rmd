@@ -40,8 +40,9 @@ spliceQTL::get.exons.bbmri(path=path)
 On the virtual machine, execute this chunk to test for alternative splicing. See the documentation of the R package spliceQTL for further information.
 
 ```{r analysis,eval=FALSE}
-for(chr in 1:22){
+for(chr in 22:1){
   for(data in c("Geuvadis","LLS")){
+    rm(list=setdiff(ls(),c("data","chr","path"))); gc()
     set.seed(1)
     
     cat("Analysing",data,chr,":",as.character(Sys.time()),"\n")
@@ -59,13 +60,13 @@ for(chr in 1:22){
     exons <- list$exons; snps <- list$snps; rm(list)
     
     cat("Adjusting samples:","\n")
-    #exons <- spliceQTL::adjust.samples(x=exons) # slow!
+    exons <- spliceQTL::adjust.samples(x=exons) # slow!
     exons <- asinh(x=exons)
     
     cat("Adjusting covariates:","\n")
     names <- strsplit(x=colnames(exons),split="_") # exon names
     length <- sapply(names,function(x) as.integer(x[[3]])-as.integer(x[[2]])) # exon length
-    #exons <- spliceQTL::adjust.covariates(x=exons,group=gene_id,offset=length) # slow!
+    exons <- spliceQTL::adjust.covariates(x=exons,group=gene_id,offset=length) # slow!
     
     # subset chromosome
     cond <- sapply(strsplit(x=colnames(exons),split="_"),function(x) x[[1]]==chr)
@@ -79,8 +80,8 @@ for(chr in 1:22){
     
     cat("Mapping SNPs:","\n")
     names <- strsplit(x=colnames(snps),split=":")
-    snp.chr <- sapply(names,function(x) x[[1]])
-    snp.pos <- sapply(names,function(x) x[[2]])
+    snp.chr <- sapply(names,function(x) as.integer(x[[1]]))
+    snp.pos <- sapply(names,function(x) as.integer(x[[2]]))
     map$snps <- spliceQTL::map.snps(gene.chr=map$genes$chr,
                                     gene.start=map$genes$start,
                                     gene.end=map$genes$end,
@@ -90,8 +91,9 @@ for(chr in 1:22){
     map <- spliceQTL::drop.trivial(map=map)
     
     cat("Testing:",as.character(Sys.time())," -> ")
-    rm(list=setdiff(ls(),c("exons","snps","map","data","chr"))); gc()
-    pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=c(0,0.5),spec=1) # slow!
+    rm(list=setdiff(ls(),c("exons","snps","map","data","chr","path"))); gc()
+    # Use rho=c(0,0.5)
+    pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=0,spec=4) # slow!
     cat(as.character(Sys.time()),"\n")
     
     save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData")))

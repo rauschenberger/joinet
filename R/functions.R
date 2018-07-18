@@ -650,6 +650,9 @@ map.snps <- function(gene.chr,gene.start,gene.end,snp.chr,snp.pos,dist=10^3){
     if(length(gene.chr)!=length(gene.start)|length(gene.chr)!=length(gene.end)){
         stop("Invalid.",call.=FALSE)
     }
+    if(!is.numeric(snp.chr)|!is.numeric(snp.pos)){
+        stop("Invalid.",call.=FALSE)
+    }
     p <- length(gene.start)
     x <- data.frame(from=integer(length=p),to=integer(length=p))
     pb <- utils::txtProgressBar(min=0,max=p,style=3)
@@ -794,9 +797,10 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
     
     # extract data
     ys <- map$exons[[i]]
-    y <- Y[,ys,drop=FALSE]; rm(Y)
+    y <- Y[,ys,drop=FALSE]
     xs <- seq(from=map$snps$from[i],to=map$snps$to[i],by=1)
-    x <- X[,xs,drop=FALSE]; rm(X)
+    x <- X[,xs,drop=FALSE]
+    rm(Y,X); silent <- gc()
     
     # test effects
     pvalue <- rep(x=NA,times=length(rho))
