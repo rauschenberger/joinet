@@ -911,6 +911,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
         limit <- ceiling(0.05*max/p)
         steps <- diff(limit^seq(from=1,to=log(max)/log(limit),length.out=pmin(p,steps))) # was (p,20)
         steps <- c(limit,round(steps)) # Or replace "limit" by "minimum # of permutations"!
+        steps[steps==0] <- 1
         steps[length(steps)] <- max-sum(steps[-length(steps)])
     }
     
