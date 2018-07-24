@@ -880,6 +880,10 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 #' number of cores\strong{:}
 #' positive integer
 #' 
+#' @param steps
+#' number of iteration chunks\strong{:}
+#' positive integer
+#' 
 #' @details
 #' Automatic adjustment of the number of permutations
 #' such that Bonferroni-significant p-values are possible.
@@ -887,7 +891,7 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 #' @examples
 #' NA
 #' 
-test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1){
+test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
     
     p <- nrow(map$genes)
     
@@ -905,7 +909,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1){
     if(TRUE){
         max <- p/0.05+1
         limit <- ceiling(0.05*max/p)
-        steps <- diff(limit^seq(from=1,to=log(max)/log(limit),length.out=pmin(p,20))) # was (p,20)
+        steps <- diff(limit^seq(from=1,to=log(max)/log(limit),length.out=pmin(p,steps))) # was (p,20)
         steps <- c(limit,round(steps)) # Or replace "limit" by "minimum # of permutations"!
         steps[length(steps)] <- max-sum(steps[-length(steps)])
     }

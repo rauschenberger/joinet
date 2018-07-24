@@ -131,7 +131,7 @@ for(chr in 22:1){
         
         rm(list=setdiff(ls(),c("data","chr","path"))); gc(); cat(".")
         load(file.path(path,paste0("temp.",data,".chr",chr,".RData"))); cat(".")
-        pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=1,spec=1); cat(".")
+        pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=1,spec=16); cat(".")
         save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData"))); cat("\n")
     }
 #q()

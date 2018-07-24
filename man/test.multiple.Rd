@@ -4,7 +4,7 @@
 \alias{test.multiple}
 \title{Conduct multiple tests}
 \usage{
-test.multiple(Y, X, map, rho = c(0, 0.5, 1), spec = 1)
+test.multiple(Y, X, map, rho = c(0, 0.5, 1), spec = 1, steps = 20)
 }
 \arguments{
 \item{Y}{exon expression\strong{:}
@@ -20,6 +20,9 @@ matrix with \eqn{n} rows (samples) and \eqn{q} columns (SNPs)}
 numeric vector with values between \eqn{0} and \eqn{1}}
 
 \item{spec}{number of cores\strong{:}
+positive integer}
+
+\item{steps}{number of iteration chunks\strong{:}
 positive integer}
 }
 \description{
