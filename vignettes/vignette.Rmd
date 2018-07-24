@@ -116,7 +116,7 @@ for(chr in 1:22){
 }
 ```
 
-On the virtual machine, first restart R and then execute this chunk to test for alternative splicing. (It seems that lme4::lmer in spliceQTL::adjust.covariates fails to release  memory on Linux.)
+On the virtual machine, first restart R and then execute this chunk to test for alternative splicing. (It seems that lme4::lmer in spliceQTL::adjust.covariates fails to release memory on Linux.)
 
 ```{r test,eval=FALSE}
 for(chr in 22:1){
@@ -129,10 +129,10 @@ for(chr in 22:1){
         #    if(wait){Sys.sleep(60);cat(".")}
         #}  
         
-        rm(list=setdiff(ls(),c("data","chr","path"))); gc()
-        load(file.path(path,paste0("temp.",data,".chr",chr,".RData")))
-        pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=1,spec=20)
-        save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData")))
+        rm(list=setdiff(ls(),c("data","chr","path"))); gc(); cat(".")
+        load(file.path(path,paste0("temp.",data,".chr",chr,".RData"))); cat(".")
+        pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=1,spec=1); cat(".")
+        save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData"))); cat("\n")
     }
 #q()
 #n
