@@ -95,8 +95,14 @@
 <a class="sourceLine" id="cb1-3" data-line-number="3">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"rauschenberger/spliceQTL"</span>,<span class="dt">lib=</span>lib)</a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(<span class="st">"spliceQTL"</span>,<span class="dt">lib.loc=</span>lib)</a>
 <a class="sourceLine" id="cb1-5" data-line-number="5">path &lt;-<span class="st"> "/virdir/Scratch/arauschenberger/spliceQTL"</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">setwd</span>(path)</a></code></pre></div>
-<p>On a local machine with PLINK, execute this chunk to obtain the Gevuadis SNP data. Then move the files from the local to the virtual machine.</p>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">setwd</span>(path)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="co">#R</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co">#rnorm(10)</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co">#Sys.sleep(2)</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co">#q()</span></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="co">#n</span></a></code></pre></div>
+<p>On a local machine with PLINK, execute this chunk to obtain the Geuvadis SNP data. Then move the files from the local to the virtual machine.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="cf">for</span>(chr <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">22</span>){ </a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">    spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/get.snps.geuvadis">get.snps.geuvadis</a></span>(<span class="dt">chr=</span>chr,<span class="dt">data=</span><span class="st">"N:/semisup/data/eQTLs"</span>,</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3">                                 <span class="dt">path=</span><span class="st">"N:/spliceQTL/data/Geuvadis"</span>)</a>
@@ -107,84 +113,114 @@
 <a class="sourceLine" id="cb3-3" data-line-number="3">}</a>
 <a class="sourceLine" id="cb3-4" data-line-number="4">spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/get.exons.geuvadis">get.exons.geuvadis</a></span>(<span class="dt">path=</span>path)</a>
 <a class="sourceLine" id="cb3-5" data-line-number="5">spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/get.exons.bbmri">get.exons.bbmri</a></span>(<span class="dt">path=</span>path)</a></code></pre></div>
-<p>On the virtual machine, execute this chunk to test for alternative splicing. See the documentation of the R package spliceQTL for further information.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="cf">for</span>(chr <span class="cf">in</span> <span class="dv">22</span><span class="op">:</span><span class="dv">1</span>){</a>
+<p>On the virtual machine, execute this chunk to prepare the data. See the documentation of the R package spliceQTL for further information.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="cf">for</span>(chr <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">22</span>){</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="cf">for</span>(data <span class="cf">in</span> <span class="kw">c</span>(<span class="st">"Geuvadis"</span>,<span class="st">"LLS"</span>)){</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">setdiff</span>(<span class="kw">ls</span>(),<span class="kw">c</span>(<span class="st">"data"</span>,<span class="st">"chr"</span>,<span class="st">"path"</span>))); <span class="kw">gc</span>()</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="kw">set.seed</span>(<span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">    </a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">    <span class="kw">cat</span>(<span class="st">"Analysing"</span>,data,chr,<span class="st">":"</span>,<span class="kw">as.character</span>(<span class="kw">Sys.time</span>()),<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">    <span class="cf">if</span>(data<span class="op">==</span><span class="st">"Geuvadis"</span>){</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">      <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="st">"Geuvadis.exons.RData"</span>),<span class="dt">verbose=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">    } <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">      <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="st">"BBMRI.exons.RData"</span>),<span class="dt">verbose=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">      cond &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">strsplit</span>(<span class="dt">x=</span><span class="kw">rownames</span>(exons),<span class="dt">split=</span><span class="st">":"</span>),<span class="cf">function</span>(x) x[[<span class="dv">1</span>]]<span class="op">==</span>data)</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">      exons &lt;-<span class="st"> </span>exons[cond,]</a>
-<a class="sourceLine" id="cb4-13" data-line-number="13">    }</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14">    <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(data,<span class="st">".chr"</span>,chr,<span class="st">".RData"</span>)),<span class="dt">verbose=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb4-15" data-line-number="15">    </a>
-<a class="sourceLine" id="cb4-16" data-line-number="16">    <span class="kw">cat</span>(<span class="st">"Matching samples:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
-<a class="sourceLine" id="cb4-17" data-line-number="17">    list &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/match.samples">match.samples</a></span>(exons,snps)</a>
-<a class="sourceLine" id="cb4-18" data-line-number="18">    exons &lt;-<span class="st"> </span>list<span class="op">$</span>exons; snps &lt;-<span class="st"> </span>list<span class="op">$</span>snps; <span class="kw">rm</span>(list)</a>
-<a class="sourceLine" id="cb4-19" data-line-number="19">    </a>
-<a class="sourceLine" id="cb4-20" data-line-number="20">    <span class="kw">cat</span>(<span class="st">"Adjusting samples:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
-<a class="sourceLine" id="cb4-21" data-line-number="21">    exons &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/adjust.samples">adjust.samples</a></span>(<span class="dt">x=</span>exons) <span class="co"># slow!</span></a>
-<a class="sourceLine" id="cb4-22" data-line-number="22">    exons &lt;-<span class="st"> </span><span class="kw">asinh</span>(<span class="dt">x=</span>exons)</a>
-<a class="sourceLine" id="cb4-23" data-line-number="23">    </a>
-<a class="sourceLine" id="cb4-24" data-line-number="24">    <span class="kw">cat</span>(<span class="st">"Adjusting covariates:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
-<a class="sourceLine" id="cb4-25" data-line-number="25">    names &lt;-<span class="st"> </span><span class="kw">strsplit</span>(<span class="dt">x=</span><span class="kw">colnames</span>(exons),<span class="dt">split=</span><span class="st">"_"</span>) <span class="co"># exon names</span></a>
-<a class="sourceLine" id="cb4-26" data-line-number="26">    length &lt;-<span class="st"> </span><span class="kw">sapply</span>(names,<span class="cf">function</span>(x) <span class="kw">as.integer</span>(x[[<span class="dv">3</span>]])<span class="op">-</span><span class="kw">as.integer</span>(x[[<span class="dv">2</span>]])) <span class="co"># exon length</span></a>
-<a class="sourceLine" id="cb4-27" data-line-number="27">    exons &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/adjust.covariates">adjust.covariates</a></span>(<span class="dt">x=</span>exons,<span class="dt">group=</span>gene_id,<span class="dt">offset=</span>length) <span class="co"># slow!</span></a>
-<a class="sourceLine" id="cb4-28" data-line-number="28">    </a>
-<a class="sourceLine" id="cb4-29" data-line-number="29">    <span class="co"># subset chromosome</span></a>
-<a class="sourceLine" id="cb4-30" data-line-number="30">    cond &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">strsplit</span>(<span class="dt">x=</span><span class="kw">colnames</span>(exons),<span class="dt">split=</span><span class="st">"_"</span>),<span class="cf">function</span>(x) x[[<span class="dv">1</span>]]<span class="op">==</span>chr)</a>
-<a class="sourceLine" id="cb4-31" data-line-number="31">    exons &lt;-<span class="st"> </span>exons[,cond]</a>
-<a class="sourceLine" id="cb4-32" data-line-number="32">    gene_id =<span class="st"> </span>gene_id[cond] <span class="co"># correct?</span></a>
-<a class="sourceLine" id="cb4-33" data-line-number="33">    </a>
-<a class="sourceLine" id="cb4-34" data-line-number="34">    <span class="kw">cat</span>(<span class="st">"Mapping exons:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
-<a class="sourceLine" id="cb4-35" data-line-number="35">    map &lt;-<span class="st"> </span><span class="kw">list</span>()</a>
-<a class="sourceLine" id="cb4-36" data-line-number="36">    map<span class="op">$</span>genes &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/map.genes">map.genes</a></span>(<span class="dt">chr=</span>chr,<span class="dt">path=</span>path)</a>
-<a class="sourceLine" id="cb4-37" data-line-number="37">    map<span class="op">$</span>exons &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/map.exons">map.exons</a></span>(<span class="dt">gene=</span><span class="kw">as.character</span>(map<span class="op">$</span>genes<span class="op">$</span>gene_id),<span class="dt">exon=</span>gene_id)</a>
-<a class="sourceLine" id="cb4-38" data-line-number="38">    </a>
-<a class="sourceLine" id="cb4-39" data-line-number="39">    <span class="kw">cat</span>(<span class="st">"Mapping SNPs:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
-<a class="sourceLine" id="cb4-40" data-line-number="40">    names &lt;-<span class="st"> </span><span class="kw">strsplit</span>(<span class="dt">x=</span><span class="kw">colnames</span>(snps),<span class="dt">split=</span><span class="st">":"</span>)</a>
-<a class="sourceLine" id="cb4-41" data-line-number="41">    snp.chr &lt;-<span class="st"> </span><span class="kw">sapply</span>(names,<span class="cf">function</span>(x) <span class="kw">as.integer</span>(x[[<span class="dv">1</span>]]))</a>
-<a class="sourceLine" id="cb4-42" data-line-number="42">    snp.pos &lt;-<span class="st"> </span><span class="kw">sapply</span>(names,<span class="cf">function</span>(x) <span class="kw">as.integer</span>(x[[<span class="dv">2</span>]]))</a>
-<a class="sourceLine" id="cb4-43" data-line-number="43">    map<span class="op">$</span>snps &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/map.snps">map.snps</a></span>(<span class="dt">gene.chr=</span>map<span class="op">$</span>genes<span class="op">$</span>chr,</a>
-<a class="sourceLine" id="cb4-44" data-line-number="44">                                    <span class="dt">gene.start=</span>map<span class="op">$</span>genes<span class="op">$</span>start,</a>
-<a class="sourceLine" id="cb4-45" data-line-number="45">                                    <span class="dt">gene.end=</span>map<span class="op">$</span>genes<span class="op">$</span>end,</a>
-<a class="sourceLine" id="cb4-46" data-line-number="46">                                    <span class="dt">snp.chr=</span>snp.chr,<span class="dt">snp.pos=</span>snp.pos)</a>
-<a class="sourceLine" id="cb4-47" data-line-number="47">    </a>
-<a class="sourceLine" id="cb4-48" data-line-number="48">    <span class="kw">cat</span>(<span class="st">"Dropping genes:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
-<a class="sourceLine" id="cb4-49" data-line-number="49">    map &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/drop.trivial">drop.trivial</a></span>(<span class="dt">map=</span>map)</a>
-<a class="sourceLine" id="cb4-50" data-line-number="50">    </a>
-<a class="sourceLine" id="cb4-51" data-line-number="51">    <span class="kw">cat</span>(<span class="st">"Testing:"</span>,<span class="kw">as.character</span>(<span class="kw">Sys.time</span>()),<span class="st">" -&gt; "</span>)</a>
-<a class="sourceLine" id="cb4-52" data-line-number="52">    <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">setdiff</span>(<span class="kw">ls</span>(),<span class="kw">c</span>(<span class="st">"exons"</span>,<span class="st">"snps"</span>,<span class="st">"map"</span>,<span class="st">"data"</span>,<span class="st">"chr"</span>,<span class="st">"path"</span>))); <span class="kw">gc</span>()</a>
-<a class="sourceLine" id="cb4-53" data-line-number="53">    <span class="co"># Use rho=c(0,0.5)</span></a>
-<a class="sourceLine" id="cb4-54" data-line-number="54">    pvalue &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/test.multiple">test.multiple</a></span>(<span class="dt">Y=</span>exons,<span class="dt">X=</span>snps,<span class="dt">map=</span>map,<span class="dt">rho=</span><span class="dv">0</span>,<span class="dt">spec=</span><span class="dv">4</span>) <span class="co"># slow!</span></a>
-<a class="sourceLine" id="cb4-55" data-line-number="55">    <span class="kw">cat</span>(<span class="kw">as.character</span>(<span class="kw">Sys.time</span>()),<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
-<a class="sourceLine" id="cb4-56" data-line-number="56">    </a>
-<a class="sourceLine" id="cb4-57" data-line-number="57">    <span class="kw">save</span>(<span class="dt">object=</span>pvalue,<span class="dt">file=</span><span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval."</span>,data,<span class="st">".chr"</span>,chr,<span class="st">".RData"</span>)))</a>
-<a class="sourceLine" id="cb4-58" data-line-number="58">  }</a>
-<a class="sourceLine" id="cb4-59" data-line-number="59">}</a></code></pre></div>
+<a class="sourceLine" id="cb4-3" data-line-number="3">      </a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="co">#wait &lt;- TRUE</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">    <span class="co">#while(wait){</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">    <span class="co">#    wait &lt;- !file.exists(paste0(data,".chr",chr,".RData"))</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">    <span class="co">#    if(wait){Sys.sleep(60);cat(".")}</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">    <span class="co">#}</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">      </a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">    <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">setdiff</span>(<span class="kw">ls</span>(),<span class="kw">c</span>(<span class="st">"data"</span>,<span class="st">"chr"</span>,<span class="st">"path"</span>))); <span class="kw">gc</span>()</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">    <span class="kw">set.seed</span>(<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">    </a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">    <span class="kw">cat</span>(<span class="st">"Analysing"</span>,data,chr,<span class="st">":"</span>,<span class="kw">as.character</span>(<span class="kw">Sys.time</span>()),<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">    <span class="cf">if</span>(data<span class="op">==</span><span class="st">"Geuvadis"</span>){</a>
+<a class="sourceLine" id="cb4-15" data-line-number="15">      <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="st">"Geuvadis.exons.RData"</span>),<span class="dt">verbose=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">    } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">      <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="st">"BBMRI.exons.RData"</span>),<span class="dt">verbose=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">      cond &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">strsplit</span>(<span class="dt">x=</span><span class="kw">rownames</span>(exons),<span class="dt">split=</span><span class="st">":"</span>),<span class="cf">function</span>(x) x[[<span class="dv">1</span>]]<span class="op">==</span>data)</a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">      exons &lt;-<span class="st"> </span>exons[cond,]</a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">    }</a>
+<a class="sourceLine" id="cb4-21" data-line-number="21">    <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(data,<span class="st">".chr"</span>,chr,<span class="st">".RData"</span>)),<span class="dt">verbose=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb4-22" data-line-number="22">    </a>
+<a class="sourceLine" id="cb4-23" data-line-number="23">    <span class="kw">cat</span>(<span class="st">"Matching samples:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
+<a class="sourceLine" id="cb4-24" data-line-number="24">    list &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/match.samples">match.samples</a></span>(exons,snps)</a>
+<a class="sourceLine" id="cb4-25" data-line-number="25">    exons &lt;-<span class="st"> </span>list<span class="op">$</span>exons; snps &lt;-<span class="st"> </span>list<span class="op">$</span>snps; <span class="kw">rm</span>(list)</a>
+<a class="sourceLine" id="cb4-26" data-line-number="26">    </a>
+<a class="sourceLine" id="cb4-27" data-line-number="27">    <span class="kw">cat</span>(<span class="st">"Adjusting samples:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
+<a class="sourceLine" id="cb4-28" data-line-number="28">    exons &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/adjust.samples">adjust.samples</a></span>(<span class="dt">x=</span>exons) <span class="co"># slow!</span></a>
+<a class="sourceLine" id="cb4-29" data-line-number="29">    exons &lt;-<span class="st"> </span><span class="kw">asinh</span>(<span class="dt">x=</span>exons)</a>
+<a class="sourceLine" id="cb4-30" data-line-number="30">    </a>
+<a class="sourceLine" id="cb4-31" data-line-number="31">    <span class="kw">cat</span>(<span class="st">"Adjusting covariates:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
+<a class="sourceLine" id="cb4-32" data-line-number="32">    names &lt;-<span class="st"> </span><span class="kw">strsplit</span>(<span class="dt">x=</span><span class="kw">colnames</span>(exons),<span class="dt">split=</span><span class="st">"_"</span>) <span class="co"># exon names</span></a>
+<a class="sourceLine" id="cb4-33" data-line-number="33">    length &lt;-<span class="st"> </span><span class="kw">sapply</span>(names,<span class="cf">function</span>(x) <span class="kw">as.integer</span>(x[[<span class="dv">3</span>]])<span class="op">-</span><span class="kw">as.integer</span>(x[[<span class="dv">2</span>]])) <span class="co"># exon length</span></a>
+<a class="sourceLine" id="cb4-34" data-line-number="34">    exons &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/adjust.covariates">adjust.covariates</a></span>(<span class="dt">x=</span>exons,<span class="dt">group=</span>gene_id,<span class="dt">offset=</span>length) <span class="co"># slow!</span></a>
+<a class="sourceLine" id="cb4-35" data-line-number="35">    </a>
+<a class="sourceLine" id="cb4-36" data-line-number="36">    <span class="co"># subset chromosome</span></a>
+<a class="sourceLine" id="cb4-37" data-line-number="37">    cond &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">strsplit</span>(<span class="dt">x=</span><span class="kw">colnames</span>(exons),<span class="dt">split=</span><span class="st">"_"</span>),<span class="cf">function</span>(x) x[[<span class="dv">1</span>]]<span class="op">==</span>chr)</a>
+<a class="sourceLine" id="cb4-38" data-line-number="38">    exons &lt;-<span class="st"> </span>exons[,cond]</a>
+<a class="sourceLine" id="cb4-39" data-line-number="39">    gene_id =<span class="st"> </span>gene_id[cond] <span class="co"># correct?</span></a>
+<a class="sourceLine" id="cb4-40" data-line-number="40">    </a>
+<a class="sourceLine" id="cb4-41" data-line-number="41">    <span class="kw">cat</span>(<span class="st">"Mapping exons:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
+<a class="sourceLine" id="cb4-42" data-line-number="42">    map &lt;-<span class="st"> </span><span class="kw">list</span>()</a>
+<a class="sourceLine" id="cb4-43" data-line-number="43">    map<span class="op">$</span>genes &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/map.genes">map.genes</a></span>(<span class="dt">chr=</span>chr,<span class="dt">path=</span>path)</a>
+<a class="sourceLine" id="cb4-44" data-line-number="44">    map<span class="op">$</span>exons &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/map.exons">map.exons</a></span>(<span class="dt">gene=</span><span class="kw">as.character</span>(map<span class="op">$</span>genes<span class="op">$</span>gene_id),<span class="dt">exon=</span>gene_id)</a>
+<a class="sourceLine" id="cb4-45" data-line-number="45">    </a>
+<a class="sourceLine" id="cb4-46" data-line-number="46">    <span class="kw">cat</span>(<span class="st">"Mapping SNPs:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
+<a class="sourceLine" id="cb4-47" data-line-number="47">    names &lt;-<span class="st"> </span><span class="kw">strsplit</span>(<span class="dt">x=</span><span class="kw">colnames</span>(snps),<span class="dt">split=</span><span class="st">":"</span>)</a>
+<a class="sourceLine" id="cb4-48" data-line-number="48">    snp.chr &lt;-<span class="st"> </span><span class="kw">sapply</span>(names,<span class="cf">function</span>(x) <span class="kw">as.integer</span>(x[[<span class="dv">1</span>]]))</a>
+<a class="sourceLine" id="cb4-49" data-line-number="49">    snp.pos &lt;-<span class="st"> </span><span class="kw">sapply</span>(names,<span class="cf">function</span>(x) <span class="kw">as.integer</span>(x[[<span class="dv">2</span>]]))</a>
+<a class="sourceLine" id="cb4-50" data-line-number="50">    map<span class="op">$</span>snps &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/map.snps">map.snps</a></span>(<span class="dt">gene.chr=</span>map<span class="op">$</span>genes<span class="op">$</span>chr,</a>
+<a class="sourceLine" id="cb4-51" data-line-number="51">                                    <span class="dt">gene.start=</span>map<span class="op">$</span>genes<span class="op">$</span>start,</a>
+<a class="sourceLine" id="cb4-52" data-line-number="52">                                    <span class="dt">gene.end=</span>map<span class="op">$</span>genes<span class="op">$</span>end,</a>
+<a class="sourceLine" id="cb4-53" data-line-number="53">                                    <span class="dt">snp.chr=</span>snp.chr,<span class="dt">snp.pos=</span>snp.pos)</a>
+<a class="sourceLine" id="cb4-54" data-line-number="54">    </a>
+<a class="sourceLine" id="cb4-55" data-line-number="55">    <span class="kw">cat</span>(<span class="st">"Dropping genes:"</span>,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
+<a class="sourceLine" id="cb4-56" data-line-number="56">    map &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/drop.trivial">drop.trivial</a></span>(<span class="dt">map=</span>map)</a>
+<a class="sourceLine" id="cb4-57" data-line-number="57">    </a>
+<a class="sourceLine" id="cb4-58" data-line-number="58">    <span class="kw">cat</span>(<span class="st">"Testing:"</span>,<span class="kw">as.character</span>(<span class="kw">Sys.time</span>()),<span class="st">" -&gt; "</span>)</a>
+<a class="sourceLine" id="cb4-59" data-line-number="59">    <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">setdiff</span>(<span class="kw">ls</span>(),<span class="kw">c</span>(<span class="st">"exons"</span>,<span class="st">"snps"</span>,<span class="st">"map"</span>,<span class="st">"data"</span>,<span class="st">"chr"</span>,<span class="st">"path"</span>))); <span class="kw">gc</span>()</a>
+<a class="sourceLine" id="cb4-60" data-line-number="60">    </a>
+<a class="sourceLine" id="cb4-61" data-line-number="61">    <span class="kw">save</span>(<span class="dt">list=</span><span class="kw">c</span>(<span class="st">"exons"</span>,<span class="st">"snps"</span>,<span class="st">"map"</span>),<span class="dt">file=</span><span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"temp."</span>,data,<span class="st">".chr"</span>,chr,<span class="st">".RData"</span>)))</a>
+<a class="sourceLine" id="cb4-62" data-line-number="62">    </a>
+<a class="sourceLine" id="cb4-63" data-line-number="63"><span class="co">#q()</span></a>
+<a class="sourceLine" id="cb4-64" data-line-number="64"><span class="co">#n</span></a>
+<a class="sourceLine" id="cb4-65" data-line-number="65"><span class="co">#exit</span></a>
+<a class="sourceLine" id="cb4-66" data-line-number="66">  }</a>
+<a class="sourceLine" id="cb4-67" data-line-number="67"></a>
+<a class="sourceLine" id="cb4-68" data-line-number="68">}</a></code></pre></div>
+<p>On the virtual machine, first restart R and then execute this chunk to test for alternative splicing. (It seems that lme4::lmer in spliceQTL::adjust.covariates fails to release memory on Linux.)</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="cf">for</span>(chr <span class="cf">in</span> <span class="dv">22</span><span class="op">:</span><span class="dv">1</span>){</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">    <span class="cf">for</span>(data <span class="cf">in</span> <span class="kw">c</span>(<span class="st">"Geuvadis"</span>,<span class="st">"LLS"</span>)){</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">        <span class="kw">cat</span>(<span class="st">"Analysing"</span>,data,chr,<span class="st">":"</span>,<span class="kw">as.character</span>(<span class="kw">Sys.time</span>()),<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">        </a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">        <span class="co">#wait &lt;- TRUE</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">        <span class="co">#while(wait){</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">        <span class="co">#    wait &lt;- !file.exists(paste0("temp.",data,".chr",chr,".RData"))</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">        <span class="co">#    if(wait){Sys.sleep(60);cat(".")}</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">        <span class="co">#}  </span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">        </a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">        <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">setdiff</span>(<span class="kw">ls</span>(),<span class="kw">c</span>(<span class="st">"data"</span>,<span class="st">"chr"</span>,<span class="st">"path"</span>))); <span class="kw">gc</span>()</a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">        <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"temp."</span>,data,<span class="st">".chr"</span>,chr,<span class="st">".RData"</span>)))</a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">        pvalue &lt;-<span class="st"> </span>spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/test.multiple">test.multiple</a></span>(<span class="dt">Y=</span>exons,<span class="dt">X=</span>snps,<span class="dt">map=</span>map,<span class="dt">rho=</span><span class="dv">1</span>,<span class="dt">spec=</span><span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">        <span class="kw">save</span>(<span class="dt">object=</span>pvalue,<span class="dt">file=</span><span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval."</span>,data,<span class="st">".chr"</span>,chr,<span class="st">".RData"</span>)))</a>
+<a class="sourceLine" id="cb5-15" data-line-number="15">    }</a>
+<a class="sourceLine" id="cb5-16" data-line-number="16"><span class="co">#q()</span></a>
+<a class="sourceLine" id="cb5-17" data-line-number="17"><span class="co">#n</span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="co">#exit</span></a>
+<a class="sourceLine" id="cb5-19" data-line-number="19">}</a></code></pre></div>
 <p>On the virtual machine, execute this chunk to compare the results between the Geuvadis and the BBMRI project.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">cor &lt;-<span class="st"> </span>chisq &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>,<span class="dt">length=</span><span class="dv">22</span>)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="cf">for</span>(chr <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">22</span>){</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">    <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="st">"pval.Geuvadis.chr"</span>,chr,<span class="st">".RData"</span>))</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">    a &lt;-<span class="st"> </span>pvalue; pvalue &lt;-<span class="st"> </span><span class="ot">NA</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">    <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="st">"pval.LLS.chr"</span>,chr,<span class="st">".RData"</span>))</a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">    b &lt;-<span class="st"> </span>pvalue; pvalue &lt;-<span class="st"> </span><span class="ot">NA</span></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">    names &lt;-<span class="st"> </span><span class="kw">intersect</span>(<span class="kw">rownames</span>(a),<span class="kw">rownames</span>(b))</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">    cor[chr] &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/cor">cor</a></span>(a[names,<span class="dv">1</span>],b[names,<span class="dv">1</span>],<span class="dt">method=</span><span class="st">"spearman"</span>)</a>
-<a class="sourceLine" id="cb5-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb5-11" data-line-number="11">    a &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(a[names,<span class="dv">1</span>])<span class="op">&lt;</span><span class="fl">0.05</span></a>
-<a class="sourceLine" id="cb5-12" data-line-number="12">    b &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(b[names,<span class="dv">1</span>])<span class="op">&lt;</span><span class="fl">0.05</span></a>
-<a class="sourceLine" id="cb5-13" data-line-number="13">    chisq[chr] &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/chisq.test">chisq.test</a></span>(<span class="kw">table</span>(a,b))</a>
-<a class="sourceLine" id="cb5-14" data-line-number="14">}</a></code></pre></div>
-<p>memory usage Linux:</p>
-<p>ps hax -o rss,user | awk ’{a[$2]+=$1;}END{for(i in a)print i" “int(a[i]/1024+0.5);}’ | sort -rnk2</p>
-<p>ps -U root –no-headers -o rss | awk ‘{ sum+=$1} END {print int(sum/1024) “MB”}’</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">cor &lt;-<span class="st"> </span>chisq &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>,<span class="dt">length=</span><span class="dv">22</span>)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="cf">for</span>(chr <span class="cf">in</span> <span class="dv">22</span><span class="op">:</span><span class="dv">1</span>){</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">    <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval.Geuvadis.chr"</span>,chr,<span class="st">".RData"</span>)))</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">    a &lt;-<span class="st"> </span>pvalue; pvalue &lt;-<span class="st"> </span><span class="ot">NA</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">    <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval.LLS.chr"</span>,chr,<span class="st">".RData"</span>)))</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">    b &lt;-<span class="st"> </span>pvalue; pvalue &lt;-<span class="st"> </span><span class="ot">NA</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">    names &lt;-<span class="st"> </span><span class="kw">intersect</span>(<span class="kw">rownames</span>(a),<span class="kw">rownames</span>(b))</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">    <span class="kw">plot</span>(<span class="kw">jitter</span>(<span class="op">-</span><span class="kw">log</span>(a[names,<span class="dv">1</span>])),<span class="kw">jitter</span>(<span class="op">-</span><span class="kw">log</span>(b[names,<span class="dv">1</span>])))</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">    cor[chr] &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/cor">cor</a></span>(a[names,<span class="dv">1</span>],b[names,<span class="dv">1</span>],<span class="dt">method=</span><span class="st">"spearman"</span>)</a>
+<a class="sourceLine" id="cb6-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">    a &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(a[names,<span class="dv">1</span>])<span class="op">&lt;</span><span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">    b &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(b[names,<span class="dv">1</span>])<span class="op">&lt;</span><span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb6-14" data-line-number="14">    <span class="kw">print</span>(<span class="kw">paste0</span>(<span class="st">"chr"</span>,chr))</a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">    <span class="kw">print</span>(<span class="kw">table</span>(a,b))</a>
+<a class="sourceLine" id="cb6-16" data-line-number="16">    chisq[chr] &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/chisq.test">chisq.test</a></span>(<span class="kw">table</span>(a,b))<span class="op">$</span>p.value</a>
+<a class="sourceLine" id="cb6-17" data-line-number="17">}</a></code></pre></div>
+<p>memory and CPU usage Linux: htop</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

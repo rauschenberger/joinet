@@ -507,7 +507,7 @@ adjust.covariates <- function(x,offset,group){
     group <- strsplit(group,split=",")
     group <- sapply(group,function(x) x[[1]][1])
     group <- rep(group,each=n)
-    lmer <- lme4::lmer(x ~ offset + (1|group))
+    lmer <- lme4::lmer(x ~ offset + (1|group)); gc()
     x <- matrix(stats::residuals(lmer),nrow=n,ncol=p,dimnames=names)
     x <- x-min(x)
     return(x)
@@ -905,7 +905,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1){
     if(TRUE){
         max <- p/0.05+1
         limit <- ceiling(0.05*max/p)
-        steps <- diff(limit^seq(from=1,to=log(max)/log(limit),length.out=pmin(p,20)))
+        steps <- diff(limit^seq(from=1,to=log(max)/log(limit),length.out=pmin(p,50))) # was (p,20)
         steps <- c(limit,round(steps)) # Or replace "limit" by "minimum # of permutations"!
         steps[length(steps)] <- max-sum(steps[-length(steps)])
     }

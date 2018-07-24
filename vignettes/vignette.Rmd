@@ -16,11 +16,17 @@ devtools::install_github("rauschenberger/spliceQTL",lib=lib)
 library("spliceQTL",lib.loc=lib)
 path <- "/virdir/Scratch/arauschenberger/spliceQTL"
 setwd(path)
+
+#R
+#rnorm(10)
+#Sys.sleep(2)
+#q()
+#n
 ```
 
-On a local machine with PLINK, execute this chunk to obtain the Gevuadis SNP data. Then move the files from the local to the virtual machine.
+On a local machine with PLINK, execute this chunk to obtain the Geuvadis SNP data. Then move the files from the local to the virtual machine.
 
-```{r local data,eval=FALSE}
+```{r obtain (local),eval=FALSE}
 for(chr in 1:22){ 
     spliceQTL::get.snps.geuvadis(chr=chr,data="N:/semisup/data/eQTLs",
                                  path="N:/spliceQTL/data/Geuvadis")
@@ -29,7 +35,7 @@ for(chr in 1:22){
 
 On the virtual machine, execute this chunk to obtain the BBMRI SNP data, the Geuvadis exon data, and the BBMRI exon data. Choose one out of the six biobanks (CODAM, LL, LLS, NTR, PAN, RS).
 
-```{r remote data,eval=FALSE}
+```{r obtain (remote),eval=FALSE}
 for(chr in 1:22){
     spliceQTL::get.snps.bbmri(chr=chr,biobank="LLS",path=path,size=500*10^3)
 }
@@ -37,11 +43,18 @@ spliceQTL::get.exons.geuvadis(path=path)
 spliceQTL::get.exons.bbmri(path=path)
 ```
 
-On the virtual machine, execute this chunk to test for alternative splicing. See the documentation of the R package spliceQTL for further information.
+On the virtual machine, execute this chunk to prepare the data. See the documentation of the R package spliceQTL for further information.
 
-```{r analysis,eval=FALSE}
-for(chr in 22:1){
+```{r prepare,eval=FALSE}
+for(chr in 1:22){
   for(data in c("Geuvadis","LLS")){
+      
+    #wait <- TRUE
+    #while(wait){
+    #    wait <- !file.exists(paste0(data,".chr",chr,".RData"))
+    #    if(wait){Sys.sleep(60);cat(".")}
+    #}
+      
     rm(list=setdiff(ls(),c("data","chr","path"))); gc()
     set.seed(1)
     
@@ -92,12 +105,38 @@ for(chr in 22:1){
     
     cat("Testing:",as.character(Sys.time())," -> ")
     rm(list=setdiff(ls(),c("exons","snps","map","data","chr","path"))); gc()
-    # Use rho=c(0,0.5)
-    pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=0,spec=4) # slow!
-    cat(as.character(Sys.time()),"\n")
     
-    save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData")))
+    save(list=c("exons","snps","map"),file=file.path(path,paste0("temp.",data,".chr",chr,".RData")))
+    
+#q()
+#n
+#exit
   }
+
+}
+```
+
+On the virtual machine, first restart R and then execute this chunk to test for alternative splicing. (It seems that lme4::lmer in spliceQTL::adjust.covariates fails to release  memory on Linux.)
+
+```{r test,eval=FALSE}
+for(chr in 22:1){
+    for(data in c("Geuvadis","LLS")){
+        cat("Analysing",data,chr,":",as.character(Sys.time()),"\n")
+        
+        #wait <- TRUE
+        #while(wait){
+        #    wait <- !file.exists(paste0("temp.",data,".chr",chr,".RData"))
+        #    if(wait){Sys.sleep(60);cat(".")}
+        #}  
+        
+        rm(list=setdiff(ls(),c("data","chr","path"))); gc()
+        load(file.path(path,paste0("temp.",data,".chr",chr,".RData")))
+        pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=1,spec=20)
+        save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData")))
+    }
+#q()
+#n
+#exit
 }
 ```
 
@@ -105,26 +144,25 @@ On the virtual machine, execute this chunk to compare the results between the Ge
 
 ```{r,eval=FALSE}
 cor <- chisq <- rep(NA,length=22)
-for(chr in 1:22){
-    load(file.path(path,"pval.Geuvadis.chr",chr,".RData"))
+for(chr in 22:1){
+    load(file.path(path,paste0("pval.Geuvadis.chr",chr,".RData")))
     a <- pvalue; pvalue <- NA
-    load(file.path(path,"pval.LLS.chr",chr,".RData"))
+    load(file.path(path,paste0("pval.LLS.chr",chr,".RData")))
     b <- pvalue; pvalue <- NA
 
     names <- intersect(rownames(a),rownames(b))
+    plot(jitter(-log(a[names,1])),jitter(-log(b[names,1])))
     cor[chr] <- stats::cor(a[names,1],b[names,1],method="spearman")
 
     a <- stats::p.adjust(a[names,1])<0.05
     b <- stats::p.adjust(b[names,1])<0.05
-    chisq[chr] <- stats::chisq.test(table(a,b))
+    print(paste0("chr",chr))
+    print(table(a,b))
+    chisq[chr] <- stats::chisq.test(table(a,b))$p.value
 }
 ```
 
 
-memory usage Linux:
-
-ps hax -o rss,user | awk '{a[$2]+=$1;}END{for(i in a)print i" "int(a[i]/1024+0.5);}' | sort -rnk2
-
-ps -U root --no-headers -o rss | awk '{ sum+=$1} END {print int(sum/1024) "MB"}'
+memory and CPU usage Linux: htop
 
 
