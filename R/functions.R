@@ -176,12 +176,6 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
             file1 <- paste0(study[j],".chr",chr,".dose.vcf.gz")
             file2 <- paste0(study[j],".chr",chr,".dose.vcf")
             
-            # Decompressing missing files in personal folder.
-            #if(!file.exists(file.path(path1,file2))){
-            #    file.copy(from=file.path(path0,file0),to=file.path(path1,file1))
-            #    R.utils::gunzip(filename=file.path(path1,file1),remove=TRUE,overwrite=TRUE)
-            #}
-            
             # Reading in files.
             #vcf <- vcfR::read.vcfR(file=file.path(path1,file2),skip=skip[i],nrows=size,verbose=FALSE)
             vcf <- vcfR::read.vcfR(file=file.path(path0,file0),skip=skip[i],nrows=size,verbose=FALSE)
@@ -196,23 +190,17 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
         end <- Sys.time()
         if(stop){break}
         
-        #### start trial ####
-        # ONLY RETAINING SNPS WITH COMPLETE DATA
-        #position <- apply(collect[i,,drop=FALSE],2,function(x) x[[1]]@fix[,"POS"])
+        # only retain SNPs measured in all studies
         position <- lapply(seq_along(study),function(j) collect[i,j][[1]]@fix[,"POS"])
         common <- Reduce(f=intersect,x=position)
         for(j in seq_along(study)){
             cond <- match(x=common,table=position[[j]])
             collect[i,j][[1]] <- collect[i,j][[1]][cond,]
         }
-        #### end trial ####
         
         # Calculating minor allele frequency.
         num <- numeric(); maf <- list()
         for(j in seq_along(study)){
-            #if(dim(collect[i,1][[1]])["variants"]!=dim(collect[i,j][[1]])["variants"]){
-            #    stop("Incompatible dimensions!") # examine this!  
-            #}
             num[j] <- dim(collect[i,j][[1]])["gt_cols"] # replace by adjusted sample sizes?
             maf[[j]] <- num[j]*vcfR::maf(collect[i,j][[1]])[,"Frequency"]
         }
@@ -235,9 +223,7 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
     # Removing empty rows.
     cond <- apply(collect,1,function(x) all(sapply(x,length)==0))
     collect <- collect[!cond,,drop=FALSE]
-    #save(object=collect,file=file.path(path1,paste0("temp.chr",chr,".RData")))
-    #load(file.path(path1,paste0("temp.chr",chr,".RData")))
-    
+
     # Fusing all matrices.
     snps <- NULL
     for(i in seq_len(nrow(collect))){
@@ -262,15 +248,7 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
     } else {
         save(object=snps,file=file.path(path1,paste0(biobank,".chr",chr,".RData")))
     }
-    
-    # Remove temporary files.
-    #for(j in seq_along(study)){
-    #    file.remove(file.path(path1,paste0(study[j],".chr",chr,".dose.vcf")))
-    #}
-    
 }
-
-
 
 
 #' @export
@@ -518,7 +496,7 @@ adjust.covariates <- function(x,offset,group){
 #' Search for genes
 #' 
 #' @description
-#' This function retrieves all genes on a chromosome.
+#' This function retrieves all protein-coding genes on a chromosome.
 #' 
 #' @param chr
 #' chromosome\strong{:} integer 1-22
@@ -606,6 +584,7 @@ map.exons <- function(gene,exon){
     return(x)
 }
 
+
 #' @export
 #' @title
 #' Search for SNPs
@@ -672,6 +651,7 @@ map.snps <- function(gene.chr,gene.start,gene.end,snp.chr,snp.pos,dist=10^3){
     close(con=pb)
     return(x)
 }
+
 
 #' @export
 #' @title
@@ -818,40 +798,6 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
     return(pvalue)
 }
 
-# test.trial <- function(y,x,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
-#     
-#     if(is.null(limit)){limit <- 5}
-#     if(is.null(steps)){steps <- c(10,20,20,50)}
-#     
-#     # check input
-#     if(!is.numeric(limit)){
-#         stop("Argument \"limit\" is not numeric.",call.=FALSE)
-#     }
-#     if(limit<1){
-#         stop("Argument \"limit\" is below one.",call.=FALSE)
-#     }
-#     if(!is.numeric(steps)|!is.vector(steps)){
-#         stop("Argument \"steps\" is no numeric vector.",call.=FALSE)
-#     }
-#     if(sum(steps)<2){
-#         stop("Too few permutations \"sum(steps)\".",call.=FALSE)
-#     }
-#     
-#     # test effects
-#     pvalue <- rep(x=NA,times=length(rho))
-#     for(j in seq_along(rho)){
-#         tstat <- spliceQTL:::G2.multin(
-#             dep.data=y,indep.data=x,nperm=steps[1]-1,rho=rho[j])$Sg
-#         for(nperm in steps[-1]){
-#             tstat <- c(tstat,spliceQTL:::G2.multin(
-#                 dep.data=y,indep.data=x,nperm=nperm,rho=rho[j])$Sg[-1])
-#             if(sum(tstat >= tstat[1]) >= limit){break}
-#         }
-#         pvalue[j] <- mean(tstat >= tstat[1],na.rm=TRUE)
-#     }
-#     
-#     return(pvalue)
-# }
 
 #' @export
 #' @title
@@ -920,8 +866,6 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
     if(spec==1){
         pvalue <- lapply(X=seq_len(p),FUN=function(i) spliceQTL::test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
     } else {
-        
-        ## parallel computation
         type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
         cluster <- parallel::makeCluster(spec=spec,type=type)
         parallel::clusterSetRNGStream(cl=cluster,iseed=1)
@@ -930,14 +874,9 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
         pvalue <- parallel::parLapply(cl=cluster,X=seq_len(p),fun=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
         #pvalue <- parallel::parLapply(cl=cluster,X=seq_len(p),fun=function(i) test.trial(y=Y[,map$exons[[i]],drop=FALSE],x=X[,seq(from=map$snps$from[i],to=map$snps$to[i],by=1),drop=FALSE],limit=limit,steps=steps,rho=rho))
         parallel::stopCluster(cluster)
-        #rm(cluster)
-        
+        rm(cluster)
     }
     
-    ## trial
-    #pvalue <- parallel::mclapply(X=seq_len(p),FUN=function(i) test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
-    
-
     # tyding up
     pvalue <- do.call(what=rbind,args=pvalue)
     colnames(pvalue) <- paste0("rho=",rho)
@@ -946,6 +885,41 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
     return(pvalue)
 }
 
+
+# test.trial <- function(y,x,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
+#     
+#     if(is.null(limit)){limit <- 5}
+#     if(is.null(steps)){steps <- c(10,20,20,50)}
+#     
+#     # check input
+#     if(!is.numeric(limit)){
+#         stop("Argument \"limit\" is not numeric.",call.=FALSE)
+#     }
+#     if(limit<1){
+#         stop("Argument \"limit\" is below one.",call.=FALSE)
+#     }
+#     if(!is.numeric(steps)|!is.vector(steps)){
+#         stop("Argument \"steps\" is no numeric vector.",call.=FALSE)
+#     }
+#     if(sum(steps)<2){
+#         stop("Too few permutations \"sum(steps)\".",call.=FALSE)
+#     }
+#     
+#     # test effects
+#     pvalue <- rep(x=NA,times=length(rho))
+#     for(j in seq_along(rho)){
+#         tstat <- spliceQTL:::G2.multin(
+#             dep.data=y,indep.data=x,nperm=steps[1]-1,rho=rho[j])$Sg
+#         for(nperm in steps[-1]){
+#             tstat <- c(tstat,spliceQTL:::G2.multin(
+#                 dep.data=y,indep.data=x,nperm=nperm,rho=rho[j])$Sg[-1])
+#             if(sum(tstat >= tstat[1]) >= limit){break}
+#         }
+#         pvalue[j] <- mean(tstat >= tstat[1],na.rm=TRUE)
+#     }
+#     
+#     return(pvalue)
+# }
 
 
 #--- spliceQTL test functions --------------------------------------------------
@@ -961,14 +935,14 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
 ### nperm : number of permutations 
 ### rho: the null correlation between SNPs
 ### mu: the null correlation between observations corresponding to different exons and different individuals
-
+#
 ### Output
 ### A list containing G2 p.values and G2 test statistics
-
+#
 ### Example : G2T = G2(dep.data = cgh, indep.data = expr, grouping=F, stand=TRUE, nperm=1000)
 ### G2 p.values : G2T$G2p
 ### G2 TS : G2T$$Sg
-
+#
 G2.multin <- function(dep.data,indep.data,stand=TRUE,nperm=100,grouping=F,rho=0,mu=0){
     
     nperm = nperm
@@ -1040,7 +1014,6 @@ G2.multin <- function(dep.data,indep.data,stand=TRUE,nperm=100,grouping=F,rho=0,
         Sg = c(Sg,spliceQTL:::get.g2stat.multin(U, mu=mu,rho=rho,tau.mat.perm) )
     }
     
-    
     ########################################################################
     
     #### G2 test statistic
@@ -1054,6 +1027,7 @@ G2.multin <- function(dep.data,indep.data,stand=TRUE,nperm=100,grouping=F,rho=0,
     
     return (list(perm = perm_samp,G2p = G2p,Sg = Sg))
 }
+
 
 # Function: get.g2stat.multin
 # Computes the G2 test statistic given two data matrices, under a multinomial distribution
@@ -1078,6 +1052,7 @@ get.g2stat.multin <- function(U, mu, rho, tau.mat){
     }
     g2tstat
 }
+
 
 # Function: get.pval.percol
 # This function takes a vector containing the observed test stat as the first entry, followed by values generated by permutation,

@@ -16,7 +16,7 @@ map.genes(chr, path = getwd(), release = "GRCh37", build = 71)
 \item{build}{integer 49-91}
 }
 \description{
-This function retrieves all genes on a chromosome.
+This function retrieves all protein-coding genes on a chromosome.
 }
 \examples{
 NA

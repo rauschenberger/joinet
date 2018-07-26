@@ -16,12 +16,6 @@ devtools::install_github("rauschenberger/spliceQTL",lib=lib)
 library("spliceQTL",lib.loc=lib)
 path <- "/virdir/Scratch/arauschenberger/spliceQTL"
 setwd(path)
-
-#R
-#rnorm(10)
-#Sys.sleep(2)
-#q()
-#n
 ```
 
 On a local machine with PLINK, execute this chunk to obtain the Geuvadis SNP data. Then move the files from the local to the virtual machine.
@@ -43,17 +37,11 @@ spliceQTL::get.exons.geuvadis(path=path)
 spliceQTL::get.exons.bbmri(path=path)
 ```
 
-On the virtual machine, execute this chunk to prepare the data. See the documentation of the R package spliceQTL for further information.
+On the virtual machine, execute this chunk to prepare the data. See the documentation of the R package spliceQTL for further information. (It seems that lme4::lmer in spliceQTL::adjust.covariates fails to release memory. Restart R after each chromosome.)
 
 ```{r prepare,eval=FALSE}
 for(chr in 1:22){
   for(data in c("Geuvadis","LLS")){
-      
-    #wait <- TRUE
-    #while(wait){
-    #    wait <- !file.exists(paste0(data,".chr",chr,".RData"))
-    #    if(wait){Sys.sleep(60);cat(".")}
-    #}
       
     rm(list=setdiff(ls(),c("data","chr","path"))); gc()
     set.seed(1)
@@ -84,7 +72,7 @@ for(chr in 1:22){
     # subset chromosome
     cond <- sapply(strsplit(x=colnames(exons),split="_"),function(x) x[[1]]==chr)
     exons <- exons[,cond]
-    gene_id = gene_id[cond] # correct?
+    gene_id <- gene_id[cond]
     
     cat("Mapping exons:","\n")
     map <- list()
@@ -107,36 +95,25 @@ for(chr in 1:22){
     rm(list=setdiff(ls(),c("exons","snps","map","data","chr","path"))); gc()
     
     save(list=c("exons","snps","map"),file=file.path(path,paste0("temp.",data,".chr",chr,".RData")))
-    
+  }
 #q()
 #n
 #exit
-  }
-
 }
 ```
 
-On the virtual machine, first restart R and then execute this chunk to test for alternative splicing. (It seems that lme4::lmer in spliceQTL::adjust.covariates fails to release memory on Linux.)
+On the virtual machine, execute this chunk to test for alternative splicing.
 
 ```{r test,eval=FALSE}
-for(chr in c(22,1,21:2)){
+for(chr in c(1:22)){
     for(data in c("Geuvadis","LLS")){
         cat("Analysing",data,chr,":",as.character(Sys.time()),"\n")
-        
-        #wait <- TRUE
-        #while(wait){
-        #    wait <- !file.exists(paste0("temp.",data,".chr",chr,".RData"))
-        #    if(wait){Sys.sleep(60);cat(".")}
-        #}  
         
         rm(list=setdiff(ls(),c("data","chr","path"))); gc(); cat(".")
         load(file.path(path,paste0("temp.",data,".chr",chr,".RData"))); cat(".")
         pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=c(0,1),spec=16); cat(".")
         save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData"))); cat("\n")
     }
-#q()
-#n
-#exit
 }
 ```
 
@@ -163,7 +140,11 @@ for(chr in 22:1){
 }
 ```
 
-
+<!--
+#wait <- TRUE
+#while(wait){
+#    wait <- !file.exists(...)
+#    if(wait){Sys.sleep(60);cat(".")}
+#}
 memory and CPU usage Linux: htop
-
-
+-->
