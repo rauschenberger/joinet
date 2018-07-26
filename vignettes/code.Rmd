@@ -1,5 +1,5 @@
 ---
-title: spliceQTL
+title: code
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{vignette}
