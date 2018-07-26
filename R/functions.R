@@ -48,14 +48,19 @@ NULL
 #' Get SNP data (Geuvadis)
 #' 
 #' @description
-#' This function transforms SNP data (local machine).
-#' 
+#' This function transforms SNP data (local machine):
+#' downloads missing genotype data from ArrayExpress,
+#' transforms variant call format to binary files,
+#' removes SNPs with low minor allele frequency,
+#' labels SNPs in the format "chromosome:position",
+#' changes sample identifiers
+#'  
 #' @param chr
 #' chromosome: integer \eqn{1-22}
 #' 
 #' @param data
 #' local directory for VCF (variant call format)
-#' and SDRF (sample and data relationship format) files
+#' and SDRF (sample and data relationship format) files;
 #' 
 #' @param path
 #' local directory for output
@@ -94,7 +99,7 @@ get.snps.geuvadis <- function(chr,data=NULL,path=getwd()){
     X <- snpStats::read.plink(bed=bed,bim=bim,fam=fam)
     X$fam <- NULL; all(diff(X$map$position) > 0)
     
-    # fitler MAF
+    # filter MAF
     maf <- snpStats::col.summary(X$genotypes)$MAF
     cond <- maf >= 0.05
     X$genotypes <- X$genotypes[,cond]
@@ -120,7 +125,12 @@ get.snps.geuvadis <- function(chr,data=NULL,path=getwd()){
 #' Get SNP data (BBMRI)
 #' 
 #' @description
-#' This function transforms SNP data (virtual machine).
+#' This function transforms SNP data (virtual machine):
+#' limits analysis to specified biobanks,
+#' reads in genotype data in chunks,
+#' removes SNPs with missing values (multiple biobanks/technologies),
+#' removes SNPs with low minor allele frequency,
+#' fuses data from multiple biobanks/technologies
 #' 
 #' @param chr
 #' chromosome: integer \eqn{1-22}
@@ -207,7 +217,7 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
         cond <- rowSums(do.call(what="cbind",args=maf))/sum(num)>0.05
         if(sum(cond)==0){if(final){break}else{next}}
         
-        # Filtering out genotypes.
+        # Extracting genotypes.
         for(j in seq_along(study)){
             gt <- vcfR::extract.gt(collect[i,j][[1]][cond,])
             gt[gt=="0|0"] <- 0
@@ -256,7 +266,10 @@ get.snps.bbmri <- function(chr,biobank=NULL,path=getwd(),size=500*10^3){
 #' Get exon data (Geuvadis)
 #' 
 #' @description
-#' This function transforms exon data (virtual machine).
+#' This function transforms exon data (virtual machine):
+#' retains exons on the autosomes,
+#' labels exons in the format "chromosome_start_end",
+#' extracts corresponding gene names
 #' 
 #' @param path
 #' data directory 
@@ -283,7 +296,14 @@ get.exons.geuvadis <- function(path=getwd()){
 #' Get exon data (BBMRI)
 #' 
 #' @description
-#' This function transforms exon data (virtual machine).
+#' This function transforms exon data (virtual machine):
+#' loads quality controlled gene expression data,
+#' extracts sample identifiers,
+#' removes samples without SNP data,
+#' loads exon expression data,
+#' extracts sample identifiers,
+#' retains samples that passed quality control,
+#' retains exons on the autosomes
 #' 
 #' @param path
 #' data directory 
@@ -550,7 +570,7 @@ map.genes <- function(chr,path=getwd(),release="GRCh37",build=71){
 #' Search for exons
 #' 
 #' @description
-#' This function
+#' This function attributes exons to genes.
 #' 
 #' @param gene
 #' gene names\strong{:} vector with one entry per gene,
@@ -590,7 +610,7 @@ map.exons <- function(gene,exon){
 #' Search for SNPs
 #' 
 #' @description
-#' This function
+#' This function attributes SNPs to genes.
 #' 
 #' @param gene.chr
 #' chromosome\strong{:}
@@ -658,7 +678,7 @@ map.snps <- function(gene.chr,gene.start,gene.end,snp.chr,snp.pos,dist=10^3){
 #' Drop trivial tests
 #' 
 #' @description
-#' This function
+#' This function trops trivial tests.
 #' 
 #' @param map
 #' list with names "genes", "exons", and "snps"

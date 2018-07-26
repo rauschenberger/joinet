@@ -12,7 +12,7 @@ drop.trivial(map)
 and \code{\link{map.snps}})}
 }
 \description{
-This function
+This function trops trivial tests.
 }
 \details{
 This functions drops tests for genes without SNPs or with a single exon.

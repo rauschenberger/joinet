@@ -10,7 +10,10 @@ get.exons.geuvadis(path = getwd())
 \item{path}{data directory}
 }
 \description{
-This function transforms exon data (virtual machine).
+This function transforms exon data (virtual machine):
+retains exons on the autosomes,
+labels exons in the format "chromosome_start_end",
+extracts corresponding gene names
 }
 \examples{
 path <- "/virdir/Scratch/arauschenberger/trial"

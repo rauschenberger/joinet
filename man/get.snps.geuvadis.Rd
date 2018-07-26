@@ -10,12 +10,17 @@ get.snps.geuvadis(chr, data = NULL, path = getwd())
 \item{chr}{chromosome: integer \eqn{1-22}}
 
 \item{data}{local directory for VCF (variant call format)
-and SDRF (sample and data relationship format) files}
+and SDRF (sample and data relationship format) files;}
 
 \item{path}{local directory for output}
 }
 \description{
-This function transforms SNP data (local machine).
+This function transforms SNP data (local machine):
+downloads missing genotype data from ArrayExpress,
+transforms variant call format to binary files,
+removes SNPs with low minor allele frequency,
+labels SNPs in the format "chromosome:position",
+changes sample identifiers
 }
 \examples{
 path <- "C:/Users/a.rauschenbe/Desktop/spliceQTL/data"

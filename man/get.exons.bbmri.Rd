@@ -10,7 +10,14 @@ get.exons.bbmri(path = getwd())
 \item{path}{data directory}
 }
 \description{
-This function transforms exon data (virtual machine).
+This function transforms exon data (virtual machine):
+loads quality controlled gene expression data,
+extracts sample identifiers,
+removes samples without SNP data,
+loads exon expression data,
+extracts sample identifiers,
+retains samples that passed quality control,
+retains exons on the autosomes
 }
 \examples{
 path <- "/virdir/Scratch/arauschenberger/trial"

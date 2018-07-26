@@ -17,7 +17,12 @@ get.snps.bbmri(chr, biobank = NULL, path = getwd(), size = 500 * 10^3)
 trade-off between memory usage (low) and speed (high)}
 }
 \description{
-This function transforms SNP data (virtual machine).
+This function transforms SNP data (virtual machine):
+limits analysis to specified biobanks,
+reads in genotype data in chunks,
+removes SNPs with missing values (multiple biobanks/technologies),
+removes SNPs with low minor allele frequency,
+fuses data from multiple biobanks/technologies
 }
 \examples{
 path <- "/virdir/Scratch/arauschenberger/trial"

@@ -15,7 +15,7 @@ including the corresponding \emph{gene} names
 (separated by comma if multiple gene names)}
 }
 \description{
-This function
+This function attributes exons to genes.
 }
 \details{
 The exon names should contain the gene names. For each gene, this function

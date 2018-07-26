@@ -25,7 +25,7 @@ numeric vector with one entry per SNP}
 integer}
 }
 \description{
-This function
+This function attributes SNPs to genes.
 }
 \examples{
 gene.chr <- rep(1,times=5)
