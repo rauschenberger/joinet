@@ -119,7 +119,7 @@ for(chr in 1:22){
 On the virtual machine, first restart R and then execute this chunk to test for alternative splicing. (It seems that lme4::lmer in spliceQTL::adjust.covariates fails to release memory on Linux.)
 
 ```{r test,eval=FALSE}
-for(chr in 22:1){
+for(chr in c(22,1,21:2)){
     for(data in c("Geuvadis","LLS")){
         cat("Analysing",data,chr,":",as.character(Sys.time()),"\n")
         
@@ -131,7 +131,7 @@ for(chr in 22:1){
         
         rm(list=setdiff(ls(),c("data","chr","path"))); gc(); cat(".")
         load(file.path(path,paste0("temp.",data,".chr",chr,".RData"))); cat(".")
-        pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=1,spec=16,steps=30); cat(".")
+        pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=c(0,1),spec=16); cat(".")
         save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData"))); cat("\n")
     }
 #q()
@@ -145,17 +145,18 @@ On the virtual machine, execute this chunk to compare the results between the Ge
 ```{r,eval=FALSE}
 cor <- chisq <- rep(NA,length=22)
 for(chr in 22:1){
+    sel <- "rho=1"
     load(file.path(path,paste0("pval.Geuvadis.chr",chr,".RData")))
     a <- pvalue; pvalue <- NA
     load(file.path(path,paste0("pval.LLS.chr",chr,".RData")))
     b <- pvalue; pvalue <- NA
 
     names <- intersect(rownames(a),rownames(b))
-    plot(jitter(-log(a[names,1])),jitter(-log(b[names,1])))
-    cor[chr] <- stats::cor(a[names,1],b[names,1],method="spearman")
+    plot(jitter(-log(a[names,sel])),jitter(-log(b[names,sel])))
+    cor[chr] <- stats::cor(a[names,sel],b[names,sel],method="spearman")
 
-    a <- stats::p.adjust(a[names,1])<0.05
-    b <- stats::p.adjust(b[names,1])<0.05
+    a <- stats::p.adjust(a[names,sel])<0.05
+    b <- stats::p.adjust(b[names,sel])<0.05
     print(paste0("chr",chr))
     print(table(a,b))
     chisq[chr] <- stats::chisq.test(table(a,b))$p.value
