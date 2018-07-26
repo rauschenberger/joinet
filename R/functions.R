@@ -842,7 +842,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
     p <- nrow(map$genes)
     
     # permutations
-    if(FALSE){
+    if(FALSE){ # old
         min <- 5
         max <- p/0.05+1
         limit <- ceiling(0.05*max/p)
@@ -852,13 +852,17 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
         steps <- c(min,diff(unique(round(base^(seq(from=from,to=to,length.out=20))))))
     }
     
-    if(TRUE){
+    if(FALSE){ # new
         max <- p/0.05+1
         limit <- ceiling(0.05*max/p)
         steps <- diff(limit^seq(from=1,to=log(max)/log(limit),length.out=pmin(p,steps))) # was (p,20)
         steps <- c(limit,round(steps)) # Or replace "limit" by "minimum # of permutations"!
         steps[steps==0] <- 1
         steps[length(steps)] <- max-sum(steps[-length(steps)])
+    }
+    
+    if(TRUE){ # temporary trial, delete this!
+        max <- limit <- steps <- 100
     }
     
     if(max != sum(steps)){stop("Invalid combination?",call.=FALSE)}
