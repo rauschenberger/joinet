@@ -861,12 +861,22 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
         steps[length(steps)] <- max-sum(steps[-length(steps)])
     }
     
-    if(TRUE){ # temporary trial, delete this!
-        max <- limit <- steps <- 100
+    if(TRUE){
+        max <- p/0.05+1
+        limit <- ceiling(0.05*max/p)
+        steps <- diff(limit^seq(from=log(100),to=log(max)/log(limit),length.out=pmin(p,steps)))
+        steps[steps<100] <- 100
+        for(i in 1:10){
+            cond <- steps>10^i & steps<10^(i+1)
+            steps[cond] <- ceiling(steps[cond]/10^i)*10^i 
+        }
+        steps <- steps[cumsum(steps)<=max]
+        steps[length(steps)+1] <- max-sum(steps)
     }
     
-    if(max != sum(steps)){stop("Invalid combination?",call.=FALSE)}
-    
+    if(any(steps<0)){stop("negative step",call.=FALSE)}
+    if(max != sum(steps)){stop("invalid step",call.=FALSE)}
+
     if(spec==1){
         pvalue <- lapply(X=seq_len(p),FUN=function(i) spliceQTL::test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
     } else {
