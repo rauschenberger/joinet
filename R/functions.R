@@ -25,7 +25,7 @@
 #' Process samples and covariates:
 #' * \code{\link{match.samples}}
 #' * \code{\link{adjust.samples}}
-#' * \code{\link{adjust.covariates}}
+#' * \code{\link{adjust.variables}}
 #' 
 #' Search for exons and SNPs:
 #' * \code{\link{map.genes}}

@@ -23,7 +23,7 @@ Process samples and covariates:
 \itemize{
 \item \code{\link{match.samples}}
 \item \code{\link{adjust.samples}}
-\item \code{\link{adjust.covariates}}
+\item \code{\link{adjust.variables}}
 }
 
 Search for exons and SNPs:
