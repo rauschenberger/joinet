@@ -846,6 +846,10 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 #' number of cores\strong{:}
 #' positive integer
 #' 
+#' @param min
+#' minim chunk size\strong{:}
+#' positive integer
+#' 
 #' @param steps
 #' number of iteration chunks\strong{:}
 #' positive integer
@@ -857,7 +861,7 @@ test.single <- function(Y,X,map,i,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 #' @examples
 #' NA
 #' 
-test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
+test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,min=100,steps=20){
     
     p <- nrow(map$genes)
     
@@ -884,8 +888,8 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,steps=20){
     if(TRUE){
         max <- p/0.05+1
         limit <- ceiling(0.05*max/p)
-        steps <- diff(limit^seq(from=log(100),to=log(max)/log(limit),length.out=pmin(p,steps)))
-        steps[steps<100] <- 100
+        steps <- diff(limit^seq(from=log(min),to=log(max)/log(limit),length.out=pmin(p,steps)))
+        steps[steps<min] <- min
         for(i in 1:10){
             cond <- steps>10^i & steps<10^(i+1)
             steps[cond] <- ceiling(steps[cond]/10^i)*10^i 
