@@ -483,7 +483,7 @@ adjust.samples <- function(x){
 #' @examples
 #' NA
 #' 
-adjust.covariates <- function(x,offset,group){
+adjust.variables <- function(x,offset,group){
     if(!is.numeric(x)|!is.matrix(x)){
         stop("Argument \"x\" is no numeric matrix.",call.=FALSE)
     }

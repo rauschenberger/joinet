@@ -1,5 +1,5 @@
 ---
-title: code
+title: rainbow (code)
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{vignette}
@@ -37,7 +37,7 @@ spliceQTL::get.exons.geuvadis(path=path)
 spliceQTL::get.exons.bbmri(path=path)
 ```
 
-On the virtual machine, execute this chunk to prepare the data. See the documentation of the R package spliceQTL for further information. (It seems that lme4::lmer in spliceQTL::adjust.covariates fails to release memory. Restart R after each chromosome.)
+On the virtual machine, execute this chunk to prepare the data. See the documentation of the R package spliceQTL for further information. (It seems that lme4::lmer in spliceQTL::adjust.variables fails to release memory. Restart R after each chromosome.)
 
 ```{r prepare,eval=FALSE}
 for(chr in 1:22){
@@ -67,7 +67,7 @@ for(chr in 1:22){
     cat("Adjusting covariates:","\n")
     names <- strsplit(x=colnames(exons),split="_") # exon names
     length <- sapply(names,function(x) as.integer(x[[3]])-as.integer(x[[2]])) # exon length
-    exons <- spliceQTL::adjust.covariates(x=exons,group=gene_id,offset=length) # slow!
+    exons <- spliceQTL::adjust.variables(x=exons,group=gene_id,offset=length) # slow!
     
     # subset chromosome
     cond <- sapply(strsplit(x=colnames(exons),split="_"),function(x) x[[1]]==chr)
