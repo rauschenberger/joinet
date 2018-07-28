@@ -888,12 +888,13 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,min=100,steps=20){
     if(TRUE){
         max <- p/0.05+1
         limit <- ceiling(0.05*max/p)
-        steps <- diff(limit^seq(from=log(min),to=log(max)/log(limit),length.out=pmin(p,steps)))
+        steps <- diff(limit^seq(from=log(min),to=log(max)/log(limit),length.out=steps)) # was pmin(p,steps)
         steps[steps<min] <- min
-        for(i in 1:10){
-            cond <- steps>10^i & steps<10^(i+1)
-            steps[cond] <- ceiling(steps[cond]/10^i)*10^i 
-        }
+        #for(i in 1:10){
+        #    cond <- steps>10^i & steps<10^(i+1)
+        #    steps[cond] <- ceiling(steps[cond]/10^i)*10^i 
+        #}
+        steps = signif(steps,digits=1)
         steps <- steps[cumsum(steps)<=max]
         steps[length(steps)+1] <- max-sum(steps)
     }
