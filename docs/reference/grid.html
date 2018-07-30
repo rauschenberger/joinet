@@ -30,7 +30,7 @@
 
 <meta property="og:title" content="Plot grid — grid" />
 
-<meta property="og:description" content="This function tests for alternative splicing." />
+<meta property="og:description" content="This function combines a scatter plot with a density plot." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -83,6 +83,9 @@
     <li>
       <a href="../articles/code.html">rainbow (code)</a>
     </li>
+    <li>
+      <a href="../articles/text.html">rainbow (text)</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -116,11 +119,11 @@
 
     <div class="ref-description">
     
-    <p>This function tests for alternative splicing.</p>
+    <p>This function combines a scatter plot with a density plot.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>grid</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
+    <pre class="usage"><span class='fu'>grid</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -134,23 +137,19 @@
       <td><p>vector</p></td>
     </tr>
     <tr>
-      <th>xlim</th>
-      <td><p>horizontal limits</p></td>
-    </tr>
-    <tr>
-      <th>ylim</th>
-      <td><p>vertical limits</p></td>
-    </tr>
-    <tr>
       <th>n</th>
       <td><p>grid resolution</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>graphical parameters</p></td>
     </tr>
     </table>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/Beta'>rbeta</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>100</span>,<span class='kw'>shape1</span><span class='kw'>=</span><span class='fl'>0.2</span>,<span class='kw'>shape2</span><span class='kw'>=</span><span class='fl'>0.5</span>)
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/Beta'>rbeta</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>100</span>,<span class='kw'>shape1</span><span class='kw'>=</span><span class='fl'>0.2</span>,<span class='kw'>shape2</span><span class='kw'>=</span><span class='fl'>0.5</span>)
+    <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/Beta'>rbeta</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>100</span>,<span class='kw'>shape1</span><span class='kw'>=</span><span class='fl'>0.3</span>,<span class='kw'>shape2</span><span class='kw'>=</span><span class='fl'>0.5</span>)
+<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/Beta'>rbeta</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>100</span>,<span class='kw'>shape1</span><span class='kw'>=</span><span class='fl'>0.3</span>,<span class='kw'>shape2</span><span class='kw'>=</span><span class='fl'>0.5</span>)
 <span class='fu'>grid</span>(<span class='no'>x</span>,<span class='no'>y</span>)</div><div class='img'><img src='grid-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>

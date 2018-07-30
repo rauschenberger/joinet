@@ -4,25 +4,23 @@
 \alias{grid}
 \title{Plot grid}
 \usage{
-grid(x, y, xlim = NULL, ylim = NULL, n = 10)
+grid(x, y, n = 10, ...)
 }
 \arguments{
 \item{x}{vector}
 
 \item{y}{vector}
 
-\item{xlim}{horizontal limits}
-
-\item{ylim}{vertical limits}
-
 \item{n}{grid resolution}
+
+\item{...}{graphical parameters}
 }
 \description{
-This function tests for alternative splicing.
+This function combines a scatter plot with a density plot.
 }
 \examples{
-x <- stats::rbeta(n=100,shape1=0.2,shape2=0.5)
-y <- stats::rbeta(n=100,shape1=0.2,shape2=0.5)
+x <- stats::rbeta(n=100,shape1=0.3,shape2=0.5)
+y <- stats::rbeta(n=100,shape1=0.3,shape2=0.5)
 grid(x,y)
 
 }

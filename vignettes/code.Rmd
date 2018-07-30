@@ -120,7 +120,7 @@ On the virtual machine, execute this chunk to compare the results between the Ge
 
 ```{r,eval=FALSE}
 cor <- chisq <- rep(NA,length=22)
-for(chr in 1){
+for(chr in c(22,1,21,20)){
     sel <- "rho=1"
     load(file.path(path,paste0("pval.Geuvadis.chr",chr,".RData")))
     a <- pvalue; pvalue <- NA

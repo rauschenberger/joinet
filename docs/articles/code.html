@@ -54,6 +54,9 @@
 <li>
       <a href="../articles/code.html">rainbow (code)</a>
     </li>
+    <li>
+      <a href="../articles/text.html">rainbow (text)</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -180,7 +183,7 @@
 <a class="sourceLine" id="cb5-9" data-line-number="9">}</a></code></pre></div>
 <p>On the virtual machine, execute this chunk to compare the results between the Geuvadis and the BBMRI project.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">cor &lt;-<span class="st"> </span>chisq &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>,<span class="dt">length=</span><span class="dv">22</span>)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="cf">for</span>(chr <span class="cf">in</span> <span class="dv">22</span><span class="op">:</span><span class="dv">1</span>){</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="cf">for</span>(chr <span class="cf">in</span> <span class="kw">c</span>(<span class="dv">22</span>,<span class="dv">1</span>,<span class="dv">21</span>,<span class="dv">20</span>)){</a>
 <a class="sourceLine" id="cb6-3" data-line-number="3">    sel &lt;-<span class="st"> "rho=1"</span></a>
 <a class="sourceLine" id="cb6-4" data-line-number="4">    <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval.Geuvadis.chr"</span>,chr,<span class="st">".RData"</span>)))</a>
 <a class="sourceLine" id="cb6-5" data-line-number="5">    a &lt;-<span class="st"> </span>pvalue; pvalue &lt;-<span class="st"> </span><span class="ot">NA</span></a>

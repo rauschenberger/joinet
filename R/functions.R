@@ -929,7 +929,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,min=100,steps=20){
 #' Plot grid
 #' 
 #' @description
-#' This function tests for alternative splicing.
+#' This function combines a scatter plot with a density plot.
 #' 
 #' @param x
 #' vector
@@ -937,40 +937,44 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,min=100,steps=20){
 #' @param y
 #' vector
 #' 
-#' @param xlim
-#' horizontal limits
-#' 
-#' @param ylim
-#' vertical limits
-#' 
 #' @param n
 #' grid resolution
 #' 
+#' @param ...
+#' graphical parameters
+#' 
 #' @examples
-#' x <- stats::rbeta(n=100,shape1=0.2,shape2=0.5)
-#' y <- stats::rbeta(n=100,shape1=0.2,shape2=0.5)
+#' x <- stats::rbeta(n=100,shape1=0.3,shape2=0.5)
+#' y <- stats::rbeta(n=100,shape1=0.3,shape2=0.5)
 #' grid(x,y)
 #' 
-grid <- function(x,y,xlim=NULL,ylim=NULL,n=10){
+grid <- function(x,y,n=10,...){
+    #default values
+    par <- list(...)
+    if(is.null(par$xlim)){par$xlim <- range(x)}
+    if(is.null(par$ylim)){par$ylim <- range(y)}
+    if(is.null(par$pch)){par$pch <- 16}
+    if(is.null(par$cex)){par$cex <- 0.5}
+    if(is.null(par$xlab)){par$xlab <- "x"}
+    if(is.null(par$ylab)){par$ylab <- "y"}
+    
     # open plot
-    if(is.null(xlim)){xlim <- range(x)}
-    if(is.null(ylim)){ylim <- range(y)}
     graphics::plot.new()
-    graphics::plot.window(xlim=xlim,ylim=ylim)
+    graphics::plot.window(xlim=par$xlim,ylim=par$ylim)
     graphics::box()
     graphics::axis(side=1)
     graphics::axis(side=2)
     
     # density
-    xc <- seq(from=xlim[1],to=xlim[2],length.out=n+1)
-    yc <- seq(from=ylim[2],to=ylim[1],length.out=n+1)
+    xc <- seq(from=par$xlim[1],to=par$xlim[2],length.out=n+1)
+    yc <- seq(from=par$ylim[2],to=par$ylim[1],length.out=n+1)
     M <- matrix(integer(),nrow=n,ncol=n)
     for(i in seq_len(n)){
         for(j in seq_len(n)){
             M[i,j] <- sum(x >= xc[i] & x <= xc[i+1] & y <= yc[j] & y >= yc[j+1])
         }
     }
-    M <- sqrt(M)/(1.25*sqrt(max(M)))
+    M <- M/(1.25*max(M))
     
     # fill plot
     for(i in seq_len(n)){
@@ -980,9 +984,10 @@ grid <- function(x,y,xlim=NULL,ylim=NULL,n=10){
                               col=gray(level=1-M[i,j]),border=NA)
         }
     }
-    graphics::segments(x0=xc,y0=ylim[1],y1=ylim[2],col="white")
-    graphics::segments(x0=xlim[1],x1=xlim[2],y0=yc,col="white")
-    graphics::points(x=x,y=y,pch=16,cex=0.5)
+    graphics::segments(x0=xc,y0=par$ylim[1],y1=par$ylim[2],col="white")
+    graphics::segments(x0=par$xlim[1],x1=par$xlim[2],y0=yc,col="white")
+    graphics::points(x=x,y=y,pch=par$pch,cex=par$cex,col="black")
+    graphics::title(xlab=par$xlab,ylab=par$ylab)
 }
 
 
