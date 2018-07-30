@@ -970,14 +970,14 @@ grid <- function(x,y,xlim=NULL,ylim=NULL,n=10){
             M[i,j] <- sum(x >= xc[i] & x <= xc[i+1] & y <= yc[j] & y >= yc[j+1])
         }
     }
-    M <- M/(1.5*max(M))
+    M <- sqrt(M)/(1.25*sqrt(max(M)))
     
     # fill plot
     for(i in seq_len(n)){
         for(j in seq_len(n)){
             graphics::polygon(x=c(xc[i],xc[i],xc[i+1],xc[i+1]),
                               y=c(yc[j],yc[j+1],yc[j+1],yc[j]),
-                              col=gray(level=1-M[i,j]))
+                              col=gray(level=1-M[i,j]),border=NA)
         }
     }
     graphics::segments(x0=xc,y0=ylim[1],y1=ylim[2],col="white")

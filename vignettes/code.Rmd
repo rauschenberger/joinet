@@ -120,7 +120,7 @@ On the virtual machine, execute this chunk to compare the results between the Ge
 
 ```{r,eval=FALSE}
 cor <- chisq <- rep(NA,length=22)
-for(chr in 22:1){
+for(chr in 1){
     sel <- "rho=1"
     load(file.path(path,paste0("pval.Geuvadis.chr",chr,".RData")))
     a <- pvalue; pvalue <- NA
@@ -128,7 +128,9 @@ for(chr in 22:1){
     b <- pvalue; pvalue <- NA
 
     names <- intersect(rownames(a),rownames(b))
-    plot(jitter(-log(a[names,sel])),jitter(-log(b[names,sel])))
+    # plot(jitter(-log(a[names,sel])),jitter(-log(b[names,sel])))
+    spliceQTL::grid(x=-log(a[names,sel]),y=-log(b[names,sel]),n=20)
+    
     cor[chr] <- stats::cor(a[names,sel],b[names,sel],method="spearman")
 
     a <- stats::p.adjust(a[names,sel])<0.05
@@ -147,50 +149,3 @@ for(chr in 22:1){
 #}
 memory and CPU usage Linux: htop
 -->
-
-
-
-```{r plot function,eval=FALSE}
-grid <- function(x,y,xlim=NULL,ylim=NULL,n=10){
-    # open plot
-    if(is.null(xlim)){xlim <- range(x)}
-    if(is.null(ylim)){ylim <- range(y)}
-    graphics::plot.new()
-    graphics::plot.window(xlim=xlim,ylim=ylim)
-    graphics::box()
-    graphics::axis(side=1)
-    graphics::axis(side=2)
-    
-    # density
-    xc <- seq(from=xlim[1],to=xlim[2],length.out=n+1)
-    yc <- seq(from=ylim[2],to=ylim[1],length.out=n+1)
-    M <- matrix(integer(),nrow=n,ncol=n)
-    for(i in seq_len(n)){
-        for(j in seq_len(n)){
-            M[i,j] <- sum(x >= xc[i] & x <= xc[i+1] & y <= yc[j] & y >= yc[j+1])
-        }
-    }
-    M <- M/(1.5*max(M))
-    
-    # fill plot
-    for(i in seq_len(n)){
-        for(j in seq_len(n)){
-            graphics::polygon(x=c(xc[i],xc[i],xc[i+1],xc[i+1]),
-                              y=c(yc[j],yc[j+1],yc[j+1],yc[j]),
-                              col=gray(level=1-M[i,j]))
-        }
-    }
-    graphics::segments(x0=xc,y0=ylim[1],y1=ylim[2],col="white")
-    graphics::segments(x0=xlim[1],x1=xlim[2],y0=yc,col="white")
-    graphics::points(x=x,y=y,pch=16,cex=0.5)
-    
-}
-
-x <- stats::rbeta(n=100,shape1=0.4,shape2=0.5)
-y <- stats::rbeta(n=100,shape1=0.2,shape2=0.5)
-grid(x,y,xlim=c(0,1),ylim=c(0,1),n=10)
-
-
-
-```
-

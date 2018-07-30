@@ -188,15 +188,17 @@
 <a class="sourceLine" id="cb6-7" data-line-number="7">    b &lt;-<span class="st"> </span>pvalue; pvalue &lt;-<span class="st"> </span><span class="ot">NA</span></a>
 <a class="sourceLine" id="cb6-8" data-line-number="8"></a>
 <a class="sourceLine" id="cb6-9" data-line-number="9">    names &lt;-<span class="st"> </span><span class="kw">intersect</span>(<span class="kw">rownames</span>(a),<span class="kw">rownames</span>(b))</a>
-<a class="sourceLine" id="cb6-10" data-line-number="10">    <span class="kw">plot</span>(<span class="kw">jitter</span>(<span class="op">-</span><span class="kw">log</span>(a[names,sel])),<span class="kw">jitter</span>(<span class="op">-</span><span class="kw">log</span>(b[names,sel])))</a>
-<a class="sourceLine" id="cb6-11" data-line-number="11">    cor[chr] &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/cor">cor</a></span>(a[names,sel],b[names,sel],<span class="dt">method=</span><span class="st">"spearman"</span>)</a>
-<a class="sourceLine" id="cb6-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb6-13" data-line-number="13">    a &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(a[names,sel])<span class="op">&lt;</span><span class="fl">0.05</span></a>
-<a class="sourceLine" id="cb6-14" data-line-number="14">    b &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(b[names,sel])<span class="op">&lt;</span><span class="fl">0.05</span></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15">    <span class="kw">print</span>(<span class="kw">paste0</span>(<span class="st">"chr"</span>,chr))</a>
-<a class="sourceLine" id="cb6-16" data-line-number="16">    <span class="kw">print</span>(<span class="kw">table</span>(a,b))</a>
-<a class="sourceLine" id="cb6-17" data-line-number="17">    chisq[chr] &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/chisq.test">chisq.test</a></span>(<span class="kw">table</span>(a,b))<span class="op">$</span>p.value</a>
-<a class="sourceLine" id="cb6-18" data-line-number="18">}</a></code></pre></div>
+<a class="sourceLine" id="cb6-10" data-line-number="10">    <span class="co"># plot(jitter(-log(a[names,sel])),jitter(-log(b[names,sel])))</span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">    spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/grid">grid</a></span>(<span class="dt">x=</span><span class="op">-</span><span class="kw">log</span>(a[names,sel]),<span class="dt">y=</span><span class="op">-</span><span class="kw">log</span>(b[names,sel]),<span class="dt">n=</span><span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">    </a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">    cor[chr] &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/cor">cor</a></span>(a[names,sel],b[names,sel],<span class="dt">method=</span><span class="st">"spearman"</span>)</a>
+<a class="sourceLine" id="cb6-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">    a &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(a[names,sel])<span class="op">&lt;</span><span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb6-16" data-line-number="16">    b &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(b[names,sel])<span class="op">&lt;</span><span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17">    <span class="kw">print</span>(<span class="kw">paste0</span>(<span class="st">"chr"</span>,chr))</a>
+<a class="sourceLine" id="cb6-18" data-line-number="18">    <span class="kw">print</span>(<span class="kw">table</span>(a,b))</a>
+<a class="sourceLine" id="cb6-19" data-line-number="19">    chisq[chr] &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/chisq.test">chisq.test</a></span>(<span class="kw">table</span>(a,b))<span class="op">$</span>p.value</a>
+<a class="sourceLine" id="cb6-20" data-line-number="20">}</a></code></pre></div>
 <!--
 #wait <- TRUE
 #while(wait){
@@ -205,44 +207,6 @@
 #}
 memory and CPU usage Linux: htop
 -->
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">grid &lt;-<span class="st"> </span><span class="cf">function</span>(x,y,<span class="dt">xlim=</span><span class="ot">NULL</span>,<span class="dt">ylim=</span><span class="ot">NULL</span>,<span class="dt">n=</span><span class="dv">10</span>){</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">    <span class="co"># open plot</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">    <span class="cf">if</span>(<span class="kw">is.null</span>(xlim)){xlim &lt;-<span class="st"> </span><span class="kw">range</span>(x)}</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">    <span class="cf">if</span>(<span class="kw">is.null</span>(ylim)){ylim &lt;-<span class="st"> </span><span class="kw">range</span>(y)}</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">    graphics<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/graphics/topics/frame">plot.new</a></span>()</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">    graphics<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/graphics/topics/plot.window">plot.window</a></span>(<span class="dt">xlim=</span>xlim,<span class="dt">ylim=</span>ylim)</a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">    graphics<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/graphics/topics/box">box</a></span>()</a>
-<a class="sourceLine" id="cb7-8" data-line-number="8">    graphics<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/graphics/topics/axis">axis</a></span>(<span class="dt">side=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">    graphics<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/graphics/topics/axis">axis</a></span>(<span class="dt">side=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb7-10" data-line-number="10">    </a>
-<a class="sourceLine" id="cb7-11" data-line-number="11">    <span class="co"># density</span></a>
-<a class="sourceLine" id="cb7-12" data-line-number="12">    xc &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dt">from=</span>xlim[<span class="dv">1</span>],<span class="dt">to=</span>xlim[<span class="dv">2</span>],<span class="dt">length.out=</span>n<span class="op">+</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb7-13" data-line-number="13">    yc &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dt">from=</span>ylim[<span class="dv">2</span>],<span class="dt">to=</span>ylim[<span class="dv">1</span>],<span class="dt">length.out=</span>n<span class="op">+</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb7-14" data-line-number="14">    M &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">integer</span>(),<span class="dt">nrow=</span>n,<span class="dt">ncol=</span>n)</a>
-<a class="sourceLine" id="cb7-15" data-line-number="15">    <span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">seq_len</span>(n)){</a>
-<a class="sourceLine" id="cb7-16" data-line-number="16">        <span class="cf">for</span>(j <span class="cf">in</span> <span class="kw">seq_len</span>(n)){</a>
-<a class="sourceLine" id="cb7-17" data-line-number="17">            M[i,j] &lt;-<span class="st"> </span><span class="kw">sum</span>(x <span class="op">&gt;=</span><span class="st"> </span>xc[i] <span class="op">&amp;</span><span class="st"> </span>x <span class="op">&lt;=</span><span class="st"> </span>xc[i<span class="op">+</span><span class="dv">1</span>] <span class="op">&amp;</span><span class="st"> </span>y <span class="op">&lt;=</span><span class="st"> </span>yc[j] <span class="op">&amp;</span><span class="st"> </span>y <span class="op">&gt;=</span><span class="st"> </span>yc[j<span class="op">+</span><span class="dv">1</span>])</a>
-<a class="sourceLine" id="cb7-18" data-line-number="18">        }</a>
-<a class="sourceLine" id="cb7-19" data-line-number="19">    }</a>
-<a class="sourceLine" id="cb7-20" data-line-number="20">    M &lt;-<span class="st"> </span>M<span class="op">/</span>(<span class="fl">1.5</span><span class="op">*</span><span class="kw">max</span>(M))</a>
-<a class="sourceLine" id="cb7-21" data-line-number="21">    </a>
-<a class="sourceLine" id="cb7-22" data-line-number="22">    <span class="co"># fill plot</span></a>
-<a class="sourceLine" id="cb7-23" data-line-number="23">    <span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">seq_len</span>(n)){</a>
-<a class="sourceLine" id="cb7-24" data-line-number="24">        <span class="cf">for</span>(j <span class="cf">in</span> <span class="kw">seq_len</span>(n)){</a>
-<a class="sourceLine" id="cb7-25" data-line-number="25">            graphics<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/graphics/topics/polygon">polygon</a></span>(<span class="dt">x=</span><span class="kw">c</span>(xc[i],xc[i],xc[i<span class="op">+</span><span class="dv">1</span>],xc[i<span class="op">+</span><span class="dv">1</span>]),</a>
-<a class="sourceLine" id="cb7-26" data-line-number="26">                              <span class="dt">y=</span><span class="kw">c</span>(yc[j],yc[j<span class="op">+</span><span class="dv">1</span>],yc[j<span class="op">+</span><span class="dv">1</span>],yc[j]),</a>
-<a class="sourceLine" id="cb7-27" data-line-number="27">                              <span class="dt">col=</span><span class="kw">gray</span>(<span class="dt">level=</span><span class="dv">1</span><span class="op">-</span>M[i,j]))</a>
-<a class="sourceLine" id="cb7-28" data-line-number="28">        }</a>
-<a class="sourceLine" id="cb7-29" data-line-number="29">    }</a>
-<a class="sourceLine" id="cb7-30" data-line-number="30">    graphics<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/graphics/topics/segments">segments</a></span>(<span class="dt">x0=</span>xc,<span class="dt">y0=</span>ylim[<span class="dv">1</span>],<span class="dt">y1=</span>ylim[<span class="dv">2</span>],<span class="dt">col=</span><span class="st">"white"</span>)</a>
-<a class="sourceLine" id="cb7-31" data-line-number="31">    graphics<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/graphics/topics/segments">segments</a></span>(<span class="dt">x0=</span>xlim[<span class="dv">1</span>],<span class="dt">x1=</span>xlim[<span class="dv">2</span>],<span class="dt">y0=</span>yc,<span class="dt">col=</span><span class="st">"white"</span>)</a>
-<a class="sourceLine" id="cb7-32" data-line-number="32">    graphics<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/graphics/topics/points">points</a></span>(<span class="dt">x=</span>x,<span class="dt">y=</span>y,<span class="dt">pch=</span><span class="dv">16</span>,<span class="dt">cex=</span><span class="fl">0.5</span>)</a>
-<a class="sourceLine" id="cb7-33" data-line-number="33">    </a>
-<a class="sourceLine" id="cb7-34" data-line-number="34">}</a>
-<a class="sourceLine" id="cb7-35" data-line-number="35"></a>
-<a class="sourceLine" id="cb7-36" data-line-number="36">x &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/Beta">rbeta</a></span>(<span class="dt">n=</span><span class="dv">100</span>,<span class="dt">shape1=</span><span class="fl">0.4</span>,<span class="dt">shape2=</span><span class="fl">0.5</span>)</a>
-<a class="sourceLine" id="cb7-37" data-line-number="37">y &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/Beta">rbeta</a></span>(<span class="dt">n=</span><span class="dv">100</span>,<span class="dt">shape1=</span><span class="fl">0.2</span>,<span class="dt">shape2=</span><span class="fl">0.5</span>)</a>
-<a class="sourceLine" id="cb7-38" data-line-number="38"><span class="kw"><a href="../reference/grid.html">grid</a></span>(x,y,<span class="dt">xlim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="dt">n=</span><span class="dv">10</span>)</a></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
