@@ -924,6 +924,69 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,min=100,steps=20){
     return(pvalue)
 }
 
+#' @export
+#' @title
+#' Plot grid
+#' 
+#' @description
+#' This function tests for alternative splicing.
+#' 
+#' @param x
+#' vector
+#' 
+#' @param y
+#' vector
+#' 
+#' @param xlim
+#' horizontal limits
+#' 
+#' @param ylim
+#' vertical limits
+#' 
+#' @param n
+#' grid resolution
+#' 
+#' @examples
+#' x <- stats::rbeta(n=100,shape1=0.2,shape2=0.5)
+#' y <- stats::rbeta(n=100,shape1=0.2,shape2=0.5)
+#' grid(x,y)
+#' 
+grid <- function(x,y,xlim=NULL,ylim=NULL,n=10){
+    # open plot
+    if(is.null(xlim)){xlim <- range(x)}
+    if(is.null(ylim)){ylim <- range(y)}
+    graphics::plot.new()
+    graphics::plot.window(xlim=xlim,ylim=ylim)
+    graphics::box()
+    graphics::axis(side=1)
+    graphics::axis(side=2)
+    
+    # density
+    xc <- seq(from=xlim[1],to=xlim[2],length.out=n+1)
+    yc <- seq(from=ylim[2],to=ylim[1],length.out=n+1)
+    M <- matrix(integer(),nrow=n,ncol=n)
+    for(i in seq_len(n)){
+        for(j in seq_len(n)){
+            M[i,j] <- sum(x >= xc[i] & x <= xc[i+1] & y <= yc[j] & y >= yc[j+1])
+        }
+    }
+    M <- M/(1.5*max(M))
+    
+    # fill plot
+    for(i in seq_len(n)){
+        for(j in seq_len(n)){
+            graphics::polygon(x=c(xc[i],xc[i],xc[i+1],xc[i+1]),
+                              y=c(yc[j],yc[j+1],yc[j+1],yc[j]),
+                              col=gray(level=1-M[i,j]))
+        }
+    }
+    graphics::segments(x0=xc,y0=ylim[1],y1=ylim[2],col="white")
+    graphics::segments(x0=xlim[1],x1=xlim[2],y0=yc,col="white")
+    graphics::points(x=x,y=y,pch=16,cex=0.5)
+}
+
+
+
 
 # test.trial <- function(y,x,limit=NULL,steps=NULL,rho=c(0,0.5,1)){
 #     

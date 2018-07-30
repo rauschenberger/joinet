@@ -105,13 +105,12 @@ for(chr in 1:22){
 On the virtual machine, execute this chunk to test for alternative splicing.
 
 ```{r test,eval=FALSE}
-for(chr in c(1:22)){
+for(chr in c(22,1,21:2)){
     for(data in c("Geuvadis","LLS")){
         cat("Analysing",data,chr,":",as.character(Sys.time()),"\n")
-        
         rm(list=setdiff(ls(),c("data","chr","path"))); gc(); cat(".")
         load(file.path(path,paste0("temp.",data,".chr",chr,".RData"))); cat(".")
-        pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=c(0,1),spec=16); cat(".")
+        pvalue <- spliceQTL::test.multiple(Y=exons,X=snps,map=map,rho=1,spec=16); cat(".")
         save(object=pvalue,file=file.path(path,paste0("pval.",data,".chr",chr,".RData"))); cat("\n")
     }
 }
@@ -148,3 +147,50 @@ for(chr in 22:1){
 #}
 memory and CPU usage Linux: htop
 -->
+
+
+
+```{r plot function,eval=FALSE}
+grid <- function(x,y,xlim=NULL,ylim=NULL,n=10){
+    # open plot
+    if(is.null(xlim)){xlim <- range(x)}
+    if(is.null(ylim)){ylim <- range(y)}
+    graphics::plot.new()
+    graphics::plot.window(xlim=xlim,ylim=ylim)
+    graphics::box()
+    graphics::axis(side=1)
+    graphics::axis(side=2)
+    
+    # density
+    xc <- seq(from=xlim[1],to=xlim[2],length.out=n+1)
+    yc <- seq(from=ylim[2],to=ylim[1],length.out=n+1)
+    M <- matrix(integer(),nrow=n,ncol=n)
+    for(i in seq_len(n)){
+        for(j in seq_len(n)){
+            M[i,j] <- sum(x >= xc[i] & x <= xc[i+1] & y <= yc[j] & y >= yc[j+1])
+        }
+    }
+    M <- M/(1.5*max(M))
+    
+    # fill plot
+    for(i in seq_len(n)){
+        for(j in seq_len(n)){
+            graphics::polygon(x=c(xc[i],xc[i],xc[i+1],xc[i+1]),
+                              y=c(yc[j],yc[j+1],yc[j+1],yc[j]),
+                              col=gray(level=1-M[i,j]))
+        }
+    }
+    graphics::segments(x0=xc,y0=ylim[1],y1=ylim[2],col="white")
+    graphics::segments(x0=xlim[1],x1=xlim[2],y0=yc,col="white")
+    graphics::points(x=x,y=y,pch=16,cex=0.5)
+    
+}
+
+x <- stats::rbeta(n=100,shape1=0.4,shape2=0.5)
+y <- stats::rbeta(n=100,shape1=0.2,shape2=0.5)
+grid(x,y,xlim=c(0,1),ylim=c(0,1),n=10)
+
+
+
+```
+
