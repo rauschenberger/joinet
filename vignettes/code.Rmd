@@ -105,7 +105,7 @@ for(chr in 1:22){
 On the virtual machine, execute this chunk to test for alternative splicing.
 
 ```{r test,eval=FALSE}
-for(chr in c(22,1,21:2)){
+for(chr in 22:1){ # 22:1
     for(data in c("Geuvadis","LLS")){
         cat("Analysing",data,chr,":",as.character(Sys.time()),"\n")
         rm(list=setdiff(ls(),c("data","chr","path"))); gc(); cat(".")
@@ -119,27 +119,48 @@ for(chr in c(22,1,21:2)){
 On the virtual machine, execute this chunk to compare the results between the Geuvadis and the BBMRI project.
 
 ```{r,eval=FALSE}
-cor <- chisq <- rep(NA,length=22)
-for(chr in c(22,1,21,20)){
-    sel <- "rho=1"
-    load(file.path(path,paste0("pval.Geuvadis.chr",chr,".RData")))
-    a <- pvalue; pvalue <- NA
-    load(file.path(path,paste0("pval.LLS.chr",chr,".RData")))
-    b <- pvalue; pvalue <- NA
-
-    names <- intersect(rownames(a),rownames(b))
-    # plot(jitter(-log(a[names,sel])),jitter(-log(b[names,sel])))
-    spliceQTL::grid(x=-log(a[names,sel]),y=-log(b[names,sel]),n=20)
-    
-    cor[chr] <- stats::cor(a[names,sel],b[names,sel],method="spearman")
-
-    a <- stats::p.adjust(a[names,sel])<0.05
-    b <- stats::p.adjust(b[names,sel])<0.05
-    print(paste0("chr",chr))
-    print(table(a,b))
-    chisq[chr] <- stats::chisq.test(table(a,b))$p.value
+table <- data.frame(chr=seq_len(22))
+for(i in seq_len(22)){
+  # load p-values
+  load(file.path(path,paste0("pval.Geuvadis.chr",i,".RData")))
+  a <- pvalue; pvalue <- NA
+  load(file.path(path,paste0("pval.LLS.chr",i,".RData")))
+  b <- pvalue; pvalue <- NA
+  
+  # filter tests
+  sel <- "rho=1"
+  names <- intersect(rownames(a),rownames(b))
+  a <- a[names,sel]
+  b <- b[names,sel]
+  
+  # correlation
+  spliceQTL::grid(x=-log(a),y=-log(b),n=20)
+  table$cor[i] <- round(stats::cor(-log(a),-log(b),method="pearson"),digits=2)
+  table$cor.test[i] <- signif(stats::cor.test(-log(a),-log(b),method="pearson")$p.value,digits=2)
+  
+  # significance
+  a <- stats::p.adjust(a)<0.05
+  b <- stats::p.adjust(b)<0.05
+  table$none[i] <- sum(!a & !b)
+  table$GEU[i] <- sum(a & !b)
+  table$LLS[i] <- sum(!a & b)
+  table$both[i] <- sum(a & b)
+  table$chisq.test[i] <- suppressWarnings(signif(stats::chisq.test(table(a,b))$p.value,digits=2))
+  
 }
 ```
+
+
+```{r,eval=FALSE}
+data <- "LLS"   # "Geuvadis" or "LLS"
+chr <- 1        # 1,2,3,...,22
+load(file.path(path,paste0("temp.",data,".chr",chr,".RData")))
+i <- which(map$genes$gene_id=="ENSG00000116171")
+visualise(Y=exons,X=snps,map=map,i=i)
+```
+
+
+
 
 <!--
 #wait <- TRUE

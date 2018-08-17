@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • spliceQTL</title>
+<title>Plot SNP-exon correlations — visualise • spliceQTL</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,7 +28,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Plot SNP-exon correlations — visualise" />
+
+<meta property="og:description" content="This function ..." />
+<meta name="twitter:card" content="summary" />
 
 
 <!-- mathjax -->
@@ -43,7 +46,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -107,131 +110,56 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Plot SNP-exon correlations</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/spliceQTL/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
+    <div class="hidden name"><code>visualise.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>This function ...</p>
+    
+    </div>
 
-    <colgroup>
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        <!--  -->
-        <td>
-          <p><code><a href="map.genes.html">map.genes()</a></code> </p>
-        </td>
-        <td><p>Search for genes</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="map.exons.html">map.exons()</a></code> </p>
-        </td>
-        <td><p>Search for exons</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="map.snps.html">map.snps()</a></code> </p>
-        </td>
-        <td><p>Search for SNPs</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="match.samples.html">match.samples()</a></code> </p>
-        </td>
-        <td><p>Prepare data matrices</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="adjust.samples.html">adjust.samples()</a></code> </p>
-        </td>
-        <td><p>Adjust library sizes</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="test.single.html">test.single()</a></code> </p>
-        </td>
-        <td><p>Conduct single test</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="test.multiple.html">test.multiple()</a></code> </p>
-        </td>
-        <td><p>Conduct multiple tests</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="drop.trivial.html">drop.trivial()</a></code> </p>
-        </td>
-        <td><p>Drop trivial tests</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="get.snps.geuvadis.html">get.snps.geuvadis()</a></code> </p>
-        </td>
-        <td><p>Get SNP data (Geuvadis)</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="get.snps.bbmri.html">get.snps.bbmri()</a></code> </p>
-        </td>
-        <td><p>Get SNP data (BBMRI)</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="get.exons.geuvadis.html">get.exons.geuvadis()</a></code> </p>
-        </td>
-        <td><p>Get exon data (Geuvadis)</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="get.exons.bbmri.html">get.exons.bbmri()</a></code> </p>
-        </td>
-        <td><p>Get exon data (BBMRI)</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="spliceQTL-package.html">spliceQTL-package</a></code> </p>
-        </td>
-        <td><p>Alternative Splicing</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="adjust.variables.html">adjust.variables()</a></code> </p>
-        </td>
-        <td><p>Adjust exon length</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="grid.html">grid()</a></code> </p>
-        </td>
-        <td><p>Plot grid</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="visualise.html">visualise()</a></code> </p>
-        </td>
-        <td><p>Plot SNP-exon correlations</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>visualise</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='no'>map</span>, <span class='no'>i</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>Y</th>
+      <td><p>to do</p></td>
+    </tr>
+    <tr>
+      <th>X</th>
+      <td><p>to do</p></td>
+    </tr>
+    <tr>
+      <th>map</th>
+      <td><p>to do</p></td>
+    </tr>
+    <tr>
+      <th>i</th>
+      <td><p>to do</p></td>
+    </tr>
     </table>
-  </div>
+    
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'># see vignette
+
+</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+            
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 

@@ -903,6 +903,7 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,min=100,steps=20){
     if(max != sum(steps)){stop("invalid step",call.=FALSE)}
 
     if(spec==1){
+        set.seed(1)
         pvalue <- lapply(X=seq_len(p),FUN=function(i) spliceQTL::test.single(Y=Y,X=X,map=map,i=i,limit=limit,steps=steps,rho=rho))
     } else {
         type <- ifelse(test=.Platform$OS.type=="windows",yes="PSOCK",no="FORK")
@@ -923,6 +924,70 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,min=100,steps=20){
     
     return(pvalue)
 }
+
+
+#' @export
+#' @title
+#' Plot SNP-exon correlations
+#' 
+#' @description
+#' This function ...
+#' 
+#' @param Y
+#' to do
+#' 
+#' @param X
+#' to do
+#' 
+#' @param map
+#' to do
+#'
+#' @param i
+#' to do
+#' 
+#' @examples
+#' # see vignette
+#' 
+visualise <- function(Y,X,map,i){
+    
+    # correlation
+    ys <- map$exons[[i]]
+    y <- as.matrix(Y[,ys,drop=FALSE])
+    xs <- map$snps$from[i]:map$snps$to[i]
+    x <- X[,xs,drop=FALSE]
+    cor <- matrix(NA,nrow=length(ys),ncol=length(xs))
+    for(j in seq_along(ys)){
+        for(k in seq_along(xs)){
+            cor[j,k] <- abs(cor(y[,j],x[,k],method="spearman"))
+        }
+    }
+    
+    # plot image
+    graphics::par(mar=c(2,2,2,1))
+    k <- 9
+    inc <- 1.2 # Set to 1 for equal spacing.
+    d <- 1/sum(inc^(0:k))
+    breaks <- c(0,cumsum(inc^(0:k)*d))
+    colour <- colorRampPalette(c("white","darkblue"))(k+1)
+    graphics::image(cor,xlab="",ylab="",breaks=breaks,col=colour,axes=FALSE)
+    graphics::title(main=map$genes$gene_id[i],xlab="exons",ylab="SNPs",line=1)
+    graphics::box()
+    
+    # indicate gene location
+    #snp.loc <- as.numeric(sapply(strsplit(x=colnames(X),split=":"),function(x) x[[2]]))
+    #local <- which(map$genes$start[i] <= snp.loc[xs] &  snp.loc[xs] <= map$genes$end[i])
+    #dx <- 1/(length(xs) - 1)
+    #dy <- 1/(length(ys) - 1)
+    #y0 <- min(local)/length(xs) - 0.5*dx
+    #y1 <- max(local)/length(xs) + 0.5*dx
+    #col <- "black"; lwd <- 1
+    #segments(x0=-0.5*dy,y0=y0,x1=-0.5*dy,y1=y1,col=col,lwd=4)
+    #segments(x0=1+0.5*dy,y0=y0,x1=1+0.5*dy,y1=y1,col=col,lwd=4)
+    #segments(x0=-0.5*dy,y0=y0,x1=1+0.5*dy,y1=y0,col=col,lwd=lwd,lty=2)
+    #segments(x0=-0.5*dy,y0=y1,x1=1+0.5*dy,y1=y1,col=col,lwd=lwd,lty=2)
+    
+}
+
 
 #' @export
 #' @title
