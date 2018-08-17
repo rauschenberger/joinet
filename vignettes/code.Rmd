@@ -119,6 +119,7 @@ for(chr in 22:1){ # 22:1
 On the virtual machine, execute this chunk to compare the results between the Geuvadis and the BBMRI project.
 
 ```{r,eval=FALSE}
+list <- list()
 table <- data.frame(chr=seq_len(22))
 for(i in seq_len(22)){
   # load p-values
@@ -133,8 +134,22 @@ for(i in seq_len(22)){
   a <- a[names,sel]
   b <- b[names,sel]
   
+  #graphics::plot.new()
+  #graphics::plot.window(xlim=c(0.5,length(a)+0.5),ylim=c(-1,1)*max(c(a,b)))
+  #graphics::box()
+  #graphics::axis(side=1)
+  #graphics::axis(side=2)
+  #graphics::points(a,col="red")
+  #graphics::segments(x0=seq_along(a),y0=0,y1=a,col="red")
+  #graphics::points(-b,col="blue")
+  #graphics::segments(x0=seq_along(b),y0=0,y1=-b,col="blue")
+  #graphics::abline(h=0,col="grey")
+  
   # correlation
+  file <- file.path(path,"plots",paste0("cor.chr",i,".pdf"))
+  grDevices::pdf(file=file,width=4,height=4)
   spliceQTL::grid(x=-log(a),y=-log(b),n=20)
+  grDevices::dev.off()
   table$cor[i] <- round(stats::cor(-log(a),-log(b),method="pearson"),digits=2)
   table$cor.test[i] <- signif(stats::cor.test(-log(a),-log(b),method="pearson")$p.value,digits=2)
   
@@ -142,24 +157,29 @@ for(i in seq_len(22)){
   a <- stats::p.adjust(a)<0.05
   b <- stats::p.adjust(b)<0.05
   table$none[i] <- sum(!a & !b)
-  table$GEU[i] <- sum(a & !b)
-  table$LLS[i] <- sum(!a & b)
+  table$onlyGEU[i] <- sum(a & !b)
+  table$onlyLLS[i] <- sum(!a & b)
   table$both[i] <- sum(a & b)
   table$chisq.test[i] <- suppressWarnings(signif(stats::chisq.test(table(a,b))$p.value,digits=2))
   
+  list[[i]] <- data.frame(chr=i,gene=names(a),Geuvadis=1*a,LLS=1*b,row.names=seq_along(a))
+  
 }
+list <- do.call(what="rbind",args=list)
+save(list,file="list.RData")
+save(table,file="table.RData")
 ```
 
+On the virtual machine, execute this chunk to plot correlations between SNPs and exons (unclear which genes should be examined).
 
 ```{r,eval=FALSE}
-data <- "LLS"   # "Geuvadis" or "LLS"
-chr <- 1        # 1,2,3,...,22
+data <- "LLS" # "Geuvadis" or "LLS"
+chr <- 22 # 1,2,3,...,22
 load(file.path(path,paste0("temp.",data,".chr",chr,".RData")))
-i <- which(map$genes$gene_id=="ENSG00000116171")
-visualise(Y=exons,X=snps,map=map,i=i)
+# id <- sample(names(a)[...],size=1) # significance (e.g. a & b)
+# i <- which(map$genes$gene_id=="...") # gene name (e.g. ENSG00000172967)
+spliceQTL::visualise(Y=exons,X=snps,map=map,i=i)
 ```
-
-
 
 
 <!--

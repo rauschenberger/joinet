@@ -182,40 +182,62 @@
 <a class="sourceLine" id="cb5-8" data-line-number="8">    }</a>
 <a class="sourceLine" id="cb5-9" data-line-number="9">}</a></code></pre></div>
 <p>On the virtual machine, execute this chunk to compare the results between the Geuvadis and the BBMRI project.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">table &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">chr=</span><span class="kw">seq_len</span>(<span class="dv">22</span>))</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">seq_len</span>(<span class="dv">22</span>)){</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">  <span class="co"># load p-values</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">  <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval.Geuvadis.chr"</span>,i,<span class="st">".RData"</span>)))</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">  a &lt;-<span class="st"> </span>pvalue; pvalue &lt;-<span class="st"> </span><span class="ot">NA</span></a>
-<a class="sourceLine" id="cb6-6" data-line-number="6">  <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval.LLS.chr"</span>,i,<span class="st">".RData"</span>)))</a>
-<a class="sourceLine" id="cb6-7" data-line-number="7">  b &lt;-<span class="st"> </span>pvalue; pvalue &lt;-<span class="st"> </span><span class="ot">NA</span></a>
-<a class="sourceLine" id="cb6-8" data-line-number="8">  </a>
-<a class="sourceLine" id="cb6-9" data-line-number="9">  <span class="co"># filter tests</span></a>
-<a class="sourceLine" id="cb6-10" data-line-number="10">  sel &lt;-<span class="st"> "rho=1"</span></a>
-<a class="sourceLine" id="cb6-11" data-line-number="11">  names &lt;-<span class="st"> </span><span class="kw">intersect</span>(<span class="kw">rownames</span>(a),<span class="kw">rownames</span>(b))</a>
-<a class="sourceLine" id="cb6-12" data-line-number="12">  a &lt;-<span class="st"> </span>a[names,sel]</a>
-<a class="sourceLine" id="cb6-13" data-line-number="13">  b &lt;-<span class="st"> </span>b[names,sel]</a>
-<a class="sourceLine" id="cb6-14" data-line-number="14">  </a>
-<a class="sourceLine" id="cb6-15" data-line-number="15">  <span class="co"># correlation</span></a>
-<a class="sourceLine" id="cb6-16" data-line-number="16">  spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/grid">grid</a></span>(<span class="dt">x=</span><span class="op">-</span><span class="kw">log</span>(a),<span class="dt">y=</span><span class="op">-</span><span class="kw">log</span>(b),<span class="dt">n=</span><span class="dv">20</span>)</a>
-<a class="sourceLine" id="cb6-17" data-line-number="17">  table<span class="op">$</span>cor[i] &lt;-<span class="st"> </span><span class="kw">round</span>(stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/cor">cor</a></span>(<span class="op">-</span><span class="kw">log</span>(a),<span class="op">-</span><span class="kw">log</span>(b),<span class="dt">method=</span><span class="st">"pearson"</span>),<span class="dt">digits=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb6-18" data-line-number="18">  table<span class="op">$</span>cor.test[i] &lt;-<span class="st"> </span><span class="kw">signif</span>(stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/cor.test">cor.test</a></span>(<span class="op">-</span><span class="kw">log</span>(a),<span class="op">-</span><span class="kw">log</span>(b),<span class="dt">method=</span><span class="st">"pearson"</span>)<span class="op">$</span>p.value,<span class="dt">digits=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb6-19" data-line-number="19">  </a>
-<a class="sourceLine" id="cb6-20" data-line-number="20">  <span class="co"># significance</span></a>
-<a class="sourceLine" id="cb6-21" data-line-number="21">  a &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(a)<span class="op">&lt;</span><span class="fl">0.05</span></a>
-<a class="sourceLine" id="cb6-22" data-line-number="22">  b &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(b)<span class="op">&lt;</span><span class="fl">0.05</span></a>
-<a class="sourceLine" id="cb6-23" data-line-number="23">  table<span class="op">$</span>none[i] &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span>a <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>b)</a>
-<a class="sourceLine" id="cb6-24" data-line-number="24">  table<span class="op">$</span>GEU[i] &lt;-<span class="st"> </span><span class="kw">sum</span>(a <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>b)</a>
-<a class="sourceLine" id="cb6-25" data-line-number="25">  table<span class="op">$</span>LLS[i] &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span>a <span class="op">&amp;</span><span class="st"> </span>b)</a>
-<a class="sourceLine" id="cb6-26" data-line-number="26">  table<span class="op">$</span>both[i] &lt;-<span class="st"> </span><span class="kw">sum</span>(a <span class="op">&amp;</span><span class="st"> </span>b)</a>
-<a class="sourceLine" id="cb6-27" data-line-number="27">  table<span class="op">$</span>chisq.test[i] &lt;-<span class="st"> </span><span class="kw">suppressWarnings</span>(<span class="kw">signif</span>(stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/chisq.test">chisq.test</a></span>(<span class="kw">table</span>(a,b))<span class="op">$</span>p.value,<span class="dt">digits=</span><span class="dv">2</span>))</a>
-<a class="sourceLine" id="cb6-28" data-line-number="28">  </a>
-<a class="sourceLine" id="cb6-29" data-line-number="29">}</a></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">data &lt;-<span class="st"> "LLS"</span>   <span class="co"># "Geuvadis" or "LLS"</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">chr &lt;-<span class="st"> </span><span class="dv">1</span>        <span class="co"># 1,2,3,...,22</span></a>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">list &lt;-<span class="st"> </span><span class="kw">list</span>()</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">table &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">chr=</span><span class="kw">seq_len</span>(<span class="dv">22</span>))</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">seq_len</span>(<span class="dv">22</span>)){</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">  <span class="co"># load p-values</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">  <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval.Geuvadis.chr"</span>,i,<span class="st">".RData"</span>)))</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">  a &lt;-<span class="st"> </span>pvalue; pvalue &lt;-<span class="st"> </span><span class="ot">NA</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">  <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval.LLS.chr"</span>,i,<span class="st">".RData"</span>)))</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">  b &lt;-<span class="st"> </span>pvalue; pvalue &lt;-<span class="st"> </span><span class="ot">NA</span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">  </a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">  <span class="co"># filter tests</span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">  sel &lt;-<span class="st"> "rho=1"</span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">  names &lt;-<span class="st"> </span><span class="kw">intersect</span>(<span class="kw">rownames</span>(a),<span class="kw">rownames</span>(b))</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">  a &lt;-<span class="st"> </span>a[names,sel]</a>
+<a class="sourceLine" id="cb6-14" data-line-number="14">  b &lt;-<span class="st"> </span>b[names,sel]</a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">  </a>
+<a class="sourceLine" id="cb6-16" data-line-number="16">  <span class="co">#graphics::plot.new()</span></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17">  <span class="co">#graphics::plot.window(xlim=c(0.5,length(a)+0.5),ylim=c(-1,1)*max(c(a,b)))</span></a>
+<a class="sourceLine" id="cb6-18" data-line-number="18">  <span class="co">#graphics::box()</span></a>
+<a class="sourceLine" id="cb6-19" data-line-number="19">  <span class="co">#graphics::axis(side=1)</span></a>
+<a class="sourceLine" id="cb6-20" data-line-number="20">  <span class="co">#graphics::axis(side=2)</span></a>
+<a class="sourceLine" id="cb6-21" data-line-number="21">  <span class="co">#graphics::points(a,col="red")</span></a>
+<a class="sourceLine" id="cb6-22" data-line-number="22">  <span class="co">#graphics::segments(x0=seq_along(a),y0=0,y1=a,col="red")</span></a>
+<a class="sourceLine" id="cb6-23" data-line-number="23">  <span class="co">#graphics::points(-b,col="blue")</span></a>
+<a class="sourceLine" id="cb6-24" data-line-number="24">  <span class="co">#graphics::segments(x0=seq_along(b),y0=0,y1=-b,col="blue")</span></a>
+<a class="sourceLine" id="cb6-25" data-line-number="25">  <span class="co">#graphics::abline(h=0,col="grey")</span></a>
+<a class="sourceLine" id="cb6-26" data-line-number="26">  </a>
+<a class="sourceLine" id="cb6-27" data-line-number="27">  <span class="co"># correlation</span></a>
+<a class="sourceLine" id="cb6-28" data-line-number="28">  file &lt;-<span class="st"> </span><span class="kw">file.path</span>(path,<span class="st">"plots"</span>,<span class="kw">paste0</span>(<span class="st">"cor.chr"</span>,i,<span class="st">".pdf"</span>))</a>
+<a class="sourceLine" id="cb6-29" data-line-number="29">  grDevices<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/grDevices/topics/pdf">pdf</a></span>(<span class="dt">file=</span>file,<span class="dt">width=</span><span class="dv">4</span>,<span class="dt">height=</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb6-30" data-line-number="30">  spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/grid">grid</a></span>(<span class="dt">x=</span><span class="op">-</span><span class="kw">log</span>(a),<span class="dt">y=</span><span class="op">-</span><span class="kw">log</span>(b),<span class="dt">n=</span><span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb6-31" data-line-number="31">  grDevices<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/grDevices/topics/dev">dev.off</a></span>()</a>
+<a class="sourceLine" id="cb6-32" data-line-number="32">  table<span class="op">$</span>cor[i] &lt;-<span class="st"> </span><span class="kw">round</span>(stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/cor">cor</a></span>(<span class="op">-</span><span class="kw">log</span>(a),<span class="op">-</span><span class="kw">log</span>(b),<span class="dt">method=</span><span class="st">"pearson"</span>),<span class="dt">digits=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb6-33" data-line-number="33">  table<span class="op">$</span>cor.test[i] &lt;-<span class="st"> </span><span class="kw">signif</span>(stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/cor.test">cor.test</a></span>(<span class="op">-</span><span class="kw">log</span>(a),<span class="op">-</span><span class="kw">log</span>(b),<span class="dt">method=</span><span class="st">"pearson"</span>)<span class="op">$</span>p.value,<span class="dt">digits=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb6-34" data-line-number="34">  </a>
+<a class="sourceLine" id="cb6-35" data-line-number="35">  <span class="co"># significance</span></a>
+<a class="sourceLine" id="cb6-36" data-line-number="36">  a &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(a)<span class="op">&lt;</span><span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb6-37" data-line-number="37">  b &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/p.adjust">p.adjust</a></span>(b)<span class="op">&lt;</span><span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb6-38" data-line-number="38">  table<span class="op">$</span>none[i] &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span>a <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>b)</a>
+<a class="sourceLine" id="cb6-39" data-line-number="39">  table<span class="op">$</span>onlyGEU[i] &lt;-<span class="st"> </span><span class="kw">sum</span>(a <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>b)</a>
+<a class="sourceLine" id="cb6-40" data-line-number="40">  table<span class="op">$</span>onlyLLS[i] &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span>a <span class="op">&amp;</span><span class="st"> </span>b)</a>
+<a class="sourceLine" id="cb6-41" data-line-number="41">  table<span class="op">$</span>both[i] &lt;-<span class="st"> </span><span class="kw">sum</span>(a <span class="op">&amp;</span><span class="st"> </span>b)</a>
+<a class="sourceLine" id="cb6-42" data-line-number="42">  table<span class="op">$</span>chisq.test[i] &lt;-<span class="st"> </span><span class="kw">suppressWarnings</span>(<span class="kw">signif</span>(stats<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/stats/topics/chisq.test">chisq.test</a></span>(<span class="kw">table</span>(a,b))<span class="op">$</span>p.value,<span class="dt">digits=</span><span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb6-43" data-line-number="43">  </a>
+<a class="sourceLine" id="cb6-44" data-line-number="44">  list[[i]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">chr=</span>i,<span class="dt">gene=</span><span class="kw">names</span>(a),<span class="dt">Geuvadis=</span><span class="dv">1</span><span class="op">*</span>a,<span class="dt">LLS=</span><span class="dv">1</span><span class="op">*</span>b,<span class="dt">row.names=</span><span class="kw">seq_along</span>(a))</a>
+<a class="sourceLine" id="cb6-45" data-line-number="45">  </a>
+<a class="sourceLine" id="cb6-46" data-line-number="46">}</a>
+<a class="sourceLine" id="cb6-47" data-line-number="47">list &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="dt">what=</span><span class="st">"rbind"</span>,<span class="dt">args=</span>list)</a>
+<a class="sourceLine" id="cb6-48" data-line-number="48"><span class="kw">save</span>(list,<span class="dt">file=</span><span class="st">"list.RData"</span>)</a>
+<a class="sourceLine" id="cb6-49" data-line-number="49"><span class="kw">save</span>(table,<span class="dt">file=</span><span class="st">"table.RData"</span>)</a></code></pre></div>
+<p>On the virtual machine, execute this chunk to plot correlations between SNPs and exons (unclear which genes should be examined).</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">data &lt;-<span class="st"> "LLS"</span> <span class="co"># "Geuvadis" or "LLS"</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">chr &lt;-<span class="st"> </span><span class="dv">22</span> <span class="co"># 1,2,3,...,22</span></a>
 <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"temp."</span>,data,<span class="st">".chr"</span>,chr,<span class="st">".RData"</span>)))</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">i &lt;-<span class="st"> </span><span class="kw">which</span>(map<span class="op">$</span>genes<span class="op">$</span>gene_id<span class="op">==</span><span class="st">"ENSG00000116171"</span>)</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="kw"><a href="../reference/visualise.html">visualise</a></span>(<span class="dt">Y=</span>exons,<span class="dt">X=</span>snps,<span class="dt">map=</span>map,<span class="dt">i=</span>i)</a></code></pre></div>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co"># id &lt;- sample(names(a)[...],size=1) # significance (e.g. a &amp; b)</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="co"># i &lt;- which(map$genes$gene_id=="...") # gene name (e.g. ENSG00000172967)</span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">spliceQTL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/spliceQTL/topics/visualise">visualise</a></span>(<span class="dt">Y=</span>exons,<span class="dt">X=</span>snps,<span class="dt">map=</span>map,<span class="dt">i=</span>i)</a></code></pre></div>
 <!--
 #wait <- TRUE
 #while(wait){

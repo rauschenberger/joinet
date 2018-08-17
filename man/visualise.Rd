@@ -7,13 +7,17 @@
 visualise(Y, X, map, i)
 }
 \arguments{
-\item{Y}{to do}
+\item{Y}{exon expression\strong{:}
+matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)}
 
-\item{X}{to do}
+\item{X}{SNP genotype\strong{:}
+matrix with \eqn{n} rows (samples) and \eqn{q} columns (SNPs)}
 
-\item{map}{to do}
+\item{map}{list with names "genes", "exons", and "snps"
+(output from \code{map.genes}, \code{map.exons}, and \code{map.snps})}
 
-\item{i}{to do}
+\item{i}{gene index\strong{:}
+integer between \eqn{1} and \code{nrow(map$genes)}}
 }
 \description{
 This function ...

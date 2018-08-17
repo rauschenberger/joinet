@@ -934,16 +934,20 @@ test.multiple <- function(Y,X,map,rho=c(0,0.5,1),spec=1,min=100,steps=20){
 #' This function ...
 #' 
 #' @param Y
-#' to do
+#' exon expression\strong{:}
+#' matrix with \eqn{n} rows (samples) and \eqn{p} columns (exons)
 #' 
 #' @param X
-#' to do
+#' SNP genotype\strong{:}
+#' matrix with \eqn{n} rows (samples) and \eqn{q} columns (SNPs)
 #' 
 #' @param map
-#' to do
+#' list with names "genes", "exons", and "snps"
+#' (output from \code{map.genes}, \code{map.exons}, and \code{map.snps})
 #'
 #' @param i
-#' to do
+#' gene index\strong{:}
+#' integer between \eqn{1} and \code{nrow(map$genes)}
 #' 
 #' @examples
 #' # see vignette
@@ -973,7 +977,7 @@ visualise <- function(Y,X,map,i){
     graphics::title(main=map$genes$gene_id[i],xlab="exons",ylab="SNPs",line=1)
     graphics::box()
     
-    # indicate gene location
+    # indicate gene location (redundant if window approx. gene)
     #snp.loc <- as.numeric(sapply(strsplit(x=colnames(X),split=":"),function(x) x[[2]]))
     #local <- which(map$genes$start[i] <= snp.loc[xs] &  snp.loc[xs] <= map$genes$end[i])
     #dx <- 1/(length(xs) - 1)
