@@ -119,8 +119,8 @@ for(chr in 22:1){ # 22:1
 On the virtual machine, execute this chunk to compare the results between the Geuvadis and the BBMRI project.
 
 ```{r,eval=FALSE}
-list <- list()
 table <- data.frame(chr=seq_len(22))
+list <- list()
 for(i in seq_len(22)){
   # load p-values
   load(file.path(path,paste0("pval.Geuvadis.chr",i,".RData")))
@@ -165,9 +165,12 @@ for(i in seq_len(22)){
   list[[i]] <- data.frame(chr=i,gene=names(a),Geuvadis=1*a,LLS=1*b,row.names=seq_along(a))
   
 }
-list <- do.call(what="rbind",args=list)
-save(list,file="list.RData")
 save(table,file="table.RData")
+
+list <- do.call(what="rbind",args=list)
+names <- do.call(what="rbind",args=list)
+list$symbol <- names$gene_name[match(x=list$gene,names$gene_id)]
+save(list,file="list.RData")
 ```
 
 On the virtual machine, execute this chunk to plot correlations between SNPs and exons (unclear which genes should be examined).

@@ -182,8 +182,8 @@
 <a class="sourceLine" id="cb5-8" data-line-number="8">    }</a>
 <a class="sourceLine" id="cb5-9" data-line-number="9">}</a></code></pre></div>
 <p>On the virtual machine, execute this chunk to compare the results between the Geuvadis and the BBMRI project.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">list &lt;-<span class="st"> </span><span class="kw">list</span>()</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">table &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">chr=</span><span class="kw">seq_len</span>(<span class="dv">22</span>))</a>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">table &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">chr=</span><span class="kw">seq_len</span>(<span class="dv">22</span>))</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">list &lt;-<span class="st"> </span><span class="kw">list</span>()</a>
 <a class="sourceLine" id="cb6-3" data-line-number="3"><span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">seq_len</span>(<span class="dv">22</span>)){</a>
 <a class="sourceLine" id="cb6-4" data-line-number="4">  <span class="co"># load p-values</span></a>
 <a class="sourceLine" id="cb6-5" data-line-number="5">  <span class="kw">load</span>(<span class="kw">file.path</span>(path,<span class="kw">paste0</span>(<span class="st">"pval.Geuvadis.chr"</span>,i,<span class="st">".RData"</span>)))</a>
@@ -228,9 +228,12 @@
 <a class="sourceLine" id="cb6-44" data-line-number="44">  list[[i]] &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">chr=</span>i,<span class="dt">gene=</span><span class="kw">names</span>(a),<span class="dt">Geuvadis=</span><span class="dv">1</span><span class="op">*</span>a,<span class="dt">LLS=</span><span class="dv">1</span><span class="op">*</span>b,<span class="dt">row.names=</span><span class="kw">seq_along</span>(a))</a>
 <a class="sourceLine" id="cb6-45" data-line-number="45">  </a>
 <a class="sourceLine" id="cb6-46" data-line-number="46">}</a>
-<a class="sourceLine" id="cb6-47" data-line-number="47">list &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="dt">what=</span><span class="st">"rbind"</span>,<span class="dt">args=</span>list)</a>
-<a class="sourceLine" id="cb6-48" data-line-number="48"><span class="kw">save</span>(list,<span class="dt">file=</span><span class="st">"list.RData"</span>)</a>
-<a class="sourceLine" id="cb6-49" data-line-number="49"><span class="kw">save</span>(table,<span class="dt">file=</span><span class="st">"table.RData"</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb6-47" data-line-number="47"><span class="kw">save</span>(table,<span class="dt">file=</span><span class="st">"table.RData"</span>)</a>
+<a class="sourceLine" id="cb6-48" data-line-number="48"></a>
+<a class="sourceLine" id="cb6-49" data-line-number="49">list &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="dt">what=</span><span class="st">"rbind"</span>,<span class="dt">args=</span>list)</a>
+<a class="sourceLine" id="cb6-50" data-line-number="50">names &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="dt">what=</span><span class="st">"rbind"</span>,<span class="dt">args=</span>list)</a>
+<a class="sourceLine" id="cb6-51" data-line-number="51">list<span class="op">$</span>symbol &lt;-<span class="st"> </span>names<span class="op">$</span>gene_name[<span class="kw">match</span>(<span class="dt">x=</span>list<span class="op">$</span>gene,names<span class="op">$</span>gene_id)]</a>
+<a class="sourceLine" id="cb6-52" data-line-number="52"><span class="kw">save</span>(list,<span class="dt">file=</span><span class="st">"list.RData"</span>)</a></code></pre></div>
 <p>On the virtual machine, execute this chunk to plot correlations between SNPs and exons (unclear which genes should be examined).</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">data &lt;-<span class="st"> "LLS"</span> <span class="co"># "Geuvadis" or "LLS"</span></a>
 <a class="sourceLine" id="cb7-2" data-line-number="2">chr &lt;-<span class="st"> </span><span class="dv">22</span> <span class="co"># 1,2,3,...,22</span></a>

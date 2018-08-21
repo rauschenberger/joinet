@@ -536,7 +536,7 @@ adjust.variables <- function(x,offset,group){
 map.genes <- function(chr,path=getwd(),release="GRCh37",build=71){
     
     # check input
-    if(!chr %in% 1:22){
+    if((!is.null(chr)) && (!chr %in% 1:22)){
         stop("Invalid argument \"chr\".",call.=FALSE)
     }
     if(!release %in% c("NCBI36","GRCh37","GRCh38")){
@@ -558,8 +558,12 @@ map.genes <- function(chr,path=getwd(),release="GRCh37",build=71){
     refGenome::basedir(object) <- path
     refGenome::read.gtf(object,filename=file)
     x <- refGenome::getGenePositions(object=object,by="gene_id")
-    x <- x[x$seqid==chr & x$gene_biotype=="protein_coding",]
-    x <- x[,c("gene_id","seqid","start","end")]
+    if(is.null(chr)){
+        x <- x[x$gene_biotype=="protein_coding",]
+    } else {
+        x <- x[x$seqid==chr & x$gene_biotype=="protein_coding",]
+    }
+    x <- x[,c("gene_id","seqid","start","end","gene_name")] # added "gene_name"
     rownames(x) <- NULL
     colnames(x)[colnames(x)=="seqid"] <- "chr"
     return(x)
