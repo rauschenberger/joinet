@@ -43,7 +43,7 @@ for(rep in 1:4){
     
     #----- CROSS-VALIDATE -----
     
-    loss <- colasso_compare(y=y,X=X)
+    loss <- colasso_compare(y=y,X=X,nfolds.int=5)
     
     # fold <- sample(x=rep(x=seq_len(5),length.out=length(y)))
     # pred <- matrix(data=NA,nrow=length(y),ncol=8)

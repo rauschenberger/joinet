@@ -122,7 +122,7 @@ https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research#Mic
 <a class="sourceLine" id="cb1-26" data-line-number="26">    </a>
 <a class="sourceLine" id="cb1-27" data-line-number="27">    <span class="co">#----- CROSS-VALIDATE -----</span></a>
 <a class="sourceLine" id="cb1-28" data-line-number="28">    </a>
-<a class="sourceLine" id="cb1-29" data-line-number="29">    loss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/colasso_compare.html">colasso_compare</a></span>(<span class="dt">y=</span>y,<span class="dt">X=</span>X)</a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">    loss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/colasso_compare.html">colasso_compare</a></span>(<span class="dt">y=</span>y,<span class="dt">X=</span>X,<span class="dt">nfolds.int=</span><span class="dv">5</span>)</a>
 <a class="sourceLine" id="cb1-30" data-line-number="30">    </a>
 <a class="sourceLine" id="cb1-31" data-line-number="31">    <span class="co"># fold &lt;- sample(x=rep(x=seq_len(5),length.out=length(y)))</span></a>
 <a class="sourceLine" id="cb1-32" data-line-number="32">    <span class="co"># pred &lt;- matrix(data=NA,nrow=length(y),ncol=8)</span></a>

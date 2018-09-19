@@ -243,8 +243,8 @@ colasso_weighted_correlation <- function(X,w=NULL){
 colasso_moderate <- function(y,X,pi,plot=FALSE){
     pvalue <- colasso_marginal_significance(y=y,X=X) 
     weight <- colasso_covariate_weights(x=pvalue)
-    cor <- abs(colasso_weighted_correlation(t(X),w=weight)) # robust
-    #cor <- abs(weights::wtd.cors(t(X),weight=weight)) # fast
+    #cor <- abs(colasso_weighted_correlation(t(X),w=weight)) # robust
+    cor <- abs(weights::wtd.cors(t(X),weight=weight)) # fast
     Y <- matrix(data=NA,nrow=length(y),ncol=length(pi),dimnames=list(NULL,pi))
     for(i in seq_along(y)){
         for(j in seq_along(pi)){
