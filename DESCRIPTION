@@ -3,7 +3,7 @@ Version: 0.0.0
 Title: colasso regression
 Description: Implements colasso.
 Depends: R (>= 3.0.0)
-Imports: glmnet, MASS
+Imports: glmnet, MASS, weights
 Suggests: knitr, testthat
 Authors@R: person("Armin","Rauschenberger",email="a.rauschenberger@vumc.nl",role=c("aut","cre"))
 VignetteBuilder: knitr
