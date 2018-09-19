@@ -15,10 +15,10 @@ https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research#Mic
 
 
 ```{r,eval=FALSE}
+loss = NULL
 for(rep in 1:4){
     set.seed(rep)
     
-
     #----- OBTAIN DATA -----
         
     ### simulated data ###
@@ -28,56 +28,28 @@ for(rep in 1:4){
     #y <- list$y; X <- list$X
     
     ### mice data ###
-    #data(mice,package="BGLR")
-    #nsel <- sort(sample(seq_len(1814),size=200,replace=FALSE))
-    #psel <- sort(sample(seq_len(10346),size=10346,replace=FALSE))
-    #y <- mice.pheno$Obesity.BMI[nsel] # try different phenotypes
-    #X <- mice.X[nsel,psel]
+    data(mice,package="BGLR")
+    nsel <- sort(sample(seq_len(1814),size=1814,replace=FALSE))
+    psel <- sort(sample(seq_len(10346),size=1000,replace=FALSE))
+    y <- mice.pheno$Obesity.BMI[nsel] # try different phenotypes
+    X <- mice.X[nsel,psel]
     
     ### wheat data ###
-    data(wheat,package="BGLR")
-    nsel <- seq_len(599) # sort(sample(seq_len(599),size=200,replace=FALSE))
-    psel <- seq_len(1279) # sort(sample(seq_len(1279),size=200,replace=FALSE))
-    y <- as.numeric(wheat.Y[nsel,rep]) # try different phenotypes
-    X <- wheat.X[nsel,psel]
+    #data(wheat,package="BGLR")
+    #nsel <- seq_len(599)
+    #psel <- seq_len(1279)
+    #y <- as.numeric(wheat.Y[nsel,rep]) # try different phenotypes
+    #X <- wheat.X[nsel,psel]
     
     #----- CROSS-VALIDATE -----
     
-    loss <- colasso_compare(y=y,X=X,nfolds.int=5)
-    
-    # fold <- sample(x=rep(x=seq_len(5),length.out=length(y)))
-    # pred <- matrix(data=NA,nrow=length(y),ncol=8)
-    # for(i in sort(unique(fold))){
-    #     cat("i =",i,"\n")
-    #     fit <- colasso(y=y[fold!=i],X=X[fold!=i,],alpha=1) # increase nfold? us
-    #    # MEM[[i]] <- fit # trial
-    #     
-    #     for(j in seq_along(fit)){
-    #         pred[fold==i,j] <- glmnet::predict.glmnet(object=fit[[j]],
-    #                                                   newx=X[fold==i,],
-    #                                                   s=fit[[j]]$lambda.min,
-    #                                                   type="response")
-    #     }
-    #     pred[fold==i,8] <- mean(y[fold!=i]) # intercept-only model
-    # }
-    # loss <- apply(X=pred,MARGIN=2,FUN=function(x) sum((y-x)^2))
-    
-    #graphics::par(mar=c(3,3,1,1))
-    #col <- rep(x=0,times=length(loss)-1)
-    #col[1] <- col[length(col)] <- 1
-    #plot(y=loss[-length(loss)],x=seq_len(length(loss)-1),
-    #     col=col+1,pch=col) # ,ylim=range(loss))
-    #abline(v=c(1.5,length(loss)-1.5),lty=2)
-    #graphics::grid()
-    #abline(h=loss[length(loss)],lty=2,col="red")
+    loss <- rbind(loss,colasso_compare(y=y,X=X,nfolds.int=5))
     
 }
 ```
 
 
 # BBMRI DATA (important!)
-
-Repeat this for all normally distributed responses, omit samples with missing response, save results to file.
 
 ```{r,eval=FALSE}
 lib <- "/virdir/Scratch/arauschenberger/library"

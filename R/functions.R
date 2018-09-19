@@ -371,7 +371,7 @@ colasso_compare <- function(y,X,plot=TRUE,nfolds.int=10){
         col[1] <- col[length(col)] <- 1
         graphics::plot(y=loss[-length(loss)],
                        x=seq_len(length(loss)-1),
-                       col=col+1,pch=col)
+                       col=col+1,ylim=range(loss),pch=col)
         graphics::abline(v=c(1.5,length(loss)-1.5),lty=2)
         graphics::grid()
         graphics::abline(h=loss[length(loss)],lty=2,col="red")
