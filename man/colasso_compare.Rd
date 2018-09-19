@@ -7,13 +7,11 @@
 colasso_compare(y, X, plot = TRUE)
 }
 \arguments{
+\item{y}{response}
+
+\item{X}{covariates}
+
 \item{plot}{logical}
-
-\item{n}{sample size}
-
-\item{p}{number of covariates}
-
-\item{cor}{correlation structure}
 }
 \description{
 This function ...

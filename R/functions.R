@@ -30,12 +30,12 @@
 #' #y[1] <- 0.5
 #' #a <- glmnet::glmnet(y=y,x=x,family="binomial")
 #' #b <- stats::glm(y~x,family="binomial")
-colasso <- function(y,X,nfold=5,alpha=1){
+colasso <- function(y,X,nfold=10,alpha=1){
     
     # properties
     n <- nrow(X); p <- ncol(X)
     if(length(y)!=n){stop("sample size")}
-    foldid <- sample(x=rep(x=seq_len(5),length.out=n))
+    foldid <- sample(x=rep(x=seq_len(nfold),length.out=n))
     pi <- seq(from=0,to=0.5,by=0.1) # adapt this
 
     # model fitting
@@ -332,14 +332,11 @@ colasso_simulate <- function(n=100,p=500,cor="constant",plot=TRUE){
 #' @description
 #' This function ...
 #'  
-#' @param n
-#' sample size
+#' @param y
+#' response
 #' 
-#' @param p
-#' number of covariates
-#' 
-#' @param cor
-#' correlation structure
+#' @param X
+#' covariates
 #' 
 #' @param plot
 #' logical

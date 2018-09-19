@@ -155,41 +155,52 @@ https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research#Mic
 <h1 class="hasAnchor">
 <a href="#bbmri-data-important" class="anchor"></a>BBMRI DATA (important!)</h1>
 <p>Repeat this for all normally distributed responses, omit samples with missing response, save results to file.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">utils<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(metabolomics_RP3RP4_overlap,<span class="dt">package=</span><span class="st">"BBMRIomics"</span>)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">utils<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(rnaSeqData_ReadCounts_BIOS_cleaned,<span class="dt">package=</span><span class="st">"BBMRIomics"</span>)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">samples &lt;-<span class="st"> </span><span class="kw">intersect</span>(<span class="kw">colnames</span>(counts),<span class="kw">colnames</span>(metabolomicData))</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">Y &lt;-<span class="st"> </span><span class="kw">t</span>(SummarizedExperiment<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/SummarizedExperiment/topics/SummarizedExperiment-class">assays</a></span>(metabolomicData[,samples])<span class="op">$</span>measurements)</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">X &lt;-<span class="st"> </span><span class="kw">t</span>(SummarizedExperiment<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/SummarizedExperiment/topics/SummarizedExperiment-class">assay</a></span>(counts[,samples]))</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">loss &lt;-<span class="st"> </span><span class="ot">NULL</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="cf">for</span>(j <span class="cf">in</span> <span class="kw">seq_len</span>(<span class="kw">ncol</span>(traits))){</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">    y &lt;-<span class="st"> </span>Y[,j]</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">    <span class="cf">if</span>(<span class="kw">sd</span>(y,<span class="dt">na.rm=</span><span class="ot">TRUE</span>)<span class="op">==</span><span class="dv">0</span>){<span class="cf">next</span>}<span class="er">)</span></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">    cond &lt;-<span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(y)</a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">    y &lt;-<span class="st"> </span>y[cond]</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15">    X &lt;-<span class="st"> </span>X[cond,]</a>
-<a class="sourceLine" id="cb2-16" data-line-number="16">    loss &lt;-<span class="st"> </span><span class="kw">rbind</span>(loss,<span class="kw"><a href="../reference/colasso.html">colasso</a></span>(<span class="dt">y=</span>y,<span class="dt">X=</span>X))</a>
-<a class="sourceLine" id="cb2-17" data-line-number="17">}</a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19">min &lt;-<span class="st"> </span><span class="kw">apply</span>(traits,<span class="dv">2</span>,<span class="cf">function</span>(x) <span class="kw">min</span>(x,<span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb2-20" data-line-number="20">max &lt;-<span class="st"> </span><span class="kw">apply</span>(traits,<span class="dv">2</span>,<span class="cf">function</span>(x) <span class="kw">max</span>(x,<span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb2-21" data-line-number="21">var &lt;-<span class="st"> </span><span class="kw">apply</span>(traits,<span class="dv">2</span>,<span class="cf">function</span>(x) <span class="kw">var</span>(x,<span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb2-23" data-line-number="23"></a>
-<a class="sourceLine" id="cb2-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb2-25" data-line-number="25">psel &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">seq_len</span>(<span class="dv">56515</span>),<span class="dt">size=</span><span class="dv">2000</span>)</a>
-<a class="sourceLine" id="cb2-26" data-line-number="26">nsel &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">seq_len</span>(<span class="dv">2003</span>),<span class="dt">size=</span><span class="dv">500</span>)</a>
-<a class="sourceLine" id="cb2-27" data-line-number="27"></a>
-<a class="sourceLine" id="cb2-28" data-line-number="28">y &lt;-<span class="st"> </span>YY[nsel,<span class="st">"totfa"</span>]</a>
-<a class="sourceLine" id="cb2-29" data-line-number="29">X &lt;-<span class="st"> </span>XX[nsel,psel]</a>
-<a class="sourceLine" id="cb2-30" data-line-number="30"></a>
-<a class="sourceLine" id="cb2-31" data-line-number="31">net &lt;-<span class="st"> </span>glmnet<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/glmnet/topics/cv.glmnet">cv.glmnet</a></span>(<span class="dt">x=</span>X,<span class="dt">y=</span>y)</a>
-<a class="sourceLine" id="cb2-32" data-line-number="32"></a>
-<a class="sourceLine" id="cb2-33" data-line-number="33"><span class="kw">plot</span>(<span class="dt">x=</span>net<span class="op">$</span>lambda,<span class="dt">y=</span>net<span class="op">$</span>cvm)</a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">lib &lt;-<span class="st"> "/virdir/Scratch/arauschenberger/library"</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">.libPaths</span>(lib)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"rauschenberger/colasso"</span>,<span class="dt">lib=</span>lib)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">utils<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(metabolomics_RP3RP4_overlap,<span class="dt">package=</span><span class="st">"BBMRIomics"</span>)</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">utils<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(rnaSeqData_ReadCounts_BIOS_cleaned,<span class="dt">package=</span><span class="st">"BBMRIomics"</span>)</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">samples &lt;-<span class="st"> </span><span class="kw">intersect</span>(<span class="kw">colnames</span>(counts),<span class="kw">colnames</span>(metabolomicData))</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">Y &lt;-<span class="st"> </span><span class="kw">t</span>(SummarizedExperiment<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/SummarizedExperiment/topics/SummarizedExperiment-class">assays</a></span>(metabolomicData[,samples])<span class="op">$</span>measurements)</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">X &lt;-<span class="st"> </span><span class="kw">t</span>(SummarizedExperiment<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/SummarizedExperiment/topics/SummarizedExperiment-class">assay</a></span>(counts[,samples]))</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">loss &lt;-<span class="st"> </span><span class="ot">NULL</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="cf">for</span>(j <span class="cf">in</span> <span class="kw">seq_len</span>(<span class="kw">ncol</span>(Y))){</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">    <span class="kw">cat</span>(<span class="st">"j ="</span>,j,<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">    y &lt;-<span class="st"> </span>Y[,j]</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">    <span class="cf">if</span>(<span class="kw">sd</span>(y,<span class="dt">na.rm=</span><span class="ot">TRUE</span>)<span class="op">==</span><span class="dv">0</span>){<span class="cf">next</span>}</a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">    <span class="cf">if</span>(<span class="ot">TRUE</span>){</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">        psel &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">seq_len</span>(<span class="dv">56515</span>),<span class="dt">size=</span><span class="dv">2000</span>)</a>
+<a class="sourceLine" id="cb2-20" data-line-number="20">        nsel &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">seq_len</span>(<span class="dv">2003</span>),<span class="dt">size=</span><span class="dv">500</span>)</a>
+<a class="sourceLine" id="cb2-21" data-line-number="21">        y &lt;-<span class="st"> </span>y[nsel]</a>
+<a class="sourceLine" id="cb2-22" data-line-number="22">        x &lt;-<span class="st"> </span>X[nsel,psel]</a>
+<a class="sourceLine" id="cb2-23" data-line-number="23">    }</a>
+<a class="sourceLine" id="cb2-24" data-line-number="24">    cond &lt;-<span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(y)</a>
+<a class="sourceLine" id="cb2-25" data-line-number="25">    y &lt;-<span class="st"> </span><span class="kw">scale</span>(y[cond])</a>
+<a class="sourceLine" id="cb2-26" data-line-number="26">    x &lt;-<span class="st"> </span>x[cond,]</a>
+<a class="sourceLine" id="cb2-27" data-line-number="27">    loss &lt;-<span class="st"> </span><span class="kw">rbind</span>(loss,colasso<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/colasso/topics/colasso_compare">colasso_compare</a></span>(<span class="dt">y=</span>y,<span class="dt">X=</span>x))</a>
+<a class="sourceLine" id="cb2-28" data-line-number="28">}</a>
+<a class="sourceLine" id="cb2-29" data-line-number="29"></a>
+<a class="sourceLine" id="cb2-30" data-line-number="30">min &lt;-<span class="st"> </span><span class="kw">apply</span>(traits,<span class="dv">2</span>,<span class="cf">function</span>(x) <span class="kw">min</span>(x,<span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb2-31" data-line-number="31">max &lt;-<span class="st"> </span><span class="kw">apply</span>(traits,<span class="dv">2</span>,<span class="cf">function</span>(x) <span class="kw">max</span>(x,<span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb2-32" data-line-number="32">var &lt;-<span class="st"> </span><span class="kw">apply</span>(traits,<span class="dv">2</span>,<span class="cf">function</span>(x) <span class="kw">var</span>(x,<span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb2-33" data-line-number="33"></a>
 <a class="sourceLine" id="cb2-34" data-line-number="34"></a>
-<a class="sourceLine" id="cb2-35" data-line-number="35"><span class="co"># then apply colasso function !</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-35" data-line-number="35"></a>
+<a class="sourceLine" id="cb2-36" data-line-number="36">psel &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">seq_len</span>(<span class="dv">56515</span>),<span class="dt">size=</span><span class="dv">2000</span>)</a>
+<a class="sourceLine" id="cb2-37" data-line-number="37">nsel &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">seq_len</span>(<span class="dv">2003</span>),<span class="dt">size=</span><span class="dv">500</span>)</a>
+<a class="sourceLine" id="cb2-38" data-line-number="38"></a>
+<a class="sourceLine" id="cb2-39" data-line-number="39">y &lt;-<span class="st"> </span>YY[nsel,<span class="st">"totfa"</span>]</a>
+<a class="sourceLine" id="cb2-40" data-line-number="40">X &lt;-<span class="st"> </span>XX[nsel,psel]</a>
+<a class="sourceLine" id="cb2-41" data-line-number="41"></a>
+<a class="sourceLine" id="cb2-42" data-line-number="42">net &lt;-<span class="st"> </span>glmnet<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/glmnet/topics/cv.glmnet">cv.glmnet</a></span>(<span class="dt">x=</span>X,<span class="dt">y=</span>y)</a>
+<a class="sourceLine" id="cb2-43" data-line-number="43"></a>
+<a class="sourceLine" id="cb2-44" data-line-number="44"><span class="kw">plot</span>(<span class="dt">x=</span>net<span class="op">$</span>lambda,<span class="dt">y=</span>net<span class="op">$</span>cvm)</a>
+<a class="sourceLine" id="cb2-45" data-line-number="45"></a>
+<a class="sourceLine" id="cb2-46" data-line-number="46"><span class="co"># then apply colasso function !</span></a></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">n &lt;-<span class="st"> </span><span class="dv">100</span>; p &lt;-<span class="st"> </span><span class="dv">10</span></a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">x &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n<span class="op">*</span>p),<span class="dt">nrow=</span>n,<span class="dt">ncol=</span>p)</a>
 <a class="sourceLine" id="cb3-3" data-line-number="3">y &lt;-<span class="st"> </span><span class="kw">rbinom</span>(<span class="dt">n=</span>n,<span class="dt">size=</span><span class="dv">1</span>,<span class="dt">prob=</span><span class="fl">0.2</span>)</a>
