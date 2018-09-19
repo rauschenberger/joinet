@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • spliceQTL</title>
+<title>Function reference • colasso</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -54,7 +54,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spliceQTL</a>
+        <a class="navbar-link" href="../index.html">colasso</a>
         <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.0</span>
       </span>
     </div>
@@ -78,10 +78,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/code.html">rainbow (code)</a>
-    </li>
-    <li>
-      <a href="../articles/text.html">rainbow (text)</a>
+      <a href="../articles/vignette.html">colasso</a>
     </li>
   </ul>
 </li>
@@ -92,7 +89,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/rauschenberger/spliceQTL">
+  <a href="https://github.com/rauschenberger/colasso">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -129,99 +126,45 @@
       <tr>
         <!--  -->
         <td>
-          <p><code><a href="map.genes.html">map.genes()</a></code> </p>
+          <p><code><a href="colasso.html">colasso()</a></code> </p>
         </td>
-        <td><p>Search for genes</p></td>
+        <td><p>colasso</p></td>
       </tr><tr>
         <!--  -->
         <td>
-          <p><code><a href="map.exons.html">map.exons()</a></code> </p>
+          <p><code><a href="colasso_marginal_significance.html">colasso_marginal_significance()</a></code> </p>
         </td>
-        <td><p>Search for exons</p></td>
+        <td><p>marginal significance</p></td>
       </tr><tr>
         <!--  -->
         <td>
-          <p><code><a href="map.snps.html">map.snps()</a></code> </p>
+          <p><code><a href="colasso_covariate_weights.html">colasso_covariate_weights()</a></code> </p>
         </td>
-        <td><p>Search for SNPs</p></td>
+        <td><p>covariate weights</p></td>
       </tr><tr>
         <!--  -->
         <td>
-          <p><code><a href="match.samples.html">match.samples()</a></code> </p>
+          <p><code><a href="colasso_weighted_correlation.html">colasso_weighted_correlation()</a></code> </p>
         </td>
-        <td><p>Prepare data matrices</p></td>
+        <td><p>weighted correlation</p></td>
       </tr><tr>
         <!--  -->
         <td>
-          <p><code><a href="adjust.samples.html">adjust.samples()</a></code> </p>
+          <p><code><a href="colasso_moderate.html">colasso_moderate()</a></code> </p>
         </td>
-        <td><p>Adjust library sizes</p></td>
+        <td><p>moderated response</p></td>
       </tr><tr>
         <!--  -->
         <td>
-          <p><code><a href="test.single.html">test.single()</a></code> </p>
+          <p><code><a href="colasso_simulate.html">colasso_simulate()</a></code> </p>
         </td>
-        <td><p>Conduct single test</p></td>
+        <td><p>simulate data</p></td>
       </tr><tr>
         <!--  -->
         <td>
-          <p><code><a href="test.multiple.html">test.multiple()</a></code> </p>
+          <p><code><a href="colasso_compare.html">colasso_compare()</a></code> </p>
         </td>
-        <td><p>Conduct multiple tests</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="drop.trivial.html">drop.trivial()</a></code> </p>
-        </td>
-        <td><p>Drop trivial tests</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="get.snps.geuvadis.html">get.snps.geuvadis()</a></code> </p>
-        </td>
-        <td><p>Get SNP data (Geuvadis)</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="get.snps.bbmri.html">get.snps.bbmri()</a></code> </p>
-        </td>
-        <td><p>Get SNP data (BBMRI)</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="get.exons.geuvadis.html">get.exons.geuvadis()</a></code> </p>
-        </td>
-        <td><p>Get exon data (Geuvadis)</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="get.exons.bbmri.html">get.exons.bbmri()</a></code> </p>
-        </td>
-        <td><p>Get exon data (BBMRI)</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="spliceQTL-package.html">spliceQTL-package</a></code> </p>
-        </td>
-        <td><p>Alternative Splicing</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="adjust.variables.html">adjust.variables()</a></code> </p>
-        </td>
-        <td><p>Adjust exon length</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="grid.html">grid()</a></code> </p>
-        </td>
-        <td><p>Plot grid</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="visualise.html">visualise()</a></code> </p>
-        </td>
-        <td><p>Plot SNP-exon correlations</p></td>
+        <td><p>External cross-validation</p></td>
       </tr>
     </tbody>
     </table>
@@ -237,7 +180,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Armin Rauschenberger, Renee Menezes.</p>
+  <p>Developed by Armin Rauschenberger.</p>
 </div>
 
 <div class="pkgdown">

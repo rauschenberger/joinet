@@ -13,12 +13,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-[![Travis-CI Build Status](https://travis-ci.org/rauschenberger/spliceQTL.svg)](https://travis-ci.org/rauschenberger/spliceQTL)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/rauschenberger/spliceQTL?svg=true)](https://ci.appveyor.com/project/rauschenberger/spliceQTL)
+[![Travis-CI Build Status](https://travis-ci.org/rauschenberger/spliceQTL.svg)](https://travis-ci.org/rauschenberger/colasso)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/rauschenberger/spliceQTL?svg=true)](https://ci.appveyor.com/project/rauschenberger/colasso)
 
 ```{r,eval=FALSE}
 #install.packages("devtools")
-devtools::install_github("rauschenberger/spliceQTL")
+devtools::install_github("rauschenberger/colasso")
 ```
 
 

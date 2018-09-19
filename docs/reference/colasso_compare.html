@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get SNP data (Geuvadis) — get.snps.geuvadis • spliceQTL</title>
+<title>External cross-validation — colasso_compare • colasso</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,14 +28,9 @@
 
 
 
-<meta property="og:title" content="Get SNP data (Geuvadis) — get.snps.geuvadis" />
+<meta property="og:title" content="External cross-validation — colasso_compare" />
 
-<meta property="og:description" content="This function transforms SNP data (local machine):
-downloads missing genotype data from ArrayExpress,
-transforms variant call format to binary files,
-removes SNPs with low minor allele frequency,
-labels SNPs in the format "chromosome:position",
-changes sample identifiers" />
+<meta property="og:description" content="This function ..." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -62,7 +57,7 @@ changes sample identifiers" />
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spliceQTL</a>
+        <a class="navbar-link" href="../index.html">colasso</a>
         <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.0</span>
       </span>
     </div>
@@ -86,10 +81,7 @@ changes sample identifiers" />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/code.html">rainbow (code)</a>
-    </li>
-    <li>
-      <a href="../articles/text.html">rainbow (text)</a>
+      <a href="../articles/vignette.html">colasso</a>
     </li>
   </ul>
 </li>
@@ -100,7 +92,7 @@ changes sample identifiers" />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/rauschenberger/spliceQTL">
+  <a href="https://github.com/rauschenberger/colasso">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -117,45 +109,44 @@ changes sample identifiers" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get SNP data (Geuvadis)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/spliceQTL/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>get.snps.geuvadis.Rd</code></div>
+    <h1>External cross-validation</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
+    <div class="hidden name"><code>colasso_compare.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function transforms SNP data (local machine):
-downloads missing genotype data from ArrayExpress,
-transforms variant call format to binary files,
-removes SNPs with low minor allele frequency,
-labels SNPs in the format "chromosome:position",
-changes sample identifiers</p>
+    <p>This function ...</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>get.snps.geuvadis</span>(<span class='no'>chr</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'>getwd</span>())</pre>
+    <pre class="usage"><span class='fu'>colasso_compare</span>(<span class='no'>y</span>, <span class='no'>X</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>chr</th>
-      <td><p>chromosome: integer \(1-22\)</p></td>
+      <th>plot</th>
+      <td><p>logical</p></td>
     </tr>
     <tr>
-      <th>data</th>
-      <td><p>local directory for VCF (variant call format)
-and SDRF (sample and data relationship format) files;</p></td>
+      <th>n</th>
+      <td><p>sample size</p></td>
     </tr>
     <tr>
-      <th>path</th>
-      <td><p>local directory for output</p></td>
+      <th>p</th>
+      <td><p>number of covariates</p></td>
+    </tr>
+    <tr>
+      <th>cor</th>
+      <td><p>correlation structure</p></td>
     </tr>
     </table>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>path</span> <span class='kw'>&lt;-</span> <span class='st'>"C:/Users/a.rauschenbe/Desktop/spliceQTL/data"</span></div></pre>
+    <pre class="examples"><div class='input'><span class='fl'>NA</span></div><div class='output co'>#&gt; [1] NA</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -170,7 +161,7 @@ and SDRF (sample and data relationship format) files;</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Armin Rauschenberger, Renee Menezes.</p>
+  <p>Developed by Armin Rauschenberger.</p>
 </div>
 
 <div class="pkgdown">

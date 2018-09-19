@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Adjust exon length — adjust.variables • spliceQTL</title>
+<title>simulate data — colasso_simulate • colasso</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Adjust exon length — adjust.variables" />
+<meta property="og:title" content="simulate data — colasso_simulate" />
 
-<meta property="og:description" content="This function adjusts exon expression data for different exon lengths." />
+<meta property="og:description" content="This function ..." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -57,7 +57,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spliceQTL</a>
+        <a class="navbar-link" href="../index.html">colasso</a>
         <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.0</span>
       </span>
     </div>
@@ -81,10 +81,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/code.html">rainbow (code)</a>
-    </li>
-    <li>
-      <a href="../articles/text.html">rainbow (text)</a>
+      <a href="../articles/vignette.html">colasso</a>
     </li>
   </ul>
 </li>
@@ -95,7 +92,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/rauschenberger/spliceQTL">
+  <a href="https://github.com/rauschenberger/colasso">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -112,39 +109,44 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Adjust exon length</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/spliceQTL/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>adjust.variables.Rd</code></div>
+    <h1>simulate data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
+    <div class="hidden name"><code>colasso_simulate.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function adjusts exon expression data for different exon lengths.</p>
+    <p>This function ...</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>adjust.variables</span>(<span class='no'>x</span>, <span class='no'>offset</span>, <span class='no'>group</span>)</pre>
+    <pre class="usage"><span class='fu'>colasso_simulate</span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>p</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>cor</span> <span class='kw'>=</span> <span class='st'>"constant"</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>matrix with \(n\) rows (samples) and \(p\) columns (exons)</p></td>
+      <th>n</th>
+      <td><p>sample size</p></td>
     </tr>
     <tr>
-      <th>offset</th>
-      <td><p>exon length<strong>:</strong> vector of length \(p\)</p></td>
+      <th>p</th>
+      <td><p>number of covariates</p></td>
     </tr>
     <tr>
-      <th>group</th>
-      <td><p>gene names<strong>:</strong> vector of length \(p\)</p></td>
+      <th>cor</th>
+      <td><p>correlation structure</p></td>
+    </tr>
+    <tr>
+      <th>plot</th>
+      <td><p>logical</p></td>
     </tr>
     </table>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fl'>NA</span></div><div class='output co'>#&gt; [1] NA</div><div class='input'>
+    <pre class="examples"><div class='input'># CONTINUE HERE
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -160,7 +162,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Armin Rauschenberger, Renee Menezes.</p>
+  <p>Developed by Armin Rauschenberger.</p>
 </div>
 
 <div class="pkgdown">

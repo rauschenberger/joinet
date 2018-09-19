@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Search for genes — map.genes • spliceQTL</title>
+<title>marginal significance — colasso_marginal_significance • colasso</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Search for genes — map.genes" />
+<meta property="og:title" content="marginal significance — colasso_marginal_significance" />
 
-<meta property="og:description" content="This function retrieves all protein-coding genes on a chromosome." />
+<meta property="og:description" content="This function ..." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -57,7 +57,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spliceQTL</a>
+        <a class="navbar-link" href="../index.html">colasso</a>
         <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.0</span>
       </span>
     </div>
@@ -81,10 +81,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/code.html">rainbow (code)</a>
-    </li>
-    <li>
-      <a href="../articles/text.html">rainbow (text)</a>
+      <a href="../articles/vignette.html">colasso</a>
     </li>
   </ul>
 </li>
@@ -95,7 +92,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/rauschenberger/spliceQTL">
+  <a href="https://github.com/rauschenberger/colasso">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -112,37 +109,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Search for genes</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/spliceQTL/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>map.genes.Rd</code></div>
+    <h1>marginal significance</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
+    <div class="hidden name"><code>colasso_marginal_significance.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function retrieves all protein-coding genes on a chromosome.</p>
+    <p>This function ...</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>map.genes</span>(<span class='no'>chr</span>, <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'>getwd</span>(), <span class='kw'>release</span> <span class='kw'>=</span> <span class='st'>"GRCh37"</span>, <span class='kw'>build</span> <span class='kw'>=</span> <span class='fl'>71</span>)</pre>
+    <pre class="usage"><span class='fu'>colasso_marginal_significance</span>(<span class='no'>y</span>, <span class='no'>X</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>chr</th>
-      <td><p>chromosome<strong>:</strong> integer 1-22</p></td>
+      <th>y</th>
+      <td><p>response<strong>:</strong>
+vector of length \(n\)</p></td>
     </tr>
     <tr>
-      <th>path</th>
-      <td><p>path to gene transfer format files (.gtf)</p></td>
-    </tr>
-    <tr>
-      <th>release</th>
-      <td><p>character "NCBI36", "GRCh37", or "GRCh38"</p></td>
-    </tr>
-    <tr>
-      <th>build</th>
-      <td><p>integer 49-91</p></td>
+      <th>X</th>
+      <td><p>covariates<strong>:</strong>
+matrix with \(n\) rows (samples) and \(p\) columns (variables)</p></td>
     </tr>
     </table>
     
@@ -164,7 +155,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Armin Rauschenberger, Renee Menezes.</p>
+  <p>Developed by Armin Rauschenberger.</p>
 </div>
 
 <div class="pkgdown">

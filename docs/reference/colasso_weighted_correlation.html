@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Drop trivial tests — drop.trivial • spliceQTL</title>
+<title>weighted correlation — colasso_weighted_correlation • colasso</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Drop trivial tests — drop.trivial" />
+<meta property="og:title" content="weighted correlation — colasso_weighted_correlation" />
 
-<meta property="og:description" content="This function trops trivial tests." />
+<meta property="og:description" content="This function ..." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -57,7 +57,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spliceQTL</a>
+        <a class="navbar-link" href="../index.html">colasso</a>
         <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.0</span>
       </span>
     </div>
@@ -81,10 +81,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/code.html">rainbow (code)</a>
-    </li>
-    <li>
-      <a href="../articles/text.html">rainbow (text)</a>
+      <a href="../articles/vignette.html">colasso</a>
     </li>
   </ul>
 </li>
@@ -95,7 +92,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/rauschenberger/spliceQTL">
+  <a href="https://github.com/rauschenberger/colasso">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -112,33 +109,33 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Drop trivial tests</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/spliceQTL/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>drop.trivial.Rd</code></div>
+    <h1>weighted correlation</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
+    <div class="hidden name"><code>colasso_weighted_correlation.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function trops trivial tests.</p>
+    <p>This function ...</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>drop.trivial</span>(<span class='no'>map</span>)</pre>
+    <pre class="usage"><span class='fu'>colasso_weighted_correlation</span>(<span class='no'>X</span>, <span class='kw'>w</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>map</th>
-      <td><p>list with names "genes", "exons", and "snps"
-(output from <code><a href='map.genes.html'>map.genes</a></code>, <code><a href='map.exons.html'>map.exons</a></code>,
-and <code><a href='map.snps.html'>map.snps</a></code>)</p></td>
+      <th>X</th>
+      <td><p>covariates<strong>:</strong>
+matrix with \(n\) rows (samples) and \(p\) columns (variables)</p></td>
+    </tr>
+    <tr>
+      <th>w</th>
+      <td><p>covariate weights<strong>:</strong>
+vector of length \(p\), with entries between \(0\) and \(1\)</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>This functions drops tests for genes without SNPs or with a single exon.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -149,9 +146,7 @@ and <code><a href='map.snps.html'>map.snps</a></code>)</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#details">Details</a></li>
-      
+            
       <li><a href="#examples">Examples</a></li>
     </ul>
 
@@ -160,7 +155,7 @@ and <code><a href='map.snps.html'>map.snps</a></code>)</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Armin Rauschenberger, Renee Menezes.</p>
+  <p>Developed by Armin Rauschenberger.</p>
 </div>
 
 <div class="pkgdown">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prepare data matrices — match.samples • spliceQTL</title>
+<title>moderated response — colasso_moderate • colasso</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,11 +28,9 @@
 
 
 
-<meta property="og:title" content="Prepare data matrices — match.samples" />
+<meta property="og:title" content="moderated response — colasso_moderate" />
 
-<meta property="og:description" content="This function removes duplicate samples from each matrix,
-only retains samples appearing in all matrices,
-and brings samples into the same order." />
+<meta property="og:description" content="This function ..." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -59,7 +57,7 @@ and brings samples into the same order." />
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">spliceQTL</a>
+        <a class="navbar-link" href="../index.html">colasso</a>
         <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.0</span>
       </span>
     </div>
@@ -83,10 +81,7 @@ and brings samples into the same order." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/code.html">rainbow (code)</a>
-    </li>
-    <li>
-      <a href="../articles/text.html">rainbow (text)</a>
+      <a href="../articles/vignette.html">colasso</a>
     </li>
   </ul>
 </li>
@@ -97,7 +92,7 @@ and brings samples into the same order." />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/rauschenberger/spliceQTL">
+  <a href="https://github.com/rauschenberger/colasso">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -114,49 +109,45 @@ and brings samples into the same order." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Prepare data matrices</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/spliceQTL/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>match.samples.Rd</code></div>
+    <h1>moderated response</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
+    <div class="hidden name"><code>colasso_moderate.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function removes duplicate samples from each matrix,
-only retains samples appearing in all matrices,
-and brings samples into the same order.</p>
+    <p>This function ...</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>match.samples</span>(<span class='no'>...</span>, <span class='kw'>message</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>colasso_moderate</span>(<span class='no'>y</span>, <span class='no'>X</span>, <span class='no'>pi</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>...</th>
-      <td><p>matrices with samples in the rows and variables in the columns,
-with sample identifiers as rows names</p></td>
+      <th>y</th>
+      <td><p>response<strong>:</strong>
+vector of length \(n\)</p></td>
     </tr>
     <tr>
-      <th>message</th>
-      <td><p>display messages<strong>:</strong> logical</p></td>
+      <th>X</th>
+      <td><p>covariates<strong>:</strong>
+matrix with \(n\) rows (samples) and \(p\) columns (variables)</p></td>
+    </tr>
+    <tr>
+      <th>pi</th>
+      <td><p>vector with entries between \(0\) and \(1\) (rename argument)</p></td>
+    </tr>
+    <tr>
+      <th>plot</th>
+      <td><p>logical</p></td>
     </tr>
     </table>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'>matrix</span>(<span class='fu'>rnorm</span>(<span class='fl'>6</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='fl'>3</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='fl'>2</span>,<span class='kw'>dimnames</span><span class='kw'>=</span><span class='fu'>list</span>(<span class='fu'>c</span>(<span class='st'>"A"</span>,<span class='st'>"B"</span>,<span class='st'>"C"</span>)))
-<span class='no'>Z</span> <span class='kw'>&lt;-</span> <span class='fu'>matrix</span>(<span class='fu'>rnorm</span>(<span class='fl'>9</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='fl'>3</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='fl'>3</span>,<span class='kw'>dimnames</span><span class='kw'>=</span><span class='fu'>list</span>(<span class='fu'>c</span>(<span class='st'>"B"</span>,<span class='st'>"A"</span>,<span class='st'>"B"</span>)))
-<span class='fu'>match.samples</span>(<span class='no'>X</span>,<span class='no'>Z</span>)</div><div class='output co'>#&gt; <span class='message'>0 duplicates in "X"</span></div><div class='output co'>#&gt; <span class='message'>33 duplicates in "Z"</span></div><div class='output co'>#&gt; <span class='message'>67% overlap in "X"</span></div><div class='output co'>#&gt; <span class='message'>100% overlap in "Z"</span></div><div class='output co'>#&gt; $X
-#&gt;         [,1]         [,2]
-#&gt; A -1.4000435 -0.005571287
-#&gt; B  0.2553171  0.621552721
-#&gt; 
-#&gt; $Z
-#&gt;         [,1]       [,2]      [,3]
-#&gt; A -0.2473253 -0.5536994 -1.630989
-#&gt; B -1.8218177 -0.2827054  2.065025
-#&gt; </div><div class='input'>
+    <pre class="examples"><div class='input'><span class='fl'>NA</span></div><div class='output co'>#&gt; [1] NA</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -172,7 +163,7 @@ with sample identifiers as rows names</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Armin Rauschenberger, Renee Menezes.</p>
+  <p>Developed by Armin Rauschenberger.</p>
 </div>
 
 <div class="pkgdown">
