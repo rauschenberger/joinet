@@ -179,16 +179,16 @@ https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research#Mic
 <a class="sourceLine" id="cb2-22" data-line-number="22">    <span class="kw">cat</span>(<span class="st">"| j ="</span>,j,<span class="st">"|</span><span class="ch">\n</span><span class="st">"</span>)</a>
 <a class="sourceLine" id="cb2-23" data-line-number="23">    y &lt;-<span class="st"> </span>Y[,j]</a>
 <a class="sourceLine" id="cb2-24" data-line-number="24">    <span class="cf">if</span>(<span class="kw">sd</span>(y,<span class="dt">na.rm=</span><span class="ot">TRUE</span>)<span class="op">==</span><span class="dv">0</span>){<span class="cf">next</span>}</a>
-<a class="sourceLine" id="cb2-25" data-line-number="25">    <span class="co">#if(TRUE){</span></a>
+<a class="sourceLine" id="cb2-25" data-line-number="25">    <span class="cf">if</span>(<span class="ot">TRUE</span>){</a>
 <a class="sourceLine" id="cb2-26" data-line-number="26">    <span class="co">#    psel &lt;- sample(seq_len(56515),size=2000)</span></a>
-<a class="sourceLine" id="cb2-27" data-line-number="27">    <span class="co">#    nsel &lt;- sample(seq_len(2003),size=500)</span></a>
-<a class="sourceLine" id="cb2-28" data-line-number="28">    <span class="co">#    y &lt;- y[nsel]</span></a>
-<a class="sourceLine" id="cb2-29" data-line-number="29">    <span class="co">#    x &lt;- X[nsel,psel]</span></a>
-<a class="sourceLine" id="cb2-30" data-line-number="30">    <span class="co">#}</span></a>
+<a class="sourceLine" id="cb2-27" data-line-number="27">        nsel &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">seq_len</span>(<span class="dv">2003</span>),<span class="dt">size=</span><span class="dv">500</span>)</a>
+<a class="sourceLine" id="cb2-28" data-line-number="28">        y &lt;-<span class="st"> </span>y[nsel]</a>
+<a class="sourceLine" id="cb2-29" data-line-number="29">        x &lt;-<span class="st"> </span>X[nsel,] <span class="co"># psel</span></a>
+<a class="sourceLine" id="cb2-30" data-line-number="30">    }</a>
 <a class="sourceLine" id="cb2-31" data-line-number="31">    cond &lt;-<span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(y)</a>
 <a class="sourceLine" id="cb2-32" data-line-number="32">    y &lt;-<span class="st"> </span><span class="kw">scale</span>(y[cond])</a>
-<a class="sourceLine" id="cb2-33" data-line-number="33">    x &lt;-<span class="st"> </span>X[cond,]</a>
-<a class="sourceLine" id="cb2-34" data-line-number="34">    loss &lt;-<span class="st"> </span><span class="kw">rbind</span>(loss,colasso<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/colasso/topics/colasso_compare">colasso_compare</a></span>(<span class="dt">y=</span>y,<span class="dt">X=</span>x))</a>
+<a class="sourceLine" id="cb2-33" data-line-number="33">    x &lt;-<span class="st"> </span>x[cond,]</a>
+<a class="sourceLine" id="cb2-34" data-line-number="34">    loss &lt;-<span class="st"> </span><span class="kw">rbind</span>(loss,colasso<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/colasso/topics/colasso_compare">colasso_compare</a></span>(<span class="dt">y=</span>y,<span class="dt">X=</span>x,<span class="dt">nfolds=</span><span class="dv">5</span>))</a>
 <a class="sourceLine" id="cb2-35" data-line-number="35">}</a></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">n &lt;-<span class="st"> </span><span class="dv">100</span>; p &lt;-<span class="st"> </span><span class="dv">10</span></a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">x &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n<span class="op">*</span>p),<span class="dt">nrow=</span>n,<span class="dt">ncol=</span>p)</a>

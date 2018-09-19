@@ -104,16 +104,16 @@ for(j in seq_len(ncol(Y))){
     cat("| j =",j,"|\n")
     y <- Y[,j]
     if(sd(y,na.rm=TRUE)==0){next}
-    #if(TRUE){
+    if(TRUE){
     #    psel <- sample(seq_len(56515),size=2000)
-    #    nsel <- sample(seq_len(2003),size=500)
-    #    y <- y[nsel]
-    #    x <- X[nsel,psel]
-    #}
+        nsel <- sample(seq_len(2003),size=500)
+        y <- y[nsel]
+        x <- X[nsel,] # psel
+    }
     cond <- !is.na(y)
     y <- scale(y[cond])
-    x <- X[cond,]
-    loss <- rbind(loss,colasso::colasso_compare(y=y,X=x))
+    x <- x[cond,]
+    loss <- rbind(loss,colasso::colasso_compare(y=y,X=x,nfolds=5))
 }
 
 

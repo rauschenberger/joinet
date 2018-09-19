@@ -16,7 +16,7 @@
 #' covariates\strong{:}
 #' matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)
 #' 
-#' @param nfold
+#' @param nfolds
 #' number of folds
 #' 
 #' @param alpha
@@ -30,12 +30,12 @@
 #' #y[1] <- 0.5
 #' #a <- glmnet::glmnet(y=y,x=x,family="binomial")
 #' #b <- stats::glm(y~x,family="binomial")
-colasso <- function(y,X,nfold=10,alpha=1){
+colasso <- function(y,X,nfold=10,alpha=1,nfolds=10){
     
     # properties
     n <- nrow(X); p <- ncol(X)
     if(length(y)!=n){stop("sample size")}
-    foldid <- sample(x=rep(x=seq_len(nfold),length.out=n))
+    foldid <- sample(x=rep(x=seq_len(nfolds),length.out=n))
     pi <- seq(from=0,to=0.5,by=0.1) # adapt this
 
     # model fitting

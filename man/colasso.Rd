@@ -5,7 +5,7 @@
 \alias{colasso-package}
 \title{colasso}
 \usage{
-colasso(y, X, nfold = 10, alpha = 1)
+colasso(y, X, nfold = 10, alpha = 1, nfolds = 10)
 }
 \arguments{
 \item{y}{response\strong{:}
@@ -14,9 +14,9 @@ vector of length \eqn{n}}
 \item{X}{covariates\strong{:}
 matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)}
 
-\item{nfold}{number of folds}
-
 \item{alpha}{elastic net parameter}
+
+\item{nfolds}{number of folds}
 }
 \description{
 This function ...
