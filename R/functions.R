@@ -341,16 +341,19 @@ colasso_simulate <- function(n=100,p=500,cor="constant",plot=TRUE){
 #' @param plot
 #' logical
 #' 
+#' @param nfolds.int
+#' internal folds
+#' 
 #' @examples
 #' NA
 #'
-colasso_compare <- function(y,X,plot=TRUE){
+colasso_compare <- function(y,X,plot=TRUE,nfolds.int=10){
     
     fold <- sample(x=rep(x=seq_len(5),length.out=length(y)))
     pred <- matrix(data=NA,nrow=length(y),ncol=8)
     for(i in sort(unique(fold))){
         cat("i =",i,"\n")
-        fit <- colasso(y=y[fold!=i],X=X[fold!=i,],alpha=1)
+        fit <- colasso(y=y[fold!=i],X=X[fold!=i,],alpha=1,nfolds=nfolds.int)
         for(j in seq_along(fit)){
             pred[fold==i,j] <- glmnet::predict.glmnet(object=fit[[j]],
                                                   newx=X[fold==i,],

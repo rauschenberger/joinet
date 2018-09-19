@@ -83,49 +83,39 @@ Repeat this for all normally distributed responses, omit samples with missing re
 lib <- "/virdir/Scratch/arauschenberger/library"
 .libPaths(lib)
 devtools::install_github("rauschenberger/colasso",lib=lib)
+setwd("/mnt/virdir/Scratch/arauschenberger/colasso")
 
 utils::data(metabolomics_RP3RP4_overlap,package="BBMRIomics")
 utils::data(rnaSeqData_ReadCounts_BIOS_cleaned,package="BBMRIomics")
 
+# selecting samples
+#colData(counts)[,"biobank_id"]
 samples <- intersect(colnames(counts),colnames(metabolomicData))
-
 Y <- t(SummarizedExperiment::assays(metabolomicData[,samples])$measurements)
 X <- t(SummarizedExperiment::assay(counts[,samples]))
 
+# selecting covariates
+names <- spliceQTL::map.genes(chr=NULL)
+X <- X[,colnames(X) %in% names$gene_id]
+
 loss <- NULL
 for(j in seq_len(ncol(Y))){
-    cat("j =",j,"\n")
+    # if(j < 2){next}
+    cat("| j =",j,"|\n")
     y <- Y[,j]
     if(sd(y,na.rm=TRUE)==0){next}
-    if(TRUE){
-        psel <- sample(seq_len(56515),size=2000)
-        nsel <- sample(seq_len(2003),size=500)
-        y <- y[nsel]
-        x <- X[nsel,psel]
-    }
+    #if(TRUE){
+    #    psel <- sample(seq_len(56515),size=2000)
+    #    nsel <- sample(seq_len(2003),size=500)
+    #    y <- y[nsel]
+    #    x <- X[nsel,psel]
+    #}
     cond <- !is.na(y)
     y <- scale(y[cond])
-    x <- x[cond,]
+    x <- X[cond,]
     loss <- rbind(loss,colasso::colasso_compare(y=y,X=x))
 }
 
-min <- apply(traits,2,function(x) min(x,na.rm=TRUE))
-max <- apply(traits,2,function(x) max(x,na.rm=TRUE))
-var <- apply(traits,2,function(x) var(x,na.rm=TRUE))
-
-
-
-psel <- sample(seq_len(56515),size=2000)
-nsel <- sample(seq_len(2003),size=500)
-
-y <- YY[nsel,"totfa"]
-X <- XX[nsel,psel]
-
-net <- glmnet::cv.glmnet(x=X,y=y)
-
-plot(x=net$lambda,y=net$cvm)
-
-# then apply colasso function !
 
 ```
 

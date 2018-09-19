@@ -4,7 +4,7 @@
 \alias{colasso_compare}
 \title{External cross-validation}
 \usage{
-colasso_compare(y, X, plot = TRUE)
+colasso_compare(y, X, plot = TRUE, nfolds.int = 10)
 }
 \arguments{
 \item{y}{response}
@@ -12,6 +12,8 @@ colasso_compare(y, X, plot = TRUE)
 \item{X}{covariates}
 
 \item{plot}{logical}
+
+\item{nfolds.int}{internal folds}
 }
 \description{
 This function ...
