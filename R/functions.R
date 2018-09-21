@@ -30,7 +30,7 @@
 #' #y[1] <- 0.5
 #' #a <- glmnet::glmnet(y=y,x=x,family="binomial")
 #' #b <- stats::glm(y~x,family="binomial")
-colasso <- function(y,X,nfold=10,alpha=1,nfolds=10){
+colasso <- function(y,X,alpha=1,nfolds=10){
     
     # properties
     n <- nrow(X); p <- ncol(X)
@@ -137,6 +137,7 @@ colasso <- function(y,X,nfold=10,alpha=1,nfolds=10){
 # obtain p-values --------------------------------------------------------------
 # input: y, X; output: p-value
 colasso_marginal_significance <- function(y,X){
+    # X = scale(X)
     x <- vector()
     for(i in seq_len(ncol(X))){
         if(stats::var(X[,i])==0){
@@ -179,6 +180,7 @@ colasso_covariate_weights <- function(x,max=0.05/length(x),min=0.05,version=1){ 
     } else {
         weight <- pmax(1-(1/min)*x,0) 
     }
+    message("non-zero weight: ",100*round(mean(weight!=0),digits=2),"%")
     return(weight)
 }
 
@@ -351,6 +353,7 @@ colasso_compare <- function(y,X,plot=TRUE,nfolds.int=10){
     
     fold <- sample(x=rep(x=seq_len(5),length.out=length(y)))
     pred <- matrix(data=NA,nrow=length(y),ncol=8)
+    select <- list()
     for(i in sort(unique(fold))){
         cat("i =",i,"\n")
         fit <- colasso(y=y[fold!=i],X=X[fold!=i,],alpha=1,nfolds=nfolds.int)
@@ -360,10 +363,28 @@ colasso_compare <- function(y,X,plot=TRUE,nfolds.int=10){
                                                   s=fit[[j]]$lambda.min,
                                                   type="response")
         }
+        select[[i]] <- lapply(fit,function(x) which(x$beta[,x$lambda==x$lambda.min]!=0))
         pred[fold==i,8] <- mean(y[fold!=i]) # intercept-only model
     }
     colnames(pred) <- c(names(fit),"intercept")
     loss <- apply(X=pred,MARGIN=2,FUN=function(x) sum((y-x)^2))
+    
+    ### start temporary ###
+    #stability <- numeric()
+    #for(k in seq_along(fit)){
+    #    matrix <- matrix(data=NA,nrow=5,ncol=5)
+    #    for(i in seq_len(5)){
+    #        for(j in seq_len(5)){
+    #            a <- select[[i]][[k]]
+    #            b <- select[[j]][[k]]
+    #            matrix[i,j] <- length(intersect(a,b))/length(union(a,b))
+    #        }
+    #    }
+    #    diag(matrix) <- NA
+    #    stability[k] <- mean(matrix,na.rm=TRUE)
+    #}
+    #cat(stability)
+    ### end temporary ###
     
     if(plot){
         graphics::par(mar=c(3,3,1,1))

@@ -15,7 +15,7 @@ https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research#Mic
 
 
 ```{r,eval=FALSE}
-loss = NULL
+loss <- NULL
 for(rep in 1:4){
     set.seed(rep)
     
@@ -28,18 +28,18 @@ for(rep in 1:4){
     #y <- list$y; X <- list$X
     
     ### mice data ###
-    data(mice,package="BGLR")
-    nsel <- sort(sample(seq_len(1814),size=1814,replace=FALSE))
-    psel <- sort(sample(seq_len(10346),size=1000,replace=FALSE))
-    y <- mice.pheno$Obesity.BMI[nsel] # try different phenotypes
-    X <- mice.X[nsel,psel]
+    #data(mice,package="BGLR")
+    #nsel <- sort(sample(seq_len(1814),size=100,replace=FALSE))
+    #psel <- sort(sample(seq_len(10346),size=1000,replace=FALSE))
+    #y <- mice.pheno$Obesity.BMI[nsel] # try different phenotypes
+    #X <- mice.X[nsel,psel]
     
     ### wheat data ###
-    #data(wheat,package="BGLR")
-    #nsel <- seq_len(599)
-    #psel <- seq_len(1279)
-    #y <- as.numeric(wheat.Y[nsel,rep]) # try different phenotypes
-    #X <- wheat.X[nsel,psel]
+    data(wheat,package="BGLR")
+    nsel <- seq_len(599)
+    psel <- seq_len(1279)
+    y <- as.numeric(wheat.Y[nsel,rep]) # try different phenotypes
+    X <- wheat.X[nsel,psel]
     
     #----- CROSS-VALIDATE -----
     
@@ -57,38 +57,111 @@ lib <- "/virdir/Scratch/arauschenberger/library"
 devtools::install_github("rauschenberger/colasso",lib=lib)
 setwd("/mnt/virdir/Scratch/arauschenberger/colasso")
 
+# load data
 utils::data(metabolomics_RP3RP4_overlap,package="BBMRIomics")
 utils::data(rnaSeqData_ReadCounts_BIOS_cleaned,package="BBMRIomics")
 
-# selecting samples
-#colData(counts)[,"biobank_id"]
-samples <- intersect(colnames(counts),colnames(metabolomicData))
-Y <- t(SummarizedExperiment::assays(metabolomicData[,samples])$measurements)
-X <- t(SummarizedExperiment::assay(counts[,samples]))
+# data matrices
+Y <- t(SummarizedExperiment::assays(metabolomicData)$measurements)
+X <- t(SummarizedExperiment::assay(counts))
 
-# selecting covariates
-names <- spliceQTL::map.genes(chr=NULL)
-X <- X[,colnames(X) %in% names$gene_id]
+# normalisation
+X <- spliceQTL::adjust.samples(X)
+X <- 2*sqrt(X+3/8)
 
+# selecting samples #colData(counts)[,"biobank_id"]
+samples <- intersect(rownames(Y),rownames(X))
+Y <- Y[samples,]
+X <- X[samples,]
+
+# selecting variables
+cond <- apply(Y,2,function(x) sd(x,na.rm=TRUE)!=0)
+Y <- Y[,cond]
+names <- spliceQTL::map.genes(chr=NULL)$gene_id
+X <- X[,colnames(X) %in% names]
+
+save("X","Y",file="data.RData")
+
+load("data.RData")
 loss <- NULL
 for(j in seq_len(ncol(Y))){
-    # if(j < 2){next}
-    cat("| j =",j,"|\n")
-    y <- Y[,j]
-    if(sd(y,na.rm=TRUE)==0){next}
-    if(TRUE){
-    #    psel <- sample(seq_len(56515),size=2000)
-        nsel <- sample(seq_len(2003),size=500)
-        y <- y[nsel]
-        x <- X[nsel,] # psel
+    file <- paste0("loss",j,".RData")
+    if(file.exists(file)){next}else{cat("metabolite j =",j,"\n")}
+    set.seed(j)
+    
+    if(TRUE){ # set to FALSE
+        nsel <- sample(seq_len(nrow(X)),size=1000)
+        psel <- sample(seq_len(ncol(X)),size=2000)
+        Y <- Y[nsel,]
+        X <- X[nsel,psel]
     }
-    cond <- !is.na(y)
-    y <- scale(y[cond])
-    x <- x[cond,]
-    loss <- rbind(loss,colasso::colasso_compare(y=y,X=x,nfolds=5))
+    
+    cond_n <- !is.na(Y[,j])
+    cond_p <- apply(X,2,function(x) sd(x)!=0)
+    ys <- as.numeric(scale(Y[cond_n,j]))
+    Xs <- X[cond_n,cond_p]
+
+    loss <- rbind(loss,colasso::colasso_compare(y=ys,X=Xs,nfolds=5)) # increase to 10
+    save(loss,file=file)
 }
 
+############################
+### parallel computation ### (trial)
+############################
 
+lib <- "/virdir/Scratch/arauschenberger/library"
+.libPaths(lib)
+devtools::install_github("rauschenberger/colasso",lib=lib)
+setwd("/mnt/virdir/Scratch/arauschenberger/colasso")
+
+check <- function(Y,X,j){
+    lib <- "/virdir/Scratch/arauschenberger/library"
+    .libPaths(lib)
+    file <- paste0("loss",j,".RData")
+    if(file.exists(file)){return(NULL)}else{cat("metabolite j =",j,"\n")}
+    set.seed(j)
+    if(FALSE){ # set to FALSE !
+        nsel <- sample(seq_len(nrow(X)),size=500)
+        psel <- sample(seq_len(ncol(X)),size=1000)
+        Y <- Y[nsel,]
+        X <- X[nsel,psel]
+    }
+    cond <- !is.na(Y[,j])
+    ys <- as.numeric(scale(Y[cond,j]))
+    Xs <- X[cond,]
+    loss <- colasso::colasso_compare(y=ys,X=Xs,nfolds=10) # set to 10 !
+    save(loss,file=file)
+}
+
+load("data.RData")
+cluster <- parallel::makeCluster(20)
+parallel::clusterExport(cluster,c("check","X","Y"),envir=environment())
+parallel::parSapply(cluster,1:ncol(Y),function(j) tryCatch(check(Y=Y,X=X,j=j),error=function(x) NULL))
+parallel::stopCluster(cluster)
+rm(cluster)
+
+frame <- NULL
+for(i in seq_len(233)){
+    file = paste0("loss",i,".RData")
+    if(!file.exists(file)){next}
+    #file.copy(from=file,to=file.path("old",file))
+    file.remove(file)
+    #load(file)
+    #frame <- rbind(frame,loss)
+}
+frame <- as.data.frame(frame)
+rownames(frame) = 1:nrow(frame)
+
+frame <- frame[frame$standard < frame$intercept,]
+mean(frame$standard < frame$select)
+mean(frame$standard == frame$select)
+mean(frame$standard > frame$select)
+
+
+# DANGER: delete all files
+#for(i in seq_len(233)){
+#    ### file.remove(paste0("loss",i,".RData"))
+#}
 ```
 
 

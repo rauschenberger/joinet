@@ -5,7 +5,7 @@
 \alias{colasso-package}
 \title{colasso}
 \usage{
-colasso(y, X, nfold = 10, alpha = 1, nfolds = 10)
+colasso(y, X, alpha = 1, nfolds = 10)
 }
 \arguments{
 \item{y}{response\strong{:}
