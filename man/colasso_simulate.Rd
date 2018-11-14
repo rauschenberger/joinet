@@ -4,7 +4,8 @@
 \alias{colasso_simulate}
 \title{simulate data}
 \usage{
-colasso_simulate(n = 100, p = 500, cor = "constant", plot = TRUE)
+colasso_simulate(n = 100, p = 500, cor = "constant",
+  family = "gaussian", plot = TRUE)
 }
 \arguments{
 \item{n}{sample size}

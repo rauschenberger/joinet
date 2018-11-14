@@ -4,14 +4,12 @@
 \alias{colasso_moderate}
 \title{moderated response}
 \usage{
-colasso_moderate(y, X, pi, plot = FALSE)
+colasso_moderate(Y)
 }
 \arguments{
-\item{y}{response\strong{:}
-vector of length \eqn{n}}
-
-\item{X}{covariates\strong{:}
-matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)}
+\item{Y}{response\strong{:}
+matrix with \eqn{n} rows and \eqn{p} columns,
+or vector of length \eqn{n} (see details)}
 
 \item{pi}{vector with entries between \eqn{0} and \eqn{1} (rename argument)}
 
@@ -22,5 +20,4 @@ This function ...
 }
 \examples{
 NA
-
 }

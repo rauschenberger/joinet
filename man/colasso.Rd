@@ -5,21 +5,33 @@
 \alias{colasso-package}
 \title{colasso}
 \usage{
-colasso(y, X, alpha = 1, nfolds = 10)
+colasso(y, Y, X, alpha = 1, nfolds = 10, family = "gaussian",
+  type.measure = "deviance")
 }
 \arguments{
 \item{y}{response\strong{:}
 vector of length \eqn{n}}
 
+\item{Y}{response\strong{:}
+matrix with \eqn{n} rows and \eqn{p} columns,
+or vector of length \eqn{n} (see details)}
+
 \item{X}{covariates\strong{:}
 matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)}
 
-\item{alpha}{elastic net parameter}
+\item{alpha}{elastic net parameter\strong{:}
+numeric between \eqn{0} and \eqn{1};
+\eqn{alpha=1} for lasso,
+\eqn{alpha=0} for ridge}
 
 \item{nfolds}{number of folds}
+
+\item{family}{see glmnet}
+
+\item{type.measure}{see glmnet}
 }
 \description{
-This function ...
+Implements penalised regression with response moderation.
 }
 \examples{
 n <- 100; p <- 20
@@ -29,4 +41,5 @@ y <- rnorm(n=n)
 #y[1] <- 0.5
 #a <- glmnet::glmnet(y=y,x=x,family="binomial")
 #b <- stats::glm(y~x,family="binomial")
+
 }

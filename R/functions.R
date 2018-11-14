@@ -1,26 +1,39 @@
 
-
 #' @export
 #' @aliases colasso-package
 #' @title
 #' colasso
 #' 
 #' @description
-#' This function ...
+#' Implements penalised regression with response moderation.
 #'  
 #' @param y
 #' response\strong{:}
 #' vector of length \eqn{n}
 #' 
+#' @param Y
+#' response\strong{:}
+#' matrix with \eqn{n} rows and \eqn{p} columns,
+#' or vector of length \eqn{n} (see details)
+#' 
 #' @param X
 #' covariates\strong{:}
 #' matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)
 #' 
+#' @param alpha
+#' elastic net parameter\strong{:}
+#' numeric between \eqn{0} and \eqn{1};
+#' \eqn{alpha=1} for lasso,
+#' \eqn{alpha=0} for ridge
+#' 
 #' @param nfolds
 #' number of folds
 #' 
-#' @param alpha
-#' elastic net parameter
+#' @param family
+#' see glmnet
+#' 
+#' @param type.measure
+#' see glmnet
 #' 
 #' @examples
 #' n <- 100; p <- 20
@@ -30,236 +43,94 @@
 #' #y[1] <- 0.5
 #' #a <- glmnet::glmnet(y=y,x=x,family="binomial")
 #' #b <- stats::glm(y~x,family="binomial")
-colasso <- function(y,X,alpha=1,nfolds=10){
-    
-    # properties
-    n <- nrow(X); p <- ncol(X)
-    if(length(y)!=n){stop("sample size")}
-    foldid <- sample(x=rep(x=seq_len(nfolds),length.out=n))
-    pi <- seq(from=0,to=0.5,by=0.1) # adapt this
+#' 
+colasso <- function(y,Y,X,alpha=1,nfolds=10,family="gaussian",type.measure="deviance"){
+  
+  # properties
+  n <- nrow(X); p <- ncol(X)
+  if(length(y)!=n){stop("sample size")}
+  foldid <- sample(x=rep(x=seq_len(nfolds),length.out=n))
+  
+  # weights
+  pi <- seq(from=0,to=1,by=0.2) # adapt this
 
-    # model fitting
-    fit <- list()
-    Y <- colasso_moderate(y=y,X=X,pi=pi)
-    for(j in seq_along(pi)){
-        fit[[j]] <- glmnet::glmnet(y=Y[,j],x=X,alpha=alpha)
-    }
+  # model fitting
+  fit <- list()
+  ym <- colasso_moderate(Y=Y) # trial
+  for(i in seq_along(pi)){
+    weights <- rep(c(1-pi[[i]],pi[[i]]),each=n)
+    fit[[i]] <- glmnet::glmnet(y=c(y,ym),x=rbind(X,X),weights=weights,family=family,alpha=alpha)
+  }
+  
+  # inner cross-validation
+  pred <- lapply(pi,function(x) matrix(data=NA,nrow=length(y),ncol=100))
+  for(k in sort(unique(foldid))){
+    y0 <- y[foldid!=k]
+    #y1 <- y[foldid==k]
+    Y0 <- Y[foldid!=k,,drop=FALSE]
+    #Y1 <- Y[foldid==k,,drop=FALSE]
+    X0 <- X[foldid!=k,,drop=FALSE]
+    X1 <- X[foldid==k,,drop=FALSE]
     
-    # inner cross-validation
-    pred <- lapply(pi,function(x) matrix(data=NA,nrow=length(y),ncol=100))
-    for(k in sort(unique(foldid))){
-        y0 <- y[foldid!=k]
-        y1 <- y[foldid==k]
-        X0 <- X[foldid!=k,,drop=FALSE]
-        X1 <- X[foldid==k,,drop=FALSE]
-        
-        Y0 <- colasso_moderate(y=y0,X=X0,pi=pi) 
-        for(j in seq_along(pi)){
-            glmnet <- glmnet::glmnet(y=Y0[,j],x=X0,alpha=alpha) # was lambda=lambda
-            temp <- stats::predict(object=glmnet,newx=X1,type="response",s=fit[[j]]$lambda)
-            pred[[j]][foldid==k,seq_len(ncol(temp))] <- temp
-        }
-    }
-    
-    # loss sequence
+    y0m <- colasso_moderate(Y=Y0)
     for(i in seq_along(pi)){
-        fit[[i]]$cvm <- apply(X=pred[[i]],MARGIN=2,FUN=function(x) mean((x-y)^2))
-        fit[[i]]$lambda.min <- fit[[i]]$lambda[which.min(fit[[i]]$cvm)]
+      weights <- rep(c(1-pi[[i]],pi[[i]]),each=sum(foldid!=k)) # trial
+      glmnet <- glmnet::glmnet(y=c(y0,y0m),x=rbind(X0,X0),weights=weights,family=family,alpha=alpha)
+      temp <- stats::predict(object=glmnet,newx=X1,type="response",s=fit[[i]]$lambda)
+      pred[[i]][foldid==k,seq_len(ncol(temp))] <- temp
     }
-    
-    # selection
-    cvm <- sapply(fit,function(x) x$cvm[which(x$lambda==x$lambda.min)])
-    sel <- which.min(cvm) # BUT "sel <- which.max(cvm)" FOR AUC!
-    fit[[length(pi)+1]] <- fit[[sel]]
-    
-    #graphics::plot(cvm); graphics::abline(v=sel,lty=2)
-    names(fit) <- c("standard",paste0("pi",pi[-1]),"select")
-    return(fit)
+  }
+  
+  # loss sequence
+  for(i in seq_along(pi)){
+    fit[[i]]$cvm <- apply(X=pred[[i]],MARGIN=2,FUN=function(x) mean((x-y)^2))
+    fit[[i]]$lambda.min <- fit[[i]]$lambda[which.min(fit[[i]]$cvm)]
+  }
+  
+  # selection
+  cvm <- sapply(fit,function(x) x$cvm[which(x$lambda==x$lambda.min)])
+  if(type.measure=="AUC"){
+    sel <- which.max(cvm)
+  } else {
+    sel <- which.min(cvm)
+  }
+  fit[[length(pi)+1]] <- fit[[sel]]
+  
+  #graphics::plot(cvm); graphics::abline(v=sel,lty=2)
+  names(fit) <- c("standard",paste0("pi",pi[-1]),"select")
+  return(fit)
 }
 
 
 
-
-# colasso <- function(y,X,alpha=1,nfolds=10){
-#     n <- nrow(X); p <- ncol(X)
-#     if(length(y)!=n){stop("sample size")}
-#     foldid <- sample(x=rep(x=seq_len(nfolds),length.out=n))
-#     pi <- seq(from=0,to=0.5,by=0.1) # adapt this
-#     lambda <- glmnet::glmnet(y=y,x=X,alpha=alpha)$lambda
-#     
-#     pred <- lapply(pi,function(x) matrix(data=NA,nrow=length(y),ncol=100))
-#     for(k in sort(unique(foldid))){
-#         y0 <- y[foldid!=k]
-#         y1 <- y[foldid==k]
-#         X0 <- X[foldid!=k,,drop=FALSE]
-#         X1 <- X[foldid==k,,drop=FALSE]
-#         
-#         Y0 <- colasso_moderate(y=y0,X=X0,pi=pi) 
-#         for(j in seq_along(pi)){
-#             glmnet <- glmnet::glmnet(y=Y0[,j],x=X0,alpha=alpha) # was lambda=lambda
-#             temp <- stats::predict(object=glmnet,newx=X1,type="response",s=lambda)
-#             pred[[j]][foldid==k,seq_len(ncol(temp))] <- temp
-#         }
-#     }
-#     
-#     Y <- colasso_moderate(y=y,X=X,pi=pi)
-#     fit <- list()
-#     for(j in seq_along(pi)){
-#         fit[[j]] <- glmnet::glmnet(y=Y[,j],x=X,alpha=alpha) # was lambda=lambda
-#         #fit[[j]]$cvm <- palasso::loss.trial(y=y,fit=pred[[j]],family=family,type.measure=type.measure)[[1]]
-#         fit[[j]]$cvm <- apply(X=pred[[j]],MARGIN=2,FUN=function(x) mean((x-y)^2))
-#         fit[[j]]$lambda.min <- lambda[which.min(fit[[j]]$cvm)]
-#     }
-#     
-#     cvm <- sapply(fit,function(x) x$cvm[which.min(abs(x$lambda-x$lambda.min))[1]])
-#     
-#     #sel <- which.max(cvm) # only for AUC
-#     sel <- which.min(cvm)
-#     
-#     fit[[length(pi)+1]] <- fit[[sel]]
-#     #graphics::plot(cvm); graphics::abline(v=sel,lty=2)
-#     names(fit) <- c("standard",paste0("pi",pi[-1]),"select")
-#     return(fit)
-# }
-
-#' @export
-#' @title
-#' marginal significance
-#' 
-#' @description
-#' This function ...
-#'  
-#' @inheritParams colasso
-#' 
-#' @examples
-#' NA
-#' 
-# obtain p-values --------------------------------------------------------------
-# input: y, X; output: p-value
-colasso_marginal_significance <- function(y,X){
-    # X = scale(X)
-    x <- vector()
-    for(i in seq_len(ncol(X))){
-        if(stats::var(X[,i])==0){
-            x[i] <- 0
-        } else {
-            x[i] <- summary(stats::lm(y~X[,i]))$coefficients["X[, i]","Pr(>|t|)"]
-        }
-    }
-    return(x)
-}
-
-#' @export
-#' @title
-#' covariate weights
-#' 
-#' @description
-#' This function ...
-#'  
-#' @param x
-#' \eqn{p}-values\strong{:}
-#' vector with entries between \eqn{0} and \eqn{1}
-#' 
-#' @param max
-#' maximum \eqn{p}-value to receive weight one
-#' 
-#' @param min
-#' minimum \eqn{p}-value to receive weight zero
-#' 
-#' @param version
-#' (temporary argument)
-#' 
-#' @examples
-#' # alternative weights: weight <- abs(cor(y,X))
-#' 
-colasso_covariate_weights <- function(x,max=0.05/length(x),min=0.05,version=1){ # was min=0.2
-    if(version==1){
-        weight <- pmin(-log10(max),pmax(-log10(x)+log10(min),0))
-        weight <- weight/(-log10(max))
-        # more compact: (log10(x)-log10(min))/(log10(max)) # (and then truncate)
-    } else {
-        weight <- pmax(1-(1/min)*x,0) 
-    }
-    message("non-zero weight: ",100*round(mean(weight!=0),digits=2),"%")
-    return(weight)
-}
-
-#' @export
-#' @title
-#' weighted correlation
-#' 
-#' @description
-#' This function ...
-#'  
-#' @inheritParams colasso
-#' 
-#' @param w
-#' covariate weights\strong{:}
-#' vector of length \eqn{p}, with entries between \eqn{0} and \eqn{1}
-#' 
-#' @examples
-#' NA
-#' 
-# weighted covariate correlation -----------------------------------------------
-# input: X, weights; output: correlation
-colasso_weighted_correlation <- function(X,w=NULL){
-    n <- nrow(X); p <- ncol(X)
-    if(is.null(w)){w <- rep(x=1,times=p)}
-    mx <- rep(x=NA,times=p)
-    for(i in seq_len(p)){
-        mx[i] <- sum(w*X[,i])/sum(w)
-    }
-    sx <- cor <- matrix(NA,nrow=p,ncol=p)
-    diag(cor) <- 1
-    for(i in seq(from=1,to=p,by=1)){
-        sx[i,i] <- sum(w*(X[,i]-mx[i])^2)/sum(w)
-    }
-    for(i in seq(from=1,to=p,by=1)){
-        for(j in seq(from=i,to=p,by=1)){
-            sx[i,j] <- sx[j,i] <- sum(w*(X[,i]-mx[i])*(X[,j]-mx[j]))/sum(w)
-            cor[i,j] <- cor[j,i] <- sx[i,j]/sqrt(sx[i,i]*sx[j,j])
-        }
-    }
-    return(cor)
-}
 
 #' @export
 #' @title
 #' moderated response
-#' 
+#'
 #' @description
 #' This function ...
-#'  
+#'
 #' @inheritParams colasso
-#' 
+#'
 #' @param pi
 #' vector with entries between \eqn{0} and \eqn{1} (rename argument)
-#' 
+#'
 #' @param plot
 #' logical
-#' 
-#' 
+#'
+#'
 #' @examples
 #' NA
-#' 
-colasso_moderate <- function(y,X,pi,plot=FALSE){
-    pvalue <- colasso_marginal_significance(y=y,X=X) 
-    weight <- colasso_covariate_weights(x=pvalue)
-    #cor <- abs(colasso_weighted_correlation(t(X),w=weight)) # robust
-    cor <- abs(weights::wtd.cors(t(X),weight=weight)) # fast
-    Y <- matrix(data=NA,nrow=length(y),ncol=length(pi),dimnames=list(NULL,pi))
-    for(i in seq_along(y)){
-        for(j in seq_along(pi)){
-            Y[i,j] <- (1-pi[j])*y[i]+pi[j]*sum(cor[,i]*y)/sum(cor[,i])
-        }
-    }
-    if(plot){
-        #plot(ecdf(x)); abline(a=0,b=1,lty=2)
-        #plot(x=x,y=weight,ylim=c(0,1)); abline(v=0.05,lty=2)
-        #graphics::image(cor)
-        #graphics::image(Y)
-    }
-    return(Y)
+colasso_moderate <- function(Y){
+  # (most basic version possible)
+  y <- rowMeans(Y)
+  y <- apply(Y,1,median)
+  if(all(y) %in% c(0,0.5,1)){
+    y[y==0.5] <- 1
+    warning("Invalid unless binomial family.")
+  }
+  return(y)
 }
 
 #' @export
@@ -284,7 +155,7 @@ colasso_moderate <- function(y,X,pi,plot=FALSE){
 #' @examples
 #' # CONTINUE HERE
 #' 
-colasso_simulate <- function(n=100,p=500,cor="constant",plot=TRUE){
+colasso_simulate <- function(n=100,p=500,cor="constant",family="gaussian",plot=TRUE){
     # correlation matrix
     if(cor=="none"){
         Sigma <- matrix(data=0,nrow=p,ncol=p)
@@ -292,13 +163,12 @@ colasso_simulate <- function(n=100,p=500,cor="constant",plot=TRUE){
         Sigma <- matrix(data=0.05,nrow=p,ncol=p)
     } else if(cor=="autoregressive"){
         # adjust 0.9 to p, such that mean(Sigma)=0.05
-        #sum(2*(p-seq_len(p)+1)*0.9^seq_len(p))/(p*p)
+        # sum(2*(p-seq_len(p)+1)*0.9^seq_len(p))/(p*p)
         Sigma <- 0.9^abs(col(diag(p))-row(diag(p)))
     } else if(cor=="unstructured"){
         Sigma <- matrix(data=stats::rbeta(n=p,shape1=0.05,shape2=1),nrow=p,ncol=p)
     }
     diag(Sigma) <- 1
-    
     
     X <- MASS::mvrnorm(n=n,mu=rep(0,p),Sigma=Sigma)
     stats::median(abs(as.numeric(cor(X))))
@@ -309,23 +179,35 @@ colasso_simulate <- function(n=100,p=500,cor="constant",plot=TRUE){
     #y <- stats::rnorm(n=n,mean=mu)
 
     # sparse effects
-    beta <- rep(1,times=p) 
-    beta[stats::rbinom(n=p,size=1,prob=0.97)==1] <- 0
+    beta <- rep(x=1,times=p) 
+    beta[stats::rbinom(n=p,size=1,prob=0.95)==1] <- 0
     mu <- X %*% beta
-    y <- stats::rnorm(n=n,mean=mu,sd=10)
+    
+    if(family=="gaussian"){
+      Y <- replicate(n=10,expr=stats::rnorm(n=n,mean=mu,sd=10))
+    } else if(family=="binomial"){
+      prob <- exp(mu)/(1+exp(mu))
+      Y <- replicate(n=10,expr=stats::rbinom(n=n,size=1,prob=prob))
+    } else if(family=="poisson"){
+      lambda <- exp(mu)
+      Y <- replicate(n=10,expr=stats::rpois(n=n,lambda=lambda))
+    } else if(family=="cox"){
+      warning("Cox regression not implemented!")
+    }
+    
+    #y <- stats::rnorm(n=n,mean=mu,sd=10)
+    y <- Y[,1]
 
     # predictivity -----------------------------------------------------------------
     if(plot){
+        graphics::par(mar=c(3,3,1,1))
         test <- glmnet::cv.glmnet(x=X,y=y)
         graphics::plot(x=log(test$lambda),y=test$cvm)
         graphics::abline(h=test$cvm[test$lambda==max(test$lambda)],lty=2)
     }
         
-    return(list(y=y,X=X))
+    return(list(y=y,Y=Y,X=X))
 }
-
-
-
 
 #' @export
 #' @title
@@ -335,7 +217,10 @@ colasso_simulate <- function(n=100,p=500,cor="constant",plot=TRUE){
 #' This function ...
 #'  
 #' @param y
-#' response
+#' response vector
+#' 
+#' @param Y
+#' response moderation matrix
 #' 
 #' @param X
 #' covariates
@@ -349,14 +234,14 @@ colasso_simulate <- function(n=100,p=500,cor="constant",plot=TRUE){
 #' @examples
 #' NA
 #'
-colasso_compare <- function(y,X,plot=TRUE,nfolds.int=10){
+colasso_compare <- function(y,Y,X,plot=TRUE,nfolds.int=10,family="gaussian",type.measure="deviance"){
     
     fold <- sample(x=rep(x=seq_len(5),length.out=length(y)))
     pred <- matrix(data=NA,nrow=length(y),ncol=8)
     select <- list()
     for(i in sort(unique(fold))){
         cat("i =",i,"\n")
-        fit <- colasso(y=y[fold!=i],X=X[fold!=i,],alpha=1,nfolds=nfolds.int)
+        fit <- colasso(y=y[fold!=i],Y=Y[fold!=i,],X=X[fold!=i,],alpha=1,nfolds=nfolds.int,type.measure=type.measure)
         for(j in seq_along(fit)){
             pred[fold==i,j] <- glmnet::predict.glmnet(object=fit[[j]],
                                                   newx=X[fold==i,],
@@ -367,7 +252,14 @@ colasso_compare <- function(y,X,plot=TRUE,nfolds.int=10){
         pred[fold==i,8] <- mean(y[fold!=i]) # intercept-only model
     }
     colnames(pred) <- c(names(fit),"intercept")
-    loss <- apply(X=pred,MARGIN=2,FUN=function(x) sum((y-x)^2))
+    
+    if(family=="gaussian" & type.measure=="deviance" | family=="binomial" & type.measure=="mse"){
+      loss <- apply(X=pred,MARGIN=2,FUN=function(x) sum((y-x)^2))
+    } else if(family=="binomial" & type.measure=="class"){
+      loss <- apply(X=pred,MARGIN=2,FUN=function(x) mean(y!=x))
+    } else {
+      warning("Implement other loss functions!")
+    }
     
     ### start temporary ###
     #stability <- numeric()
@@ -400,5 +292,3 @@ colasso_compare <- function(y,X,plot=TRUE,nfolds.int=10){
     
     return(loss)
 }
-
-

@@ -4,10 +4,13 @@
 \alias{colasso_compare}
 \title{External cross-validation}
 \usage{
-colasso_compare(y, X, plot = TRUE, nfolds.int = 10)
+colasso_compare(y, Y, X, plot = TRUE, nfolds.int = 10,
+  family = "gaussian", type.measure = "deviance")
 }
 \arguments{
-\item{y}{response}
+\item{y}{response vector}
+
+\item{Y}{response moderation matrix}
 
 \item{X}{covariates}
 
