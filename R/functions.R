@@ -36,39 +36,43 @@
 #' see glmnet
 #' 
 #' @examples
-#' n <- 100; p <- 20
+#' n <- 100; p <- 20; q <- 10
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+#' Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
 #' #y <- rbinom(n=n,size=1,prob=0.2)
 #' y <- rnorm(n=n)
-#' #y[1] <- 0.5
-#' #a <- glmnet::glmnet(y=y,x=x,family="binomial")
-#' #b <- stats::glm(y~x,family="binomial")
+#' test <- colasso(y=y,Y=Y,X=X)
 #' 
 colasso <- function(y,Y,X,alpha=1,nfolds=10,family="gaussian",type.measure="deviance"){
   
   # properties
   n <- nrow(X); p <- ncol(X)
+  if(!family %in% c("gaussian","poisson","binomial")){
+    stop("Family not implemented.")
+  }
   if(length(y)!=n){stop("sample size")}
-  foldid <- sample(x=rep(x=seq_len(nfolds),length.out=n))
+  #foldid <- sample(x=rep(x=seq_len(nfolds),length.out=n))
+  foldid <- palasso:::.folds(y=y,nfolds=nfolds)
   
   # weights
   pi <- seq(from=0,to=1,by=0.2) # adapt this
 
   # model fitting
   fit <- list()
-  ym <- colasso_moderate(Y=Y) # trial
+  ym <- colasso::colasso_moderate(Y=Y) # trial
   for(i in seq_along(pi)){
     weights <- rep(c(1-pi[[i]],pi[[i]]),each=n)
     fit[[i]] <- glmnet::glmnet(y=c(y,ym),x=rbind(X,X),weights=weights,family=family,alpha=alpha)
   }
+  names(fit) <- paste0("pi",pi)
   
   # inner cross-validation
   pred <- lapply(pi,function(x) matrix(data=NA,nrow=length(y),ncol=100))
-  for(k in sort(unique(foldid))){
+  for(k in unique(foldid)){
     y0 <- y[foldid!=k]
-    #y1 <- y[foldid==k]
+    y1 <- y[foldid==k]
     Y0 <- Y[foldid!=k,,drop=FALSE]
-    #Y1 <- Y[foldid==k,,drop=FALSE]
+    Y1 <- Y[foldid==k,,drop=FALSE]
     X0 <- X[foldid!=k,,drop=FALSE]
     X1 <- X[foldid==k,,drop=FALSE]
     
@@ -81,11 +85,24 @@ colasso <- function(y,Y,X,alpha=1,nfolds=10,family="gaussian",type.measure="devi
     }
   }
   
-  # loss sequence
+  # loss sequence 
   for(i in seq_along(pi)){
-    fit[[i]]$cvm <- apply(X=pred[[i]],MARGIN=2,FUN=function(x) mean((x-y)^2))
-    fit[[i]]$lambda.min <- fit[[i]]$lambda[which.min(fit[[i]]$cvm)]
+    # WATCH OUT: adapt to all loss fuctions
+    #fit[[i]]$cvm <- apply(X=pred[[i]],MARGIN=2,FUN=function(x) mean((x-y)^2))
+    fit[[i]]$cvm <- palasso:::.loss(y=y,fit=pred[[i]],family=family,type.measure=type.measure,foldid=foldid)[[1]]
+    # WATCH OUT: minimise or maximise
+    if(type.measure=="AUC"){
+      fit[[i]]$lambda.min <- fit[[i]]$lambda[which.max(fit[[i]]$cvm)]
+    } else {
+      fit[[i]]$lambda.min <- fit[[i]]$lambda[which.min(fit[[i]]$cvm)]
+    }
   }
+  
+  # loss sequence
+  #cvm <- palasso:::.loss(y=y,fit=pred,family=family,type.measure=type.measure,foldid=foldid)
+  
+  # optimisation
+  #model <- .extract(fit=fit.full,lambda=lambda,cvm=cvm,type.measure=args$type.measure)
   
   # selection
   cvm <- sapply(fit,function(x) x$cvm[which(x$lambda==x$lambda.min)])
@@ -97,7 +114,7 @@ colasso <- function(y,Y,X,alpha=1,nfolds=10,family="gaussian",type.measure="devi
   fit[[length(pi)+1]] <- fit[[sel]]
   
   #graphics::plot(cvm); graphics::abline(v=sel,lty=2)
-  names(fit) <- c("standard",paste0("pi",pi[-1]),"select")
+  names(fit) <- c("glmnet",paste0("pi",pi[-1]),"conet")
   return(fit)
 }
 
@@ -112,21 +129,20 @@ colasso <- function(y,Y,X,alpha=1,nfolds=10,family="gaussian",type.measure="devi
 #' This function ...
 #'
 #' @inheritParams colasso
-#'
-#' @param pi
+#' 
+#' @param ...
+#' further arguments (currently not implemented)
 #' vector with entries between \eqn{0} and \eqn{1} (rename argument)
 #'
-#' @param plot
-#' logical
 #'
 #'
 #' @examples
 #' NA
-colasso_moderate <- function(Y){
+colasso_moderate <- function(Y,...){
   # (most basic version possible)
   y <- rowMeans(Y)
-  y <- apply(Y,1,median)
-  if(all(y) %in% c(0,0.5,1)){
+  y <- apply(Y,1,stats::median)
+  if(all(y %in% c(0,0.5,1))){
     y[y==0.5] <- 1
     warning("Invalid unless binomial family.")
   }
@@ -151,6 +167,9 @@ colasso_moderate <- function(Y){
 #' 
 #' @param plot
 #' logical
+#' 
+#' @param family
+#' character
 #' 
 #' @examples
 #' # CONTINUE HERE
@@ -231,6 +250,8 @@ colasso_simulate <- function(n=100,p=500,cor="constant",family="gaussian",plot=T
 #' @param nfolds.int
 #' internal folds
 #' 
+#' @inheritParams colasso
+#' 
 #' @examples
 #' NA
 #'
@@ -282,9 +303,14 @@ colasso_compare <- function(y,Y,X,plot=TRUE,nfolds.int=10,family="gaussian",type
         graphics::par(mar=c(3,3,1,1))
         col <- rep(x=0,times=length(loss)-1)
         col[1] <- col[length(col)] <- 1
-        graphics::plot(y=loss[-length(loss)],
+        graphics::plot.new()
+        graphics::plot.window(xlim=c(1,length(loss)-1),ylim=range(loss))
+        graphics::axis(side=1,at=seq_len(length(loss)-1),labels=names(loss)[-length(loss)])
+        graphics::axis(side=2)
+        graphics::box()
+        graphics::points(y=loss[-length(loss)],
                        x=seq_len(length(loss)-1),
-                       col=col+1,ylim=range(loss),pch=col)
+                       col=col+1,pch=col)
         graphics::abline(v=c(1.5,length(loss)-1.5),lty=2)
         graphics::grid()
         graphics::abline(h=loss[length(loss)],lty=2,col="red")

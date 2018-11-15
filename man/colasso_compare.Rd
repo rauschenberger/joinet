@@ -17,6 +17,10 @@ colasso_compare(y, Y, X, plot = TRUE, nfolds.int = 10,
 \item{plot}{logical}
 
 \item{nfolds.int}{internal folds}
+
+\item{family}{see glmnet}
+
+\item{type.measure}{see glmnet}
 }
 \description{
 This function ...

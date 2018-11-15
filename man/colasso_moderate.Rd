@@ -4,16 +4,15 @@
 \alias{colasso_moderate}
 \title{moderated response}
 \usage{
-colasso_moderate(Y)
+colasso_moderate(Y, ...)
 }
 \arguments{
 \item{Y}{response\strong{:}
 matrix with \eqn{n} rows and \eqn{p} columns,
 or vector of length \eqn{n} (see details)}
 
-\item{pi}{vector with entries between \eqn{0} and \eqn{1} (rename argument)}
-
-\item{plot}{logical}
+\item{...}{further arguments (currently not implemented)
+vector with entries between \eqn{0} and \eqn{1} (rename argument)}
 }
 \description{
 This function ...

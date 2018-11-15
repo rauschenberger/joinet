@@ -34,12 +34,11 @@ numeric between \eqn{0} and \eqn{1};
 Implements penalised regression with response moderation.
 }
 \examples{
-n <- 100; p <- 20
+n <- 100; p <- 20; q <- 10
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
 #y <- rbinom(n=n,size=1,prob=0.2)
 y <- rnorm(n=n)
-#y[1] <- 0.5
-#a <- glmnet::glmnet(y=y,x=x,family="binomial")
-#b <- stats::glm(y~x,family="binomial")
+test <- colasso(y=y,Y=Y,X=X)
 
 }

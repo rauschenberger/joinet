@@ -14,6 +14,8 @@ colasso_simulate(n = 100, p = 500, cor = "constant",
 
 \item{cor}{correlation structure}
 
+\item{family}{character}
+
 \item{plot}{logical}
 }
 \description{
