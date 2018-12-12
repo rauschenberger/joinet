@@ -119,8 +119,6 @@ colasso <- function(y,Y,X,alpha=1,nfolds=10,family="gaussian",type.measure="devi
 }
 
 
-
-
 #' @export
 #' @title
 #' moderated response
@@ -250,20 +248,24 @@ colasso_simulate <- function(n=100,p=500,cor="constant",family="gaussian",plot=T
 #' @param nfolds.int
 #' internal folds
 #' 
+#' @param nfolds.ext
+#' external folds
+#' 
 #' @inheritParams colasso
 #' 
 #' @examples
 #' NA
 #'
-colasso_compare <- function(y,Y,X,plot=TRUE,nfolds.int=10,family="gaussian",type.measure="deviance"){
+colasso_compare <- function(y,Y,X,plot=TRUE,nfolds.ext=5,nfolds.int=10,family="gaussian",type.measure="deviance"){
     
-    fold <- sample(x=rep(x=seq_len(5),length.out=length(y)))
+    fold <- sample(x=rep(x=seq_len(nfolds.ext),length.out=length(y)))
     pred <- matrix(data=NA,nrow=length(y),ncol=8)
     select <- list()
-    for(i in sort(unique(fold))){
+    for(i in unique(fold)){
         cat("i =",i,"\n")
         fit <- colasso(y=y[fold!=i],Y=Y[fold!=i,],X=X[fold!=i,],alpha=1,nfolds=nfolds.int,type.measure=type.measure)
         for(j in seq_along(fit)){
+          # REPLACE glmnet::predict.glmnet by stats::predict !!!
             pred[fold==i,j] <- glmnet::predict.glmnet(object=fit[[j]],
                                                   newx=X[fold==i,],
                                                   s=fit[[j]]$lambda.min,
@@ -318,3 +320,75 @@ colasso_compare <- function(y,Y,X,plot=TRUE,nfolds.int=10,family="gaussian",type
     
     return(loss)
 }
+
+
+
+#' @export
+#' @title
+#' moderated response (trial)
+#'
+#' @description
+#' This function ...
+#'
+#' @inheritParams colasso
+#'
+#' @examples
+#' NA
+#' 
+moderate <- function(y,Y,k=2){
+  p <- ncol(Y)
+  id <- which(apply(X=Y,MARGIN=2,FUN=function(x) all(y==x)))
+  if(length(id)!=1){stop("Invalid input.")}
+  if(k==1){
+    cluster <- rep(x=1,times=p)
+  } else if(k==ncol(Y)){
+    cluster <- seq_len(p)
+  } else {
+    cluster <- stats::kmeans(x=t(Y),centers=k)$cluster
+  }
+  cond <- cluster == cluster[id]
+  median <- apply(Y[,cond,drop=FALSE],1,median)
+  message("cor ",round(cor(y,median),2))
+  return(median)
+}
+
+# moderate <- function(y,Y){
+#   id <- which(apply(X=Y,MARGIN=2,FUN=function(x) all(y==x)))
+#   if(length(id)!=1){stop("Invalid input.")}
+#   
+#   n <- nrow(Y)
+#   p <- ncol(Y)
+#   
+#   
+#   kmeans <- stats::kmeans(x=t(Y),centers=3)
+#   
+#   ## hierarchical clustering
+#   #d <- stats::dist(x=t(Y),method="euclidean")
+#   ##d <- as.dist(1-abs(stats::cor(data,method="spearman")))
+#   #tree <- stats::hclust(d=d,method="complete")
+#   #stats:::plot.hclust(x=tree,labels=FALSE)
+#   #cut <- stats::cutree(tree=tree,k=seq_len(p))
+#   #cond <- apply(X=cut,MARGIN=2,function(x) x==x[id])
+#   #median <- apply(X=cond,MARGIN=2,FUN=function(x) apply(Y[,x],1,median))
+#   
+#   ##old
+#   # cluster <- matrix(data=NA,nrow=p,ncol=p)
+#   # list <- list()
+#   # for(i in seq_len(p)){
+#   #   list[[i]] <- matrix(data=NA,nrow=n,ncol=i)
+#   #   id <- stats::cutree(tree=tree,k=i)
+#   #   for(j in seq_len(i)){
+#   #     list[[i]][,j] <- apply(X=data[,id==j,drop=FALSE],
+#   #                            MARGIN=1,function(x) median(x))
+#   #   }
+#   # }
+#   
+#   cor <- lapply(list,function(x) abs(stats::cor(y,x)))
+#   id_cluster <- lapply(cor,function(x) which.max(x))
+#   max <- sapply(cor,function(x) max(x))
+#   id_depth <- min(which(max>0.5))
+#   mod <- list[[id_depth]][,id_cluster[[id_depth]]]
+#   plot(y,mod)
+#   return(mod)
+# }
+

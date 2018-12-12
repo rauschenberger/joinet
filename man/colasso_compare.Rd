@@ -4,8 +4,8 @@
 \alias{colasso_compare}
 \title{External cross-validation}
 \usage{
-colasso_compare(y, Y, X, plot = TRUE, nfolds.int = 10,
-  family = "gaussian", type.measure = "deviance")
+colasso_compare(y, Y, X, plot = TRUE, nfolds.ext = 5,
+  nfolds.int = 10, family = "gaussian", type.measure = "deviance")
 }
 \arguments{
 \item{y}{response vector}
@@ -15,6 +15,8 @@ colasso_compare(y, Y, X, plot = TRUE, nfolds.int = 10,
 \item{X}{covariates}
 
 \item{plot}{logical}
+
+\item{nfolds.ext}{external folds}
 
 \item{nfolds.int}{internal folds}
 

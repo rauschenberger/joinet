@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • colasso</title>
+<title>bilasso — bilasso • colasso</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,7 +30,12 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="bilasso — bilasso" />
+
+<meta property="og:description" content="Implements penalised regression with response duality.
+pi=0 represents binomial regression,
+pi=1 represents linear regression" />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -46,7 +51,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -95,72 +100,71 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>bilasso</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/bilasso.R'><code>R/bilasso.R</code></a></small>
+    <div class="hidden name"><code>bilasso.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>Implements penalised regression with response duality.
+<code>pi=0</code> represents binomial regression,
+<code>pi=1</code> represents linear regression</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="bilasso.html">bilasso()</a></code> </p>
-        </td>
-        <td><p>bilasso</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="colasso.html">colasso()</a></code> </p>
-        </td>
-        <td><p>colasso</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="colasso_compare.html">colasso_compare()</a></code> </p>
-        </td>
-        <td><p>External cross-validation</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="colasso_moderate.html">colasso_moderate()</a></code> </p>
-        </td>
-        <td><p>moderated response</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="colasso_simulate.html">colasso_simulate()</a></code> </p>
-        </td>
-        <td><p>simulate data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="moderate.html">moderate()</a></code> </p>
-        </td>
-        <td><p>moderated response (trial)</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>bilasso</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>y</th>
+      <td><p>continuous response<strong>:</strong>
+vector of length \(n\)</p></td>
+    </tr>
+    <tr>
+      <th>cutoff</th>
+      <td><p>value between <code>min(y)</code> and <code>max(y)</code></p></td>
+    </tr>
+    <tr>
+      <th>X</th>
+      <td><p>covariates<strong>:</strong>
+matrix with \(n\) rows (samples) and \(p\) columns (variables)</p></td>
+    </tr>
+    <tr>
+      <th>alpha</th>
+      <td><p>elastic net parameter<strong>:</strong>
+numeric between \(0\) and \(1\);
+\(alpha=1\) for lasso,
+\(alpha=0\) for ridge</p></td>
+    </tr>
+    <tr>
+      <th>nfolds</th>
+      <td><p>number of folds</p></td>
+    </tr>
+    <tr>
+      <th>z</th>
+      <td><p>binary response<strong>:</strong>
+vector of length \(n\)</p></td>
+    </tr>
     </table>
-  </div>
+    
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fl'>NA</span></div><div class='output co'>#&gt; [1] NA</div><div class='input'>
+</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+            
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 
