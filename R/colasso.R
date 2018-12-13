@@ -266,10 +266,15 @@ colasso_compare <- function(y,Y,X,plot=TRUE,nfolds.ext=5,nfolds.int=10,family="g
         fit <- colasso(y=y[fold!=i],Y=Y[fold!=i,],X=X[fold!=i,],alpha=1,nfolds=nfolds.int,type.measure=type.measure)
         for(j in seq_along(fit)){
           # REPLACE glmnet::predict.glmnet by stats::predict !!!
-            pred[fold==i,j] <- glmnet::predict.glmnet(object=fit[[j]],
-                                                  newx=X[fold==i,],
-                                                  s=fit[[j]]$lambda.min,
-                                                  type="response")
+            #pred[fold==i,j] <- glmnet::predict.glmnet(object=fit[[j]],
+            #                                      newx=X[fold==i,],
+            #                                      s=fit[[j]]$lambda.min,
+            #                                      type="response")
+            pred[fold==i,j] <- stats::predict(object=fit[[j]],
+                                              newx=X[fold==i,],
+                                              s=fit[[j]]$lambda.min,
+                                              type="response")
+            
         }
         select[[i]] <- lapply(fit,function(x) which(x$beta[,x$lambda==x$lambda.min]!=0))
         pred[fold==i,8] <- mean(y[fold!=i]) # intercept-only model

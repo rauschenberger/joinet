@@ -2,9 +2,10 @@
 % Please edit documentation in R/bilasso.R
 \name{bilasso}
 \alias{bilasso}
-\title{bilasso}
+\title{Logistic regression with a continuous response}
 \usage{
-bilasso(y, cutoff, X, alpha = 1, nfolds = 10)
+bilasso(y, cutoff, X, alpha = 1, nfolds = 10,
+  type.measure = "deviance")
 }
 \arguments{
 \item{y}{continuous response\strong{:}
@@ -13,22 +14,26 @@ vector of length \eqn{n}}
 \item{cutoff}{value between \code{min(y)} and \code{max(y)}}
 
 \item{X}{covariates\strong{:}
-matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)}
+matrix with \eqn{n} rows (samples)
+and \eqn{p} columns (variables)}
 
 \item{alpha}{elastic net parameter\strong{:}
-numeric between \eqn{0} and \eqn{1};
-\eqn{alpha=1} for lasso,
-\eqn{alpha=0} for ridge}
+numeric between \eqn{1} and \eqn{0};
+compromise between lasso (\eqn{alpha=1})
+and ridge (\eqn{alpha=0}) regression}
 
 \item{nfolds}{number of folds}
 
-\item{z}{binary response\strong{:}
-vector of length \eqn{n}}
+\item{type.measure}{loss function for logistic regression
+(the deviance is used for linear regression)}
 }
 \description{
-Implements penalised regression with response duality.
-\code{pi=0} represents binomial regression,
-\code{pi=1} represents linear regression
+Implements penalised logistic regression
+with both a binary and a continuous response.
+}
+\details{
+Finds a compromise between binomial (\eqn{pi=0})
+and linear (\eqn{pi=1}) regression.
 }
 \examples{
 NA

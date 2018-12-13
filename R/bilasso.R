@@ -1,19 +1,18 @@
 
 #' @export
 #' @title
-#' bilasso
+#' Logistic regression with a continuous response
 #' 
 #' @description
-#' Implements penalised regression with response duality.
-#' \code{pi=0} represents binomial regression,
-#' \code{pi=1} represents linear regression
+#' Implements penalised logistic regression
+#' with both a binary and a continuous response.
+#' 
+#' @details
+#' Finds a compromise between binomial (\eqn{pi=0})
+#' and linear (\eqn{pi=1}) regression.
 #'  
 #' @param y
 #' continuous response\strong{:}
-#' vector of length \eqn{n}
-#' 
-#' @param z
-#' binary response\strong{:}
 #' vector of length \eqn{n}
 #' 
 #' @param cutoff
@@ -21,43 +20,57 @@
 #' 
 #' @param X
 #' covariates\strong{:}
-#' matrix with \eqn{n} rows (samples) and \eqn{p} columns (variables)
+#' matrix with \eqn{n} rows (samples)
+#' and \eqn{p} columns (variables)
 #' 
 #' @param alpha
 #' elastic net parameter\strong{:}
-#' numeric between \eqn{0} and \eqn{1};
-#' \eqn{alpha=1} for lasso,
-#' \eqn{alpha=0} for ridge
+#' numeric between \eqn{1} and \eqn{0};
+#' compromise between lasso (\eqn{alpha=1})
+#' and ridge (\eqn{alpha=0}) regression
 #' 
 #' @param nfolds
 #' number of folds
 #' 
+#' @param type.measure
+#' loss function for logistic regression
+#' (the deviance is used for linear regression)
+#' 
 #' @examples
 #' NA
 #' 
-bilasso <- function(y,cutoff,X,alpha=1,nfolds=10){
+bilasso <- function(y,cutoff,X,alpha=1,nfolds=10,type.measure="deviance"){
   
+  # checks
+  .check(x=y,type="vector")
+  .check(x=cutoff,type="scalar",min=min(y),max=max(y))
+  .check(x=X,type="matrix")
+  .check(x=alpha,type="scalar",min=0,max=1)
+  .check(x=nfolds,type="scalar",min=3)
+  .check(x=type.measure,type="string",values=c("deviance","class","mse","mae","auc"))
+  if(length(y)!=nrow(X)){stop("Contradictory sample size.")}
+  
+  # binarisation
   z <- 1*(y > cutoff)
-  # alpha <- 1; nfolds <- 10
   
-  # properties
-  n <- nrow(X); p <- ncol(X)
-  if(length(y)!=n){stop("sample size")}
+  # fold identifiers
   foldid <- palasso:::.folds(y=z,nfolds=nfolds)
-  if(cutoff < min(y) | max(y) < cutoff){stop("Cutoff outside.")}
-  
+
   # model fitting
   fit <- list()
   fit$gaussian <- glmnet::glmnet(y=y,x=X,family="gaussian",alpha=alpha)
   fit$binomial <- glmnet::glmnet(y=z,x=X,family="binomial",alpha=alpha)
   
   # weights
-  fit$pi <- seq(from=0,to=1,length.out=101) # adapt this
+  fit$pi <- seq(from=0,to=1,length.out=101)
   
-  # inner cross-validation
-  pred_y <- pred_z <- matrix(data=NA,nrow=length(y),ncol=100)
-  pred <- matrix(data=NA,nrow=length(y),ncol=length(fit$pi))
+  # cross-validation
+  pred <- list()
+  pred$y  <- matrix(data=NA,nrow=length(y),ncol=length(fit$gaussian$lambda))
+  pred$z  <- matrix(data=NA,nrow=length(y),ncol=length(fit$binomial$lambda))
+  pred$pi <- matrix(data=NA,nrow=length(y),ncol=length(fit$pi))
   for(k in unique(foldid)){
+
     y0 <- y[foldid!=k]
     y1 <- y[foldid==k]
     z0 <- z[foldid!=k]
@@ -65,66 +78,108 @@ bilasso <- function(y,cutoff,X,alpha=1,nfolds=10){
     X0 <- X[foldid!=k,,drop=FALSE]
     X1 <- X[foldid==k,,drop=FALSE]
     
-    foldid_int <- palasso:::.folds(y=z0,nfolds=nfolds)
+    # linear regression
+    net <- glmnet::glmnet(y=y0,x=X0,family="gaussian",alpha=alpha)
+    temp <- stats::predict(object=net,newx=X1,type="response",s=fit$gaussian$lambda)
+    cvm <- .loss(y=y1,fit=temp,family="gaussian",type.measure="deviance")[[1]]
+    pred$y[foldid==k,seq_len(ncol(temp))] <- temp
+    y_hat <- temp[,which.min(cvm)]
     
-    net_y <- glmnet::glmnet(y=y0,x=X0,family="gaussian",alpha=alpha)
-    net_z <- glmnet::glmnet(y=z0,x=X0,family="binomial",alpha=alpha)
+    # logistic regression
+    net <- glmnet::glmnet(y=z0,x=X0,family="binomial",alpha=alpha)
+    temp <- stats::predict(object=net,newx=X1,type="response",s=fit$binomial$lambda)
+    cvm <- .loss(y=z1,fit=temp,family="binomial",type.measure=type.measure)[[1]]
+    pred$z[foldid==k,seq_len(ncol(temp))] <- temp
+    z_hat <- temp[,which.min(cvm)]
     
-    temp_y <- stats::predict(object=net_y,newx=X1,type="response",s=fit$gaussian$lambda)
-    cvm_y <- .loss(y=y1,fit=temp_y,family="gaussian",type.measure="deviance")[[1]]
-    sel_y <- which.min(cvm_y)
-    pred_y[foldid==k,seq_len(ncol(temp_y))] <- temp_y
-    
-    temp_z <- stats::predict(object=net_z,newx=X1,type="response",s=fit$binomial$lambda)
-    cvm_z <- .loss(y=z1,fit=temp_z,family="binomial",type.measure="deviance")[[1]]
-    sel_z <- which.min(cvm_z)
-    pred_z[foldid==k,seq_len(ncol(temp_z))] <- temp_z
-    
+    # fusion
     for(i in seq_along(fit$pi)){
-      pred[foldid==k,i] <- fit$pi[i]*(temp_y[,sel_y] > cutoff) + (1-fit$pi[i])*temp_z[,sel_z]
+      pred$pi[foldid==k,i] <- fit$pi[i]*(y_hat > cutoff) + (1-fit$pi[i])*z_hat
     }
-  
+    
   }
   
-  fit$gaussian$cvm <- .loss(y=y,fit=pred_y,family="gaussian",type.measure="deviance")[[1]]
+  # deviance (not comparable between Gaussian and binomial families)
+  fit$gaussian$cvm <- .loss(y=y,fit=pred$y,family="gaussian",type.measure="deviance")[[1]]
   fit$gaussian$lambda.min <- fit$gaussian$lambda[which.min(fit$gaussian$cvm)]
-  fit$binomial$cvm <- .loss(y=z,fit=pred_z,family="binomial",type.measure="deviance")[[1]]
+  fit$binomial$cvm <- .loss(y=z,fit=pred$z,family="binomial",type.measure=type.measure)[[1]]
   fit$binomial$lambda.min <- fit$binomial$lambda[which.min(fit$binomial$cvm)]
-  
-  fit$cvm <- .loss(y=z,fit=pred,family="binomial",type.measure="deviance")[[1]]
-  sel <- which.min(fit$cvm)
-  fit$pi.min <- fit$pi[sel]
-  
+  fit$cvm <- .loss(y=z,fit=pred$pi,family="binomial",type.measure=type.measure)[[1]]
+  fit$pi.min <- fit$pi[which.min(fit$cvm)]
+  fit$cutoff <- cutoff
+
   class(fit) <- "bilasso"
   return(fit)
 }
 
-bilasso_compare <- function(y,cutoff,X){
+coef.bilasso <- function(x){
+  s <- x$gaussian$lambda.min
+  beta <- glmnet::coef.glmnet(object=x$gaussian,s=s)
+  
+  s <- x$binomial$lambda.min
+  gamma <- glmnet::coef.glmnet(object=x$binomial,s=s)
+  
+  coef <- cbind(beta,gamma)
+  colnames(coef) <- c("beta","gamma")
+  return(coef)
+}
+
+predict.bilasso <- function(x,newx,type="response",...){
+  # gaussian
+  s <- x$gaussian$lambda.min
+  gaussian <- as.numeric(stats::predict(object=x$gaussian,newx=newx,s=s,type=type,...))
+  gaussian <- (gaussian/max(abs(gaussian))+1)/2 # trial
+  # It would even be better to replace max(abs(gaussian)) by a fixed value,
+  # but make sure that min>=0 and max<=1.
+  #gaussian <- 1*(gaussian > x$cutoff) # original
+  if(any(gaussian<0|gaussian>1)){
+    stop("unit interval",call.=FALSE)
+  }
+  
+  # binomial
+  s <- x$binomial$lambda.min
+  binomial <- as.numeric(stats::predict(object=x$binomial,newx=newx,s=s,type=type,...))
+  
+  # mixed
+  mixed <- x$pi.min*gaussian + (1-x$pi.min)*binomial
+  if(any((gaussian <= mixed) != (mixed < binomial))){ # check this
+    stop("consistency",call.=FALSE)
+  }
+  
+  frame <- data.frame(gaussian=gaussian,binomial=binomial,mixed=mixed)
+  return(frame)
+}
+
+bilasso_compare <- function(y,cutoff,X,type.measure="deviance"){
   
   z <- 1*(y > cutoff)
-  
   fold <- palasso:::.folds(y=z,nfolds=5)
+  
   pred <- matrix(data=NA,nrow=length(y),ncol=3,
                  dimnames=list(NULL,c("gaussian","binomial","mixed")))
   
   select <- list()
   for(i in sort(unique(fold))){
-    cat("i =",i,"\n")
-    fit <- bilasso(y=y[fold!=i],X=X[fold!=i,],cutoff=cutoff)
+    fit <- bilasso(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],type.measure=type.measure)
     
-    gaussian <- 1*(stats::predict(object=fit$gaussian,
-                              newx=X[fold==i,],
-                              s=fit$gaussian$lambda.min,
-                              type="response") > cutoff)
-    binomial <- stats::predict(object=fit$binomial,
-                              newx=X[fold==i,],
-                              s=fit$binomial$lambda.min,
-                              type="response")
-    
-    pred[fold==i,"gaussian"] <- gaussian
-    pred[fold==i,"binomial"] <- binomial
-    pred[fold==i,"mixed"] <- fit$pi.min*pred[fold==i,"gaussian"] + (1-fit$pi.min)*pred[fold==i,"binomial"]
-      
+    #gaussian <- 1*(stats::predict(object=fit$gaussian,
+    #                          newx=X[fold==i,],
+    #                          s=fit$gaussian$lambda.min,
+    #                          type="response") > cutoff)
+    #binomial <- stats::predict(object=fit$binomial,
+    #                          newx=X[fold==i,],
+    #                          s=fit$binomial$lambda.min,
+    #                          type="response")
+  #  
+  #  pred[fold==i,"gaussian"] <- gaussian
+  #  pred[fold==i,"binomial"] <- binomial
+  #  pred[fold==i,"mixed"] <- fit$pi.min*pred[fold==i,"gaussian"] + (1-fit$pi.min)*pred[fold==i,"binomial"]
+   
+    temp <- predict.bilasso(fit,newx=X[fold==i,])
+    pred[fold==i,"gaussian"] <- temp$gaussian
+    pred[fold==i,"binomial"] <- temp$binomial
+    pred[fold==i,"mixed"] <- temp$mixed
+     
   }
   
   loss <- list()
@@ -137,10 +192,47 @@ bilasso_compare <- function(y,cutoff,X){
   return(loss)
 }
 
-# Correct this function in the palasso package (search for "# typo").
+.check <- function(x,type,miss=FALSE,min=NULL,max=NULL,values=NULL){
+  name <- deparse(substitute(x))
+  if(type=="string"){
+    cond <- is.vector(x) & is.character(x) & length(x)==1
+  } else if(type=="scalar"){
+    cond <- is.vector(x) & is.numeric(x) & length(x)==1
+  } else if(type=="vector"){
+    cond <- is.vector(x) & is.numeric(x)
+  } else if(type=="matrix"){
+    cond <- is.matrix(x) & is.numeric(x)
+  } else {
+    warning("Unknown type.")
+  }
+  if(!cond){
+    stop(paste0("Argument \"",name,"\" does not match formal requirements."),call.=FALSE)
+  }
+  if(!miss && any(is.na(x))){
+    stop(paste0("Argument \"",name,"\" contains missing values."),call.=FALSE)
+  }
+  if(!is.null(min) && any(x<min)){
+    stop(paste0("expecting ",name," >= ",min),call.=FALSE)
+  }
+  if(!is.null(max) && any(x>max)){
+    stop(paste0("expecting ",name," <= ",max),call.=FALSE)
+  }
+  if(!is.null(values) && !(x %in% values)){
+    stop(paste0("Argument \"",name,"\" contains invalid values."),call.=FALSE)
+  }
+  return(invisible(NULL))
+}
 
-.loss <- function (y, fit, family, type.measure, foldid = NULL) 
-{
+
+
+
+
+
+
+
+# Correct this function in the palasso package (search twice for "# typo").
+
+.loss <- function (y,fit,family,type.measure,foldid=NULL){
   if (!is.list(fit)) {
     fit <- list(fit)
   }
@@ -198,6 +290,7 @@ bilasso_compare <- function(y,cutoff,X){
         }
         loss[[i]] <- apply(X = cvraw, MARGIN = 2, FUN = function(x) stats::weighted.mean(x = x, 
                                                                                          w = weights, na.rm = TRUE))
+        names(loss[[i]]) <- colnames(fit[[i]]) # typo in palasso package!
       }
       else {
         stop("Invalid type measure.", call. = FALSE)
@@ -242,4 +335,138 @@ bilasso_compare <- function(y,cutoff,X){
   }
   return(loss)
 }
+
+
+
+
+# bilasso_original <- function(y,cutoff,X,alpha=1,nfolds=10){
+#   
+#   z <- 1*(y > cutoff)
+#   # alpha <- 1; nfolds <- 10
+#   
+#   # properties
+#   n <- nrow(X); p <- ncol(X)
+#   if(length(y)!=n){stop("sample size")}
+#   foldid <- palasso:::.folds(y=z,nfolds=nfolds)
+#   if(cutoff < min(y) | max(y) < cutoff){stop("Cutoff outside.")}
+#   
+#   # model fitting
+#   fit <- list()
+#   fit$gaussian <- glmnet::glmnet(y=y,x=X,family="gaussian",alpha=alpha)
+#   fit$binomial <- glmnet::glmnet(y=z,x=X,family="binomial",alpha=alpha)
+#   
+#   # weights
+#   fit$pi <- seq(from=0,to=1,length.out=101) # adapt this
+#   
+#   # inner cross-validation
+#   pred_y <- pred_z <- matrix(data=NA,nrow=length(y),ncol=100)
+#   pred <- matrix(data=NA,nrow=length(y),ncol=length(fit$pi))
+#   for(k in unique(foldid)){
+#     y0 <- y[foldid!=k]
+#     y1 <- y[foldid==k]
+#     z0 <- z[foldid!=k]
+#     z1 <- z[foldid==k]
+#     X0 <- X[foldid!=k,,drop=FALSE]
+#     X1 <- X[foldid==k,,drop=FALSE]
+#     
+#     foldid_int <- palasso:::.folds(y=z0,nfolds=nfolds)
+#     
+#     net_y <- glmnet::glmnet(y=y0,x=X0,family="gaussian",alpha=alpha)
+#     net_z <- glmnet::glmnet(y=z0,x=X0,family="binomial",alpha=alpha)
+#     
+#     temp_y <- stats::predict(object=net_y,newx=X1,type="response",s=fit$gaussian$lambda)
+#     cvm_y <- .loss(y=y1,fit=temp_y,family="gaussian",type.measure="deviance")[[1]]
+#     sel_y <- which.min(cvm_y)
+#     pred_y[foldid==k,seq_len(ncol(temp_y))] <- temp_y
+#     
+#     temp_z <- stats::predict(object=net_z,newx=X1,type="response",s=fit$binomial$lambda)
+#     cvm_z <- .loss(y=z1,fit=temp_z,family="binomial",type.measure="deviance")[[1]]
+#     sel_z <- which.min(cvm_z)
+#     pred_z[foldid==k,seq_len(ncol(temp_z))] <- temp_z
+#     
+#     for(i in seq_along(fit$pi)){
+#       pred[foldid==k,i] <- fit$pi[i]*(temp_y[,sel_y] > cutoff) + (1-fit$pi[i])*temp_z[,sel_z]
+#     }
+#     
+#   }
+#   
+#   fit$gaussian$cvm <- .loss(y=y,fit=pred_y,family="gaussian",type.measure="deviance")[[1]]
+#   fit$gaussian$lambda.min <- fit$gaussian$lambda[which.min(fit$gaussian$cvm)]
+#   fit$binomial$cvm <- .loss(y=z,fit=pred_z,family="binomial",type.measure="deviance")[[1]]
+#   fit$binomial$lambda.min <- fit$binomial$lambda[which.min(fit$binomial$cvm)]
+#   
+#   fit$cvm <- .loss(y=z,fit=pred,family="binomial",type.measure="deviance")[[1]]
+#   sel <- which.min(fit$cvm)
+#   fit$pi.min <- fit$pi[sel]
+#   
+#   ### trial start ###
+#   #array <- array(data=NA,dim=c(ncol(pred_y),ncol(pred_z),length(fit$pi)))
+#   #for(i in seq_len(ncol(pred_y))){
+#   #  for(j in seq_len(ncol(pred_z))){
+#   #    for(k in seq_along(fit$pi)){
+#   #      pred <- fit$pi[k]*(pred_y[,i] > cutoff) + (1-fit$pi[k])*pred_z[,j]
+#   #      array[i,j,k] <- .loss(y=z,fit=pred,family="binomial",type.measure="deviance")[[1]]
+#   #    }
+#   #  }
+#   #}
+#   #temp <- which(array==min(array,na.rm=TRUE),arr.ind=TRUE)
+#   #colnames(temp) <- c("gaussian","binomial","pi")
+#   #fit$trial <- temp
+#   ### trial end ###
+#   
+#   class(fit) <- "bilasso"
+#   return(fit)
+# }
+# 
+# 
+# bilasso_compare_original <- function(y,cutoff,X,tm.bin="deviance"){
+#   
+#   z <- 1*(y > cutoff)
+#   
+#   fold <- palasso:::.folds(y=z,nfolds=5)
+#   pred <- matrix(data=NA,nrow=length(y),ncol=3,
+#                  dimnames=list(NULL,c("gaussian","binomial","mixed")))
+#   
+#   select <- list()
+#   for(i in sort(unique(fold))){
+#     cat("i =",i,"\n")
+#     fit <- bilasso(y=y[fold!=i],X=X[fold!=i,],cutoff=cutoff,tm.bin=tm.bin)
+#     
+#     gaussian <- 1*(stats::predict(object=fit$gaussian,
+#                                   newx=X[fold==i,],
+#                                   s=fit$gaussian$lambda.min,
+#                                   type="response") > cutoff)
+#     binomial <- stats::predict(object=fit$binomial,
+#                                newx=X[fold==i,],
+#                                s=fit$binomial$lambda.min,
+#                                type="response")
+#     
+#     pred[fold==i,"gaussian"] <- gaussian
+#     pred[fold==i,"binomial"] <- binomial
+#     pred[fold==i,"mixed"] <- fit$pi.min*pred[fold==i,"gaussian"] + (1-fit$pi.min)*pred[fold==i,"binomial"]
+#     
+#     ### trial start ###
+#     #if(nrow(fit$trial)>1){fit$trial <- fit$trial[1,,drop=FALSE]}
+#     #gaussian <- 1*(stats::predict(object=fit$gaussian,
+#     #                              newx=X[fold==i,],
+#     #                              type="response") > cutoff)[,fit$trial[,"gaussian"]]
+#     #binomial <- stats::predict(object=fit$binomial,
+#     #                           newx=X[fold==i,],
+#     #                           type="response")[,fit$trial[,"binomial"]]
+#     #pi <- fit$pi[fit$trial[,"pi"]]
+#     #
+#     # pred[fold==i,"trial"] <- pi*gaussian + (1-pi)*binomial
+#     ### trial end ###
+#     
+#   }
+#   
+#   loss <- list()
+#   loss$deviance <- .loss(y=z,fit=pred,family="binomial",type.measure="deviance")[[1]]
+#   loss$class <- .loss(y=z,fit=pred,family="binomial",type.measure="class")[[1]]
+#   loss$mse <- .loss(y=z,fit=pred,family="binomial",type.measure="mse")[[1]]
+#   loss$mae <- .loss(y=z,fit=pred,family="binomial",type.measure="mae")[[1]]
+#   loss$auc <- .loss(y=z,fit=pred,family="binomial",type.measure="auc",foldid=fold)[[1]]
+#   
+#   return(loss)
+# }
 

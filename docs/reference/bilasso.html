@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>bilasso — bilasso • colasso</title>
+<title>Logistic regression with a continuous response — bilasso • colasso</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,11 +30,10 @@
 
 
 
-<meta property="og:title" content="bilasso — bilasso" />
+<meta property="og:title" content="Logistic regression with a continuous response — bilasso" />
 
-<meta property="og:description" content="Implements penalised regression with response duality.
-pi=0 represents binomial regression,
-pi=1 represents linear regression" />
+<meta property="og:description" content="Implements penalised logistic regression
+with both a binary and a continuous response." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -102,20 +101,20 @@ pi=1 represents linear regression" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>bilasso</h1>
+    <h1>Logistic regression with a continuous response</h1>
     <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/bilasso.R'><code>R/bilasso.R</code></a></small>
     <div class="hidden name"><code>bilasso.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Implements penalised regression with response duality.
-<code>pi=0</code> represents binomial regression,
-<code>pi=1</code> represents linear regression</p>
+    <p>Implements penalised logistic regression
+with both a binary and a continuous response.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>bilasso</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
+    <pre class="usage"><span class='fu'>bilasso</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -132,25 +131,31 @@ vector of length \(n\)</p></td>
     <tr>
       <th>X</th>
       <td><p>covariates<strong>:</strong>
-matrix with \(n\) rows (samples) and \(p\) columns (variables)</p></td>
+matrix with \(n\) rows (samples)
+and \(p\) columns (variables)</p></td>
     </tr>
     <tr>
       <th>alpha</th>
       <td><p>elastic net parameter<strong>:</strong>
-numeric between \(0\) and \(1\);
-\(alpha=1\) for lasso,
-\(alpha=0\) for ridge</p></td>
+numeric between \(1\) and \(0\);
+compromise between lasso (\(alpha=1\))
+and ridge (\(alpha=0\)) regression</p></td>
     </tr>
     <tr>
       <th>nfolds</th>
       <td><p>number of folds</p></td>
     </tr>
     <tr>
-      <th>z</th>
-      <td><p>binary response<strong>:</strong>
-vector of length \(n\)</p></td>
+      <th>type.measure</th>
+      <td><p>loss function for logistic regression
+(the deviance is used for linear regression)</p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Finds a compromise between binomial (\(pi=0\))
+and linear (\(pi=1\)) regression.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -161,7 +166,9 @@ vector of length \(n\)</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#details">Details</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
