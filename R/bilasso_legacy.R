@@ -1,3 +1,4 @@
+if(FALSE){
 
 #' @export
 #' @title
@@ -36,13 +37,10 @@
 #' loss function for logistic regression
 #' (the deviance is used for linear regression)
 #' 
-#' @param res
-#' resolution
-#' 
 #' @examples
 #' NA
 #' 
-bilasso <- function(y,cutoff,X,alpha=1,nfolds=10,type.measure="deviance",res=100){
+bilasso <- function(y,cutoff,X,alpha=1,nfolds=10,type.measure="deviance"){
   # think about scaling y (for transformation of pred. val. to pred. prob.)
   
   # checks
@@ -52,7 +50,6 @@ bilasso <- function(y,cutoff,X,alpha=1,nfolds=10,type.measure="deviance",res=100
   .check(x=alpha,type="scalar",min=0,max=1)
   .check(x=nfolds,type="scalar",min=3)
   .check(x=type.measure,type="string",values=c("deviance","class","mse","mae","auc"))
-  .check(x=res,type="scalar",min=10)
   if(length(y)!=nrow(X)){stop("Contradictory sample size.")}
   
   # binarisation
@@ -68,10 +65,10 @@ bilasso <- function(y,cutoff,X,alpha=1,nfolds=10,type.measure="deviance",res=100
   
   # weights
   # INCREASE length.out to 101 and 100, respectively !!!!!!!!!!!!!!!!!!!!!!!!!!!
-  fit$pi <- seq(from=0,to=1,length.out=res+1)
+  fit$pi <- seq(from=0,to=1,length.out=11)
   #fit$base <- exp(seq(from=log(1),to=log(100),length.out=100)) # old base
-  fit$base <- exp(seq(from=log(0.05*sd(y)),to=log(2*sd(y)),length.out=res)) # new base
-  #fit$grid <- expand.grid(pi=fit$pi,base=fit$base) # temporary
+  fit$base <- exp(seq(from=log(0.05*sd(y)),to=log(2*sd(y)),length.out=10)) # new base
+  fit$grid <- expand.grid(pi=fit$pi,base=fit$base) # temporary
   
   # cross-validation
   pred <- list()
@@ -79,7 +76,7 @@ bilasso <- function(y,cutoff,X,alpha=1,nfolds=10,type.measure="deviance",res=100
   pred$z  <- matrix(data=NA,nrow=length(y),ncol=length(fit$binomial$lambda))
   pred$pi <- matrix(data=NA,nrow=length(y),ncol=length(fit$pi))
   pred$base <- matrix(data=NA,nrow=length(y),ncol=length(fit$base))
-  #pred$grid <- matrix(data=NA,nrow=length(y),ncol=nrow(fit$grid))
+  pred$grid <- matrix(data=NA,nrow=length(y),ncol=nrow(fit$grid))
   
   for(k in unique(foldid)){
 
@@ -106,9 +103,7 @@ bilasso <- function(y,cutoff,X,alpha=1,nfolds=10,type.measure="deviance",res=100
     
     # fusion (pi)
     for(i in seq_along(fit$pi)){
-      #pred$pi[foldid==k,i] <- fit$pi[i]*(y_hat > cutoff) + (1-fit$pi[i])*z_hat # original
-      cont <- stats::pnorm(q=y_hat,mean=cutoff,sd=sd(y)) # trial
-      pred$pi[foldid==k,i] <- fit$pi[i]*cont + (1-fit$pi[i])*z_hat #trial
+      pred$pi[foldid==k,i] <- fit$pi[i]*(y_hat > cutoff) + (1-fit$pi[i])*z_hat
     }
     
     # fusion (base)
@@ -118,12 +113,13 @@ bilasso <- function(y,cutoff,X,alpha=1,nfolds=10,type.measure="deviance",res=100
     }
     
     # fusion (pi and base)
-    #for(i in seq_len(nrow(fit$grid))){
-    #  cont <- stats::pnorm(q=y_hat,mean=cutoff,sd=fit$grid$base[i])
-    #  temp <- fit$grid$pi[i]*cont + (1-fit$grid$pi[i])*z_hat
-    #  pred$grid[foldid==k,i] <- temp
-    #}
+    for(i in seq_len(nrow(fit$grid))){
+      cont <- stats::pnorm(q=y_hat,mean=cutoff,sd=fit$grid$base[i])
+      temp <- fit$grid$pi[i]*cont + (1-fit$grid$pi[i])*z_hat
+      pred$grid[foldid==k,i] <- temp
+    }
     
+
   }
   
   # deviance (not comparable between Gaussian and binomial families)
@@ -135,8 +131,8 @@ bilasso <- function(y,cutoff,X,alpha=1,nfolds=10,type.measure="deviance",res=100
   fit$pi.min <- fit$pi[which.min(fit$pi.cvm)]
   fit$base.cvm <- .loss(y=z,fit=pred$base,family="binomial",type.measure=type.measure)[[1]]
   fit$base.min <- fit$base[which.min(fit$base.cvm)]
-  #fit$grid.cvm <- .loss(y=z,fit=pred$grid,family="binomial",type.measure=type.measure)[[1]]
-  #fit$grid.min <- fit$grid[which.min(fit$grid.cvm),]
+  fit$grid.cvm <- .loss(y=z,fit=pred$grid,family="binomial",type.measure=type.measure)[[1]]
+  fit$grid.min <- fit$grid[which.min(fit$grid.cvm),]
   fit$cutoff <- cutoff
 
   class(fit) <- "bilasso"
@@ -193,16 +189,16 @@ predict.bilasso <- function(x,newx,type="response",...){
   #base <- 1/(1+x$base.min^(x$cutoff-pred_y)) # old trial
   base <- stats::pnorm(q=pred_y,mean=x$cutoff,sd=x$base.min) # new trial
   
-  # # grid
-  #cont <- stats::pnorm(q=pred_y,mean=x$cutoff,sd=x$grid.min$base)
-  #grid <- x$grid.min$pi*cont + (1-x$grid.min$pi)*pred_z
+  # grid
+  cont <- stats::pnorm(q=pred_y,mean=x$cutoff,sd=x$grid.min$base)
+  grid <- x$grid.min$pi*cont + (1-x$grid.min$pi)*pred_z
   
-  # # trial
+  # trial
   cont <- stats::pnorm(q=pred_y,mean=x$cutoff,sd=x$base.min)
   trial <- x$pi.min*cont + (1-x$pi.min)*pred_z
   
   
-  frame <- data.frame(gaussian=gaussian,binomial=binomial,pi=pi,base=base,trial=trial)
+  frame <- data.frame(gaussian=gaussian,binomial=binomial,pi=pi,base=base,grid=grid,trial=trial)
   return(frame)
 }
 
@@ -211,18 +207,18 @@ predict.bilasso <- function(x,newx,type="response",...){
 
 
 
-bilasso_compare <- function(y,cutoff,X,type.measure="deviance",res=100){
+bilasso_compare <- function(y,cutoff,X,type.measure="deviance"){
   
   z <- 1*(y > cutoff)
   fold <- palasso:::.folds(y=z,nfolds=5)
   
-  cols <- c("gaussian","binomial","pi","base","trial")
+  cols <- c("gaussian","binomial","pi","base","grid","trial")
   pred <- matrix(data=NA,nrow=length(y),ncol=length(cols),
                  dimnames=list(NULL,cols))
   
   select <- list()
   for(i in sort(unique(fold))){
-    fit <- bilasso(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],type.measure=type.measure,res=res)
+    fit <- bilasso(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],type.measure=type.measure)
     
     #gaussian <- 1*(stats::predict(object=fit$gaussian,
     #                          newx=X[fold==i,],
@@ -543,3 +539,4 @@ bilasso_compare <- function(y,cutoff,X,type.measure="deviance",res=100){
 #   return(loss)
 # }
 
+}

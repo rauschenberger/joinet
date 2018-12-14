@@ -5,7 +5,7 @@
 \title{Logistic regression with a continuous response}
 \usage{
 bilasso(y, cutoff, X, alpha = 1, nfolds = 10,
-  type.measure = "deviance")
+  type.measure = "deviance", res = 100)
 }
 \arguments{
 \item{y}{continuous response\strong{:}
@@ -26,6 +26,8 @@ and ridge (\eqn{alpha=0}) regression}
 
 \item{type.measure}{loss function for logistic regression
 (the deviance is used for linear regression)}
+
+\item{res}{resolution}
 }
 \description{
 Implements penalised logistic regression
