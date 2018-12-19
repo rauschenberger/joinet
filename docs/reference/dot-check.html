@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>moderated response (trial) — moderate • colasso</title>
+<title>Arguments — .check • colasso</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="moderated response (trial) — moderate" />
+<meta property="og:title" content="Arguments — .check" />
 
-<meta property="og:description" content="This function ..." />
+<meta property="og:description" content="Verifies whether an argument matches formal requirements." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -100,36 +100,60 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>moderated response (trial)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/colasso.R'><code>R/colasso.R</code></a></small>
-    <div class="hidden name"><code>moderate.Rd</code></div>
+    <h1>Arguments</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/bilasso.R'><code>R/bilasso.R</code></a></small>
+    <div class="hidden name"><code>dot-check.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function ...</p>
+    <p>Verifies whether an argument matches formal requirements.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>moderate</span>(<span class='no'>y</span>, <span class='no'>Y</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</pre>
+    <pre class="usage"><span class='fu'>.check</span>(<span class='no'>x</span>, <span class='no'>type</span>, <span class='kw'>miss</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>min</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>values</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>inf</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>null</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>y</th>
-      <td><p>response<strong>:</strong>
-vector of length \(n\)</p></td>
+      <th>x</th>
+      <td><p>argument</p></td>
     </tr>
     <tr>
-      <th>Y</th>
-      <td><p>response<strong>:</strong>
-matrix with \(n\) rows and \(p\) columns,
-or vector of length \(n\) (see details)</p></td>
+      <th>type</th>
+      <td><p>character <code>"string"</code>, <code>"scalar"</code>, <code>"vector"</code>, <code>"matrix"</code></p></td>
     </tr>
     <tr>
-      <th>k</th>
-      <td><p>to do</p></td>
+      <th>miss</th>
+      <td><p>accept missing values<strong>:</strong>
+logical</p></td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td><p>lower limit<strong>:</strong>
+numeric</p></td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td><p>upper limit<strong>:</strong>
+numeric</p></td>
+    </tr>
+    <tr>
+      <th>values</th>
+      <td><p>only accept specific values<strong>:</strong>
+vector</p></td>
+    </tr>
+    <tr>
+      <th>inf</th>
+      <td><p>accept infinite (<code>Inf</code> or <code>-Inf</code>) values<strong>:</strong>
+logical</p></td>
+    </tr>
+    <tr>
+      <th>null</th>
+      <td><p>accept <code>NULL</code><strong>:</strong>
+logical</p></td>
     </tr>
     </table>
     

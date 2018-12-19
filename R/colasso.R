@@ -188,7 +188,7 @@ colasso_simulate <- function(n=100,p=500,cor="constant",family="gaussian",plot=T
     diag(Sigma) <- 1
     
     X <- MASS::mvrnorm(n=n,mu=rep(0,p),Sigma=Sigma)
-    stats::median(abs(as.numeric(cor(X))))
+    stats::median(abs(as.numeric(stats::cor(X))))
 
     # non-sparse effects
     #beta <- stats::rnorm(n=p,mean=0,sd=1)
@@ -336,6 +336,9 @@ colasso_compare <- function(y,Y,X,plot=TRUE,nfolds.ext=5,nfolds.int=10,family="g
 #' This function ...
 #'
 #' @inheritParams colasso
+#' 
+#' @param k
+#' to do
 #'
 #' @examples
 #' NA
@@ -353,7 +356,7 @@ moderate <- function(y,Y,k=2){
   }
   cond <- cluster == cluster[id]
   median <- apply(Y[,cond,drop=FALSE],1,median)
-  message("cor ",round(cor(y,median),2))
+  message("cor ",round(stats::cor(y,median),2))
   return(median)
 }
 

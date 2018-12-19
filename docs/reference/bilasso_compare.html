@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>moderated response (trial) — moderate • colasso</title>
+<title>Comparison — bilasso_compare • colasso</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="moderated response (trial) — moderate" />
+<meta property="og:title" content="Comparison — bilasso_compare" />
 
-<meta property="og:description" content="This function ..." />
+<meta property="og:description" content="Compares models for a continuous response with a cutoff value" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -100,36 +100,37 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>moderated response (trial)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/colasso.R'><code>R/colasso.R</code></a></small>
-    <div class="hidden name"><code>moderate.Rd</code></div>
+    <h1>Comparison</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/bilasso.R'><code>R/bilasso.R</code></a></small>
+    <div class="hidden name"><code>bilasso_compare.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This function ...</p>
+    <p>Compares models for a continuous response with a cutoff value</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>moderate</span>(<span class='no'>y</span>, <span class='no'>Y</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</pre>
+    <pre class="usage"><span class='fu'>bilasso_compare</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>y</th>
-      <td><p>response<strong>:</strong>
+      <td><p>continuous response<strong>:</strong>
 vector of length \(n\)</p></td>
     </tr>
     <tr>
-      <th>Y</th>
-      <td><p>response<strong>:</strong>
-matrix with \(n\) rows and \(p\) columns,
-or vector of length \(n\) (see details)</p></td>
+      <th>cutoff</th>
+      <td><p>cutoff point for dichotomising response into classes<strong>:</strong>
+value between <code>min(y)</code> and <code>max(y)</code></p></td>
     </tr>
     <tr>
-      <th>k</th>
-      <td><p>to do</p></td>
+      <th>X</th>
+      <td><p>covariates<strong>:</strong>
+numeric matrix with \(n\) rows (samples)
+and \(p\) columns (variables)</p></td>
     </tr>
     </table>
     

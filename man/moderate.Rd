@@ -13,6 +13,8 @@ vector of length \eqn{n}}
 \item{Y}{response\strong{:}
 matrix with \eqn{n} rows and \eqn{p} columns,
 or vector of length \eqn{n} (see details)}
+
+\item{k}{to do}
 }
 \description{
 This function ...

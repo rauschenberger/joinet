@@ -4,40 +4,54 @@
 \alias{bilasso}
 \title{Logistic regression with a continuous response}
 \usage{
-bilasso(y, cutoff, X, alpha = 1, nfolds = 10,
-  type.measure = "deviance", res = 100)
+bilasso(y, cutoff, X, alpha = 1, nfolds = 10, foldid = NULL,
+  type.measure = "deviance", nsigma = 100, sigma = NULL,
+  logistic = TRUE)
 }
 \arguments{
 \item{y}{continuous response\strong{:}
 vector of length \eqn{n}}
 
-\item{cutoff}{value between \code{min(y)} and \code{max(y)}}
+\item{cutoff}{cutoff point for dichotomising response into classes\strong{:}
+value between \code{min(y)} and \code{max(y)}}
 
 \item{X}{covariates\strong{:}
-matrix with \eqn{n} rows (samples)
+numeric matrix with \eqn{n} rows (samples)
 and \eqn{p} columns (variables)}
 
 \item{alpha}{elastic net parameter\strong{:}
-numeric between \eqn{1} and \eqn{0};
-compromise between lasso (\eqn{alpha=1})
-and ridge (\eqn{alpha=0}) regression}
+numeric between \eqn{0} (ridge)
+and \eqn{1} (lasso)}
 
 \item{nfolds}{number of folds}
 
-\item{type.measure}{loss function for logistic regression
-(the deviance is used for linear regression)}
+\item{foldid}{fold identifiers\strong{:}
+vector with entries between \eqn{1} and \code{nfolds};
+or \code{NULL} (balance)}
 
-\item{res}{resolution}
+\item{type.measure}{loss function for binary classification
+(linear regression uses the deviance)}
+
+\item{nsigma}{number of \code{sigma} values}
+
+\item{sigma}{sigma sequence\strong{:}
+vector of increasing positive values;
+or \code{NULL} (default sequence)}
+
+\item{logistic}{fit logistic regression for comparison\strong{:}
+logical
+(currently all methods require \code{TRUE})}
 }
 \description{
-Implements penalised logistic regression
-with both a binary and a continuous response.
+Implements logistic regression with a continuous response.
 }
 \details{
-Finds a compromise between binomial (\eqn{pi=0})
-and linear (\eqn{pi=1}) regression.
+INCLUDE note on deviance (not comparable between lin and log models)
 }
 \examples{
-NA
+n <- 100; p <- 200
+y <- rnorm(n)
+X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+bilasso(y=y,cutoff=0,X=X)
 
 }
