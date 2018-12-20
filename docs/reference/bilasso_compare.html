@@ -111,7 +111,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>bilasso_compare</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>)</pre>
+    <pre class="usage"><span class='fu'>bilasso_compare</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>5</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -131,6 +131,10 @@ value between <code>min(y)</code> and <code>max(y)</code></p></td>
       <td><p>covariates<strong>:</strong>
 numeric matrix with \(n\) rows (samples)
 and \(p\) columns (variables)</p></td>
+    </tr>
+    <tr>
+      <th>nfolds</th>
+      <td><p>number of folds</p></td>
     </tr>
     </table>
     

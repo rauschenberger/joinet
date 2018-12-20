@@ -4,9 +4,8 @@
 \alias{bilasso}
 \title{Logistic regression with a continuous response}
 \usage{
-bilasso(y, cutoff, X, alpha = 1, nfolds = 10, foldid = NULL,
-  type.measure = "deviance", nsigma = 100, sigma = NULL,
-  logistic = TRUE)
+bilasso(y, cutoff, X, nsigma = 99, sigma = NULL, nfolds = 10,
+  foldid = NULL, type.measure = "deviance", logistic = TRUE, ...)
 }
 \arguments{
 \item{y}{continuous response\strong{:}
@@ -19,9 +18,11 @@ value between \code{min(y)} and \code{max(y)}}
 numeric matrix with \eqn{n} rows (samples)
 and \eqn{p} columns (variables)}
 
-\item{alpha}{elastic net parameter\strong{:}
-numeric between \eqn{0} (ridge)
-and \eqn{1} (lasso)}
+\item{nsigma}{number of \code{sigma} values}
+
+\item{sigma}{sigma sequence\strong{:}
+vector of increasing positive values;
+or \code{NULL} (default sequence)}
 
 \item{nfolds}{number of folds}
 
@@ -32,26 +33,25 @@ or \code{NULL} (balance)}
 \item{type.measure}{loss function for binary classification
 (linear regression uses the deviance)}
 
-\item{nsigma}{number of \code{sigma} values}
-
-\item{sigma}{sigma sequence\strong{:}
-vector of increasing positive values;
-or \code{NULL} (default sequence)}
-
 \item{logistic}{fit logistic regression for comparison\strong{:}
 logical
 (currently all methods require \code{TRUE})}
+
+\item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}}
 }
 \description{
 Implements logistic regression with a continuous response.
 }
 \details{
-INCLUDE note on deviance (not comparable between lin and log models)
+- INCLUDE note on deviance (not comparable between lin and log models)
+- alpha: elastic net parameter\strong{:}
+numeric between \eqn{0} (ridge) and \eqn{1} (lasso)
+- do not use "family"
 }
 \examples{
 n <- 100; p <- 200
 y <- rnorm(n)
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-bilasso(y=y,cutoff=0,X=X)
+net <- bilasso(y=y,cutoff=0,X=X,alpha=1,nlambda=50)
 
 }

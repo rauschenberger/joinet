@@ -4,7 +4,7 @@
 \alias{bilasso_compare}
 \title{Comparison}
 \usage{
-bilasso_compare(y, cutoff, X)
+bilasso_compare(y, cutoff, X, nfolds = 5)
 }
 \arguments{
 \item{y}{continuous response\strong{:}
@@ -16,6 +16,8 @@ value between \code{min(y)} and \code{max(y)}}
 \item{X}{covariates\strong{:}
 numeric matrix with \eqn{n} rows (samples)
 and \eqn{p} columns (variables)}
+
+\item{nfolds}{number of folds}
 }
 \description{
 Compares models for a continuous response with a cutoff value
