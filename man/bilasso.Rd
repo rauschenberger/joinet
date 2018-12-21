@@ -4,7 +4,7 @@
 \alias{bilasso}
 \title{Logistic regression with a continuous response}
 \usage{
-bilasso(y, cutoff, X, nsigma = 99, sigma = NULL, nfolds = 10,
+bilasso(y, cutoff, X, nsigma = 100, sigma = NULL, nfolds = 10,
   foldid = NULL, type.measure = "deviance", logistic = TRUE, ...)
 }
 \arguments{
@@ -52,6 +52,6 @@ numeric between \eqn{0} (ridge) and \eqn{1} (lasso)
 n <- 100; p <- 200
 y <- rnorm(n)
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-net <- bilasso(y=y,cutoff=0,X=X,alpha=1,nlambda=50)
-
+net <- bilasso(y=y,cutoff=0,X=X)
+### Add ... to all glmnet::glmnet calls !!! ###
 }

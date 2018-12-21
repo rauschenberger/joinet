@@ -1,6 +1,6 @@
 
 # data simulation
-list <- .simulate(n=100,p=200)
+list <- colasso:::.simulate(n=100,p=200)
 y <- list$y; X <- list$X
 
 # penalised regression
@@ -41,7 +41,7 @@ for(dist in c("gaussian","binomial")){
 }
 
 testthat::test_that("predicted values (logistic)",{
-  a <- predict.bilasso(x=fit,newx=X)$binomial
+  a <- colasso:::predict.bilasso(x=fit,newx=X)$binomial
   b <- as.numeric(stats::predict(object=net$binomial,newx=X,s="lambda.min",type="response"))
   testthat::expect_true(all(a==b))
 })

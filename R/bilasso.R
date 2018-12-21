@@ -1,4 +1,25 @@
 
+
+# transforms to unit interval
+.prob <- function(x,cutoff,shape1,shape2,plot=FALSE){
+  q <- exp(x-cutoff)/(1+exp(x-cutoff))
+  p <- stats::pbeta(q=q,shape1=shape1,shape2=shape2)
+  xlim <- range(c(x,-x))
+  mu <- stats::pbeta(q=0.5,shape1=shape1,shape2=shape2)
+  a <- rep(NA,times=length(p))
+  a[p<mu] <- 0.5*(p/mu)[p<mu]
+  a[p>mu] <- 1-0.5*((1-p)/(1-mu))[p>mu]
+  if(plot){
+    graphics::plot(x=x,y=a,ylim=c(0,1),xlim=xlim)
+    graphics::abline(v=cutoff,lty=2,col="red")
+    graphics::abline(h=0.5,lty=2,col="grey")
+  }
+  return(a)
+}
+
+#.prob(x=rnorm(100),cutoff=2,shape1=2,shape2=1,plot=TRUE)
+
+
 #' @export
 #' @title
 #' Logistic regression with a continuous response
@@ -57,28 +78,34 @@
 #' n <- 100; p <- 200
 #' y <- rnorm(n)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-#' net <- bilasso(y=y,cutoff=0,X=X,alpha=1,nlambda=50)
-#' 
-bilasso <- function(y,cutoff,X,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",logistic=TRUE,...){
+#' net <- bilasso(y=y,cutoff=0,X=X)
+#' ### Add ... to all glmnet::glmnet calls !!! ###
+bilasso <- function(y,cutoff,X,nsigma=100,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",logistic=TRUE,...){
   
   #--- temporary ---
   # cutoff <- 0; nsigma <- 99; sigma <- NULL; nfolds <- 10;  foldid <- NULL; type.measure <- "deviance"; logistic <- TRUE
   test <- list()
-  test$sigma <- test$pi <- test$max <- TRUE
-  test$grid <- TRUE
-  test$grid2 <- FALSE
   
+  test$sigma <- TRUE
+  test$pi <- TRUE
+  test$trial <- TRUE
+  test$unit <- TRUE
+
+  test$grid <- TRUE
+  test$max <- FALSE
+  test$grid2 <- FALSE
+
   #--- checks ---
   colasso:::.check(x=y,type="vector")
-  if(all(y %in% c(0,1))){stop("Binary response.",call.=FALSE)}
+  if(all(y %in% c(0,1))){warning("Binary response.",call.=FALSE)}
   colasso:::.check(x=cutoff,type="scalar",min=min(y),max=max(y))
   colasso:::.check(x=X,type="matrix")
   if(length(y)!=nrow(X)){stop("Contradictory sample size.",call.=FALSE)}
-  colasso:::.check(x=nsigma,type="scalar",min=10)
+  colasso:::.check(x=nsigma,type="scalar",min=1)
   colasso:::.check(x=sigma,type="vector",min=.Machine$double.eps,null=TRUE)
   colasso:::.check(x=nfolds,type="scalar",min=3)
   colasso:::.check(x=foldid,type="vector",values=seq_len(nfolds),null=TRUE)
-  colasso:::.check(x=type.measure,type="string",values=c("deviance","class","mse","mae","auc"))
+  colasso:::.check(x=type.measure,type="string",values=c("deviance","class","mse","mae")) # not auc (min/max confusion)
   if(!is.null(list(...)$family)){stop("Reserved argument \"family\".",call.=FALSE)}
   n <- length(y)
   
@@ -92,9 +119,18 @@ bilasso <- function(y,cutoff,X,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.m
   
   #--- model fitting ---
   fit <- list()
-  fit$gaussian <- glmnet::glmnet(y=y,x=X,family="gaussian",...)
+  fit$gaussian <- glmnet::glmnet(y=y,x=X,family="gaussian")
   if(logistic){
-    fit$binomial <- glmnet::glmnet(y=z,x=X,family="binomial",...)
+    fit$binomial <- glmnet::glmnet(y=z,x=X,family="binomial")
+  }
+  
+  #--- sigma, nsigma ---
+  if(is.null(sigma)){
+    fit$sigma <- exp(seq(from=log(0.05*stats::sd(y)),
+                  to=log(10*stats::sd(y)),length.out=nsigma))
+  } else {
+    fit$sigma <- sigma
+    nsigma <- length(sigma)
   }
 
   #--- tuning parameters ---
@@ -102,13 +138,6 @@ bilasso <- function(y,cutoff,X,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.m
   nlambda <- length(fit$gaussian$lambda)
   lab.sigma <- paste0("si",seq_len(nsigma))
   lab.lambda <- paste0("la",seq_len(nlambda))
-  
-  if(is.null(sigma)){
-    fit$sigma <- exp(seq(from=log(0.05*stats::sd(y)),
-                  to=log(10*stats::sd(y)),length.out=nsigma))
-  } else {
-    fit$sigma <- sigma
-  }
   names(fit$sigma) <- lab.sigma
   names(fit$lambda) <- lab.lambda
   
@@ -119,6 +148,13 @@ bilasso <- function(y,cutoff,X,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.m
   if(test$max){
     fit$max <- exp(seq(from=log(0.05*max(abs(y-cutoff))),
                 to=log(max(abs(y-cutoff))),length.out=100))
+  }
+  
+  if(test$unit){
+    fit$shape1 <- seq(from=0.01,to=10,length.out=100)
+    fit$shape2 <- seq(from=0.01,to=10,length.out=100)
+    lab.s1 <- paste0("a",1:100)
+    lab.s2 <- paste0("b",1:100)
   }
   
   #--- cross-validation ---
@@ -144,6 +180,14 @@ bilasso <- function(y,cutoff,X,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.m
     dimnames <- list(NULL,lab.pi,lab.lambda)
     pred$grid2 <- array(data=NA,dim=c(n,100,nlambda),dimnames=dimnames)
   }
+  if(test$trial){
+    dimnames <- list(NULL,lab.sigma,lab.pi)
+    pred$trial <- array(data=NA,dim=c(n,nsigma,100),dimnames=dimnames)
+  }
+  if(test$unit){
+    dimnames <- list(NULL,lab.s1,lab.s2)
+    pred$unit <- array(data=NA,dim=c(n,100,100),dimnames=dimnames)
+  }
   
   for(k in seq_len(nfolds)){
 
@@ -155,13 +199,13 @@ bilasso <- function(y,cutoff,X,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.m
     X1 <- X[foldid==k,,drop=FALSE]
     
     # linear regression
-    net <- glmnet::glmnet(y=y0,x=X0,family="gaussian",...)
+    net <- glmnet::glmnet(y=y0,x=X0,family="gaussian")
     temp_y <- stats::predict(object=net,newx=X1,type="response",s=fit$gaussian$lambda)
     pred$y[foldid==k,seq_len(ncol(temp_y))] <- temp_y
     
     # logistic regression
     if(logistic){
-      net <- glmnet::glmnet(y=z0,x=X0,family="binomial",...)
+      net <- glmnet::glmnet(y=z0,x=X0,family="binomial")
       temp_z <- stats::predict(object=net,newx=X1,type="response",s=fit$binomial$lambda)
       pred$z[foldid==k,seq_len(ncol(temp_z))] <- temp_z
     }
@@ -182,6 +226,7 @@ bilasso <- function(y,cutoff,X,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.m
       }
     }
     
+    # fusion (grid2)
     if(test$grid2){
       for(i in seq_along(fit$sigma)){
         cont <- stats::pnorm(q=temp_y,mean=cutoff,sd=stats::sd(y))
@@ -206,7 +251,26 @@ bilasso <- function(y,cutoff,X,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.m
         pred$max[foldid==k,i] <- pmax(0,pmin(temp,1))
       }
     }
-
+    
+    # fusion (trial)
+    if(test$trial){
+      for(i in seq_along(fit$sigma)){
+        for(j in seq_along(fit$pi)){
+          cont <- stats::pnorm(q=y_hat,mean=cutoff,sd=fit$sigma[i])
+          pred$trial[foldid==k,i,j] <- fit$pi[j]*cont + (1-fit$pi[j])*z_hat
+        }
+      }
+    }
+    
+    # fusion (unit)
+    if(test$unit){
+      for(i in seq_len(100)){
+        for(j in seq_len(100)){
+          pred$unit[foldid==k,i,j] <- .prob(x=y_hat,cutoff=cutoff,shape1=fit$shape1[i],shape2=fit$shape2[j])
+        }
+      }
+    }
+    
   }
   
   #--- evaluation ---
@@ -265,6 +329,34 @@ bilasso <- function(y,cutoff,X,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.m
     fit$grid2.min <- data.frame(sigma=fit$sigma[temp[,"row"]],lambda=fit$gaussian$lambda[temp[,"col"]])
   }
   
+  if(test$trial){
+    dimnames <- list(lab.sigma,lab.pi)
+    fit$trial.cvm <- matrix(data=NA,nrow=nsigma,ncol=100,dimnames=dimnames)
+    for(i in seq_len(nsigma)){
+      for(j in seq_len(100)){
+        fit$trial.cvm[i,j] <- colasso:::.loss(y=z,fit=pred$trial[,i,j],family="binomial",type.measure=type.measure)[[1]]
+      }
+    }
+    temp <- which(fit$trial.cvm==min(fit$trial.cvm),arr.ind=TRUE)
+    if(nrow(temp)>1){warning("MULTIPLE!",call.=FALSE);temp <- temp[1,,drop=FALSE]}
+    fit$trial.min <- data.frame(sigma=fit$sigma[temp[,"row"]],pi=fit$pi[temp[,"col"]])
+  }
+  
+  if(test$unit){
+    dimnames <- list(lab.s1,lab.s2)
+    fit$unit.cvm <- matrix(data=NA,nrow=100,ncol=100,dimnames=dimnames)
+    for(i in seq_len(100)){
+      for(j in seq_len(100)){
+        fit$unit.cvm[i,j] <- colasso:::.loss(y=z,fit=pred$unit[,i,j],family="binomial",type.measure=type.measure)[[1]]
+      }
+    }
+    temp <- which(fit$unit.cvm==min(fit$unit.cvm),arr.ind=TRUE)
+    if(nrow(temp)>1){warning("MULTIPLE!",call.=FALSE);temp <- temp[1,,drop=FALSE]}
+    fit$unit.min <- data.frame(shape1=fit$shape1[temp[,"row"]],shape2=fit$shape2[temp[,"col"]])
+    cond <- fit$unit.cvm[lab.s1[temp[,"row"]],lab.s2[temp[,"col"]]]==min(fit$unit.cvm) # check
+    if(!cond){stop("internal mistake",call.=FALSE)}
+  }
+  
   #--- return ---
   fit$cutoff <- cutoff
   fit$info <- list(type.measure=type.measure,
@@ -289,43 +381,72 @@ coef.bilasso <- function(x){
   return(coef)
 }
 
+# plot.bilasso <- function(x){
+#   #graphics::plot(x=x$sigma,y=x$sigma.cvm,xlab=expression(sigma),ylab="deviance")
+#   #graphics::abline(v=x$sigma.min,lty=2,col="red")
+#   #graphics::abline(v=x$info$sd.y,lty=2,col="grey")
+#   
+#   ### original ###
+#   #x$grid.cvm[40,40] <- -100
+#   #k <- 100
+#   #levels <- quantile(x$grid.cvm,probs=seq(from=0,to=1,length.out=k+1))
+#   #col <- colorspace::diverge_hsv(n=k)
+#   #graphics::filled.contour(x$grid.cvm,xlab="",ylab="",levels=levels,col=col,)
+#   
+#   ### trial ###
+#   k <- 100
+#   levels <- stats::quantile(x$cvm,probs=seq(from=0,to=1,length.out=k+1))
+#   col <- colorspace::diverge_hsv(n=k)
+#   nsigma <- length(x$sigma)
+#   nlambda <- length(x$gaussi$lambda)
+#   
+#   sigma.min <- x$grid.min$sigma
+#   lambda.min <- x$grid.min$lambda
+#   
+#   graphics::plot.new()
+#   graphics::par(xaxs="i",yaxs="i")
+#   graphics::plot.window(xlim=c(1-0.5,nsigma+0.5),ylim=c(1-0.5,nlambda+0.5))
+#   
+#   sel <- which(x$sigma==sigma.min)
+#   graphics::axis(side=1,at=c(1,sel,nsigma),labels=signif(x$sigma[c(1,sel,nsigma)],digits=2))
+#   
+#   sel <- which(x$gaussian$lambda==lambda.min)
+#   graphics::axis(side=2,at=c(1,sel,nlambda),labels=signif(x$gaussian$lambda[c(1,sel,nlambda)],digits=2))
+#   
+#   graphics::title(xlab=expression(sigma),ylab=expression(lambda))
+#   #graphics::.filled.contour(x=seq_along(x$sigma),y=seq_along(x$gaussian$lambda),z=x$cvm,levels=levels,col=col)
+#   graphics::image(x=seq_along(x$sigma),y=seq_along(x$gaussian$lambda),z=x$cvm,breaks=levels,col=col,add=TRUE)
+#   graphics::box()
+# 
+# }
+
+
 plot.bilasso <- function(x){
-  #graphics::plot(x=x$sigma,y=x$sigma.cvm,xlab=expression(sigma),ylab="deviance")
-  #graphics::abline(v=x$sigma.min,lty=2,col="red")
-  #graphics::abline(v=x$info$sd.y,lty=2,col="grey")
-  
-  ### original ###
-  #x$grid.cvm[40,40] <- -100
-  #k <- 100
-  #levels <- quantile(x$grid.cvm,probs=seq(from=0,to=1,length.out=k+1))
-  #col <- colorspace::diverge_hsv(n=k)
-  #graphics::filled.contour(x$grid.cvm,xlab="",ylab="",levels=levels,col=col,)
-  
-  ### trial ###
+
   k <- 100
-  levels <- stats::quantile(x$cvm,probs=seq(from=0,to=1,length.out=k+1))
+  levels <- stats::quantile(x$trial.cvm,probs=seq(from=0,to=1,length.out=k+1))
   col <- colorspace::diverge_hsv(n=k)
   nsigma <- length(x$sigma)
-  nlambda <- length(x$gaussi$lambda)
+  npi <- length(x$pi)
   
-  sigma.min <- x$grid.min$sigma
-  lambda.min <- x$grid.min$lambda
+  sigma.min <- x$trial.min$sigma
+  pi.min <- x$trial.min$pi
   
   graphics::plot.new()
   graphics::par(xaxs="i",yaxs="i")
-  graphics::plot.window(xlim=c(1,nsigma),ylim=c(1,nlambda))
+  graphics::plot.window(xlim=c(1-0.5,nsigma+0.5),ylim=c(1-0.5,npi+0.5))
   
   sel <- which(x$sigma==sigma.min)
   graphics::axis(side=1,at=c(1,sel,nsigma),labels=signif(x$sigma[c(1,sel,nsigma)],digits=2))
   
-  sel <- which(x$gaussian$lambda==lambda.min)
-  graphics::axis(side=2,at=c(1,sel,nlambda),labels=signif(x$gaussian$lambda[c(1,sel,nlambda)],digits=2))
+  sel <- which(x$pi==pi.min)
+  graphics::axis(side=2,at=c(1,sel,npi),labels=signif(x$pi[c(1,sel,npi)],digits=2))
   
-  #graphics::axis(side=1,at=seq(from=1,to=ncol(x$grid.cvm)),labels=x$gaussian$lambda)
-  graphics::title(xlab=expression(sigma),ylab=expression(lambda))
-  graphics::.filled.contour(x=seq_along(x$sigma),y=seq_along(x$gaussian$lambda),z=x$cvm,levels=levels,col=col)
+  graphics::title(xlab=expression(sigma),ylab=expression(pi))
+  #graphics::.filled.contour(x=seq_along(x$sigma),y=seq_along(x$pi),z=x$cvm,levels=levels,col=col)
+  graphics::image(x=seq_along(x$sigma),y=seq_along(x$pi),z=x$trial.cvm,breaks=levels,col=col,add=TRUE)
   graphics::box()
-
+  
 }
 
 
@@ -370,7 +491,16 @@ predict.bilasso <- function(x,newx,type="probability"){
   if(test$grid2){
     temp <- as.numeric(stats::predict(object=x$gaussian,
                                       newx=newx,s=x$grid2.min$lambda,type="response"))
-    prob$grid2 <- fit$grid2.min$pi*temp + (1-fit$grid2.min$pi)*prob$binomial
+    prob$grid2 <- x$grid2.min$pi*temp + (1-x$grid2.min$pi)*prob$binomial
+  }
+  
+  if(test$trial){
+    cont <- stats::pnorm(q=link,mean=x$cutoff,sd=x$trial.min$sigma)
+    prob$trial <- x$trial.min$pi*cont + (1-x$trial.min$pi)*prob$binomial
+  }
+  
+  if(test$unit){
+    prob$unit <- .prob(x=link,cutoff=x$cutoff,shape1=x$unit.min$shape1,shape2=x$unit.min$shape2)
   }
 
   # consistency tests
@@ -403,21 +533,22 @@ predict.bilasso <- function(x,newx,type="probability"){
 #' @examples
 #' NA
 #' 
-bilasso_compare <- function(y,cutoff,X,nfolds=5){
+bilasso_compare <- function(y,cutoff,X,nfolds=5,type.measure="deviance"){
   
   z <- 1*(y > cutoff)
   fold <- palasso:::.folds(y=z,nfolds=nfolds)
   
-  cols <- c("gaussian","binomial","grid","max","pi","sigma")
+  cols <- c("gaussian","binomial","sigma","pi","trial","grid","unit")
   pred <- matrix(data=NA,nrow=length(y),ncol=length(cols),
                  dimnames=list(NULL,cols))
   
   select <- list()
   for(i in seq_len(nfolds)){
-    fit <- colasso::bilasso(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],logistic=TRUE)
+    fit <- colasso::bilasso(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],logistic=TRUE,type.measure=type.measure)
     tryCatch(expr=colasso:::plot.bilasso(fit),error=function(x) NULL)
     #colasso:::plot.bilasso(fit)
     temp <- colasso:::predict.bilasso(fit,newx=X[fold==i,])
+    if(any(temp<0|temp>1)){stop("Outside unit interval.",call.=FALSE)}
     model <- colnames(pred)
     for(j in seq_along(model)){
       pred[fold==i,model[j]] <- temp[[model[j]]]

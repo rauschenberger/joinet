@@ -111,7 +111,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>bilasso_compare</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>5</span>)</pre>
+    <pre class="usage"><span class='fu'>bilasso_compare</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -135,6 +135,11 @@ and \(p\) columns (variables)</p></td>
     <tr>
       <th>nfolds</th>
       <td><p>number of folds</p></td>
+    </tr>
+    <tr>
+      <th>type.measure</th>
+      <td><p>loss function for binary classification
+(linear regression uses the deviance)</p></td>
     </tr>
     </table>
     

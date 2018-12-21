@@ -4,7 +4,7 @@
 \alias{bilasso_compare}
 \title{Comparison}
 \usage{
-bilasso_compare(y, cutoff, X, nfolds = 5)
+bilasso_compare(y, cutoff, X, nfolds = 5, type.measure = "deviance")
 }
 \arguments{
 \item{y}{continuous response\strong{:}
@@ -18,6 +18,9 @@ numeric matrix with \eqn{n} rows (samples)
 and \eqn{p} columns (variables)}
 
 \item{nfolds}{number of folds}
+
+\item{type.measure}{loss function for binary classification
+(linear regression uses the deviance)}
 }
 \description{
 Compares models for a continuous response with a cutoff value
