@@ -4,8 +4,9 @@
 \alias{bilasso}
 \title{Logistic regression with a continuous response}
 \usage{
-bilasso(y, cutoff, X, nsigma = 100, sigma = NULL, nfolds = 10,
-  foldid = NULL, type.measure = "deviance", logistic = TRUE, ...)
+bilasso(y, cutoff, X, npi = 100, nsigma = 100, sigma = NULL,
+  nfolds = 10, foldid = NULL, type.measure = "deviance",
+  logistic = TRUE, ...)
 }
 \arguments{
 \item{y}{continuous response\strong{:}

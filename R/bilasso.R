@@ -80,7 +80,7 @@
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' net <- bilasso(y=y,cutoff=0,X=X)
 #' ### Add ... to all glmnet::glmnet calls !!! ###
-bilasso <- function(y,cutoff,X,nsigma=100,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",logistic=TRUE,...){
+bilasso <- function(y,cutoff,X,npi=100,nsigma=100,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",logistic=TRUE,...){
   
   #--- temporary ---
   # cutoff <- 0; nsigma <- 99; sigma <- NULL; nfolds <- 10;  foldid <- NULL; type.measure <- "deviance"; logistic <- TRUE
@@ -101,6 +101,7 @@ bilasso <- function(y,cutoff,X,nsigma=100,sigma=NULL,nfolds=10,foldid=NULL,type.
   colasso:::.check(x=cutoff,type="scalar",min=min(y),max=max(y))
   colasso:::.check(x=X,type="matrix")
   if(length(y)!=nrow(X)){stop("Contradictory sample size.",call.=FALSE)}
+  colasso:::.check(x=npi,type="scalar",min=1)
   colasso:::.check(x=nsigma,type="scalar",min=1)
   colasso:::.check(x=sigma,type="vector",min=.Machine$double.eps,null=TRUE)
   colasso:::.check(x=nfolds,type="scalar",min=3)
@@ -142,8 +143,8 @@ bilasso <- function(y,cutoff,X,nsigma=100,sigma=NULL,nfolds=10,foldid=NULL,type.
   names(fit$lambda) <- lab.lambda
   
   if(test$pi){
-    fit$pi <- seq(from=0,to=1,length.out=100)
-    lab.pi <- paste0("pi",seq_len(100))
+    fit$pi <- seq(from=0,to=1,length.out=npi)
+    lab.pi <- paste0("pi",seq_len(npi))
   }
   if(test$max){
     fit$max <- exp(seq(from=log(0.05*max(abs(y-cutoff))),
@@ -178,11 +179,11 @@ bilasso <- function(y,cutoff,X,nsigma=100,sigma=NULL,nfolds=10,foldid=NULL,type.
   }
   if(test$grid2){
     dimnames <- list(NULL,lab.pi,lab.lambda)
-    pred$grid2 <- array(data=NA,dim=c(n,100,nlambda),dimnames=dimnames)
+    pred$grid2 <- array(data=NA,dim=c(n,npi,nlambda),dimnames=dimnames)
   }
   if(test$trial){
     dimnames <- list(NULL,lab.sigma,lab.pi)
-    pred$trial <- array(data=NA,dim=c(n,nsigma,100),dimnames=dimnames)
+    pred$trial <- array(data=NA,dim=c(n,nsigma,npi),dimnames=dimnames)
   }
   if(test$unit){
     dimnames <- list(NULL,lab.s1,lab.s2)
