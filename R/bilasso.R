@@ -254,7 +254,7 @@ bilasso <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fo
 #' 
 coef.bilasso <- function(object,...){
   
-  if(!is.null(list(...))){warning("Ignoring arguments.")}
+  if(length(list(...))!=0){warning("Ignoring arguments.")}
   
   s <- object$gaussian$lambda.min
   beta <- glmnet::coef.glmnet(object=object$gaussian,s=s)
@@ -286,7 +286,7 @@ coef.bilasso <- function(object,...){
 #' 
 plot.bilasso <- function(x,...){
   
-  if(!is.null(list(...))){warning("Ignoring arguments.")}
+  if(length(list(...))!=0){warning("Ignoring arguments.")}
 
   k <- 100
   levels <- stats::quantile(x$cvm,probs=seq(from=0,to=1,length.out=k+1))
@@ -337,7 +337,7 @@ plot.bilasso <- function(x,...){
 #' 
 predict.bilasso <- function(object,newx,type="probability",...){
   
-  if(!is.null(list(...))){warning("Ignoring arguments.")}
+  if(length(list(...))!=0){warning("Ignoring arguments.")}
   
   x <- object; rm(object)
   
@@ -364,7 +364,7 @@ predict.bilasso <- function(object,newx,type="probability",...){
  
   if(test$grid){
     cont <- stats::pnorm(q=link,mean=x$cutoff,sd=x$sigma.min)
-    prob$trial <- x$pi.min*cont + (1-x$pi.min)*prob$binomial
+    prob$grid <- x$pi.min*cont + (1-x$pi.min)*prob$binomial
   }
   
   # consistency tests
@@ -408,7 +408,8 @@ bilasso_compare <- function(y,cutoff,X,nfolds=5,foldid=NULL,type.measure="devian
     fold <- foldid
   }
   
-  cols <- c("gaussian","binomial","sigma","pi","trial","grid","unit")
+  #cols <- c("gaussian","binomial","sigma","pi","trial","grid","unit")
+  cols <- c("gaussian","binomial","grid")
   pred <- matrix(data=NA,nrow=length(y),ncol=length(cols),
                  dimnames=list(NULL,cols))
   
