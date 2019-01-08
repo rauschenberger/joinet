@@ -1,3 +1,3 @@
-## spliceQTL 0.0.0 (2018-06-12)
+## colasso 0.0.0 (2019-01-08)
 
 * Added functions

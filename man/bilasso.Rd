@@ -4,9 +4,9 @@
 \alias{bilasso}
 \title{Logistic regression with a continuous response}
 \usage{
-bilasso(y, cutoff, X, npi = 100, nsigma = 100, sigma = NULL,
-  nfolds = 10, foldid = NULL, type.measure = "deviance",
-  logistic = TRUE, ...)
+bilasso(y, cutoff, X, npi = 101, pi = NULL, nsigma = 99,
+  sigma = NULL, nfolds = 10, foldid = NULL,
+  type.measure = "deviance", ...)
 }
 \arguments{
 \item{y}{continuous response\strong{:}
@@ -18,6 +18,12 @@ value between \code{min(y)} and \code{max(y)}}
 \item{X}{covariates\strong{:}
 numeric matrix with \eqn{n} rows (samples)
 and \eqn{p} columns (variables)}
+
+\item{npi}{number of \code{pi} values}
+
+\item{pi}{pi sequence\strong{:}
+vector of values in the unit interval;
+or \code{NULL} (default sequence)}
 
 \item{nsigma}{number of \code{sigma} values}
 
@@ -33,10 +39,6 @@ or \code{NULL} (balance)}
 
 \item{type.measure}{loss function for binary classification
 (linear regression uses the deviance)}
-
-\item{logistic}{fit logistic regression for comparison\strong{:}
-logical
-(currently all methods require \code{TRUE})}
 
 \item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}}
 }

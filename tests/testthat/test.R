@@ -41,7 +41,7 @@ for(dist in c("gaussian","binomial")){
 }
 
 testthat::test_that("predicted values (logistic)",{
-  a <- colasso:::predict.bilasso(x=fit,newx=X)$binomial
+  a <- colasso:::predict.bilasso(object=fit,newx=X)$binomial
   b <- as.numeric(stats::predict(object=net$binomial,newx=X,s="lambda.min",type="response"))
   testthat::expect_true(all(a==b))
 })

@@ -4,7 +4,8 @@
 \alias{bilasso_compare}
 \title{Comparison}
 \usage{
-bilasso_compare(y, cutoff, X, nfolds = 5, type.measure = "deviance")
+bilasso_compare(y, cutoff, X, nfolds = 5, foldid = NULL,
+  type.measure = "deviance")
 }
 \arguments{
 \item{y}{continuous response\strong{:}
@@ -18,6 +19,10 @@ numeric matrix with \eqn{n} rows (samples)
 and \eqn{p} columns (variables)}
 
 \item{nfolds}{number of folds}
+
+\item{foldid}{fold identifiers\strong{:}
+vector with entries between \eqn{1} and \code{nfolds};
+or \code{NULL} (balance)}
 
 \item{type.measure}{loss function for binary classification
 (linear regression uses the deviance)}
