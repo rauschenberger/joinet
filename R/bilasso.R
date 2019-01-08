@@ -83,7 +83,7 @@
 bilasso <- function(y,cutoff,X,npi=100,nsigma=100,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",logistic=TRUE,...){
   
   #--- temporary ---
-  # cutoff <- 0; nsigma <- 99; sigma <- NULL; nfolds <- 10;  foldid <- NULL; type.measure <- "deviance"; logistic <- TRUE
+  # cutoff <- 0; npi <- 100; nsigma <- 99; sigma <- NULL; nfolds <- 10;  foldid <- NULL; type.measure <- "deviance"; logistic <- TRUE
   test <- list()
   
   test$sigma <- TRUE
@@ -94,7 +94,9 @@ bilasso <- function(y,cutoff,X,npi=100,nsigma=100,sigma=NULL,nfolds=10,foldid=NU
   test$grid <- TRUE
   test$max <- FALSE
   test$grid2 <- FALSE
-
+  
+  test$calibrate <- FALSE
+  
   #--- checks ---
   colasso:::.check(x=y,type="vector")
   if(all(y %in% c(0,1))){warning("Binary response.",call.=FALSE)}
@@ -189,7 +191,7 @@ bilasso <- function(y,cutoff,X,npi=100,nsigma=100,sigma=NULL,nfolds=10,foldid=NU
     dimnames <- list(NULL,lab.s1,lab.s2)
     pred$unit <- array(data=NA,dim=c(n,100,100),dimnames=dimnames)
   }
-  
+
   for(k in seq_len(nfolds)){
 
     y0 <- y[foldid!=k]
@@ -332,9 +334,9 @@ bilasso <- function(y,cutoff,X,npi=100,nsigma=100,sigma=NULL,nfolds=10,foldid=NU
   
   if(test$trial){
     dimnames <- list(lab.sigma,lab.pi)
-    fit$trial.cvm <- matrix(data=NA,nrow=nsigma,ncol=100,dimnames=dimnames)
+    fit$trial.cvm <- matrix(data=NA,nrow=nsigma,ncol=npi,dimnames=dimnames)
     for(i in seq_len(nsigma)){
-      for(j in seq_len(100)){
+      for(j in seq_len(npi)){
         fit$trial.cvm[i,j] <- colasso:::.loss(y=z,fit=pred$trial[,i,j],family="binomial",type.measure=type.measure)[[1]]
       }
     }
@@ -356,6 +358,11 @@ bilasso <- function(y,cutoff,X,npi=100,nsigma=100,sigma=NULL,nfolds=10,foldid=NU
     fit$unit.min <- data.frame(shape1=fit$shape1[temp[,"row"]],shape2=fit$shape2[temp[,"col"]])
     cond <- fit$unit.cvm[lab.s1[temp[,"row"]],lab.s2[temp[,"col"]]]==min(fit$unit.cvm) # check
     if(!cond){stop("internal mistake",call.=FALSE)}
+  }
+  
+  # calibrate
+  if(test$calibrate){
+    fit$calibrate <- CalibratR::calibrate(actual=z,predicted=pred$y[,which.min(fit$gaussian$cvm)],nCores=1,model_idx=5)$calibration_models
   }
   
   #--- return ---
@@ -502,6 +509,10 @@ predict.bilasso <- function(x,newx,type="probability"){
   
   if(test$unit){
     prob$unit <- .prob(x=link,cutoff=x$cutoff,shape1=x$unit.min$shape1,shape2=x$unit.min$shape2)
+  }
+  
+  if(test$calibrate){
+    prob$calibrate <- CalibratR::predict_calibratR(calibration_models=x$calibrate,new=link,nCores=1)$GUESS_2
   }
 
   # consistency tests
