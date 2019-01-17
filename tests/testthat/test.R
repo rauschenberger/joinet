@@ -1,12 +1,12 @@
 
 # data simulation
-list <- colasso:::.simulate(n=100,p=200)
+list <- cornet:::.simulate(n=100,p=200)
 y <- list$y; X <- list$X
 
 # penalised regression
 cutoff <- 1
 foldid <- palasso:::.folds(y=y>cutoff,nfolds=10)
-fit <- colasso::bilasso(y=y,cutoff=cutoff,X=X,foldid=foldid)
+fit <- cornet::cornet(y=y,cutoff=cutoff,X=X,foldid=foldid)
 net <- list()
 net$gaussian <- glmnet::cv.glmnet(y=y,x=X,family="gaussian",foldid=foldid)
 net$binomial <- glmnet::cv.glmnet(y=y>cutoff,x=X,family="binomial",foldid=foldid)
@@ -41,7 +41,7 @@ for(dist in c("gaussian","binomial")){
 }
 
 testthat::test_that("predicted values (logistic)",{
-  a <- colasso:::predict.bilasso(object=fit,newx=X)$binomial
+  a <- cornet:::predict.cornet(object=fit,newx=X)$binomial
   b <- as.numeric(stats::predict(object=net$binomial,newx=X,s="lambda.min",type="response"))
   testthat::expect_true(all(a==b))
 })

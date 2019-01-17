@@ -1,4 +1,4 @@
 library(testthat)
-library(colasso)
+library(cornet)
 
-testthat::test_check("colasso")
+testthat::test_check("cornet")

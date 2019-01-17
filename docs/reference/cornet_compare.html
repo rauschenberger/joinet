@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Logistic regression with a continuous response — bilasso • colasso</title>
+<title>Comparison — cornet_compare • cornet</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Logistic regression with a continuous response — bilasso" />
+<meta property="og:title" content="Comparison — cornet_compare" />
 
-<meta property="og:description" content="Implements logistic regression with a continuous response." />
+<meta property="og:description" content="Compares models for a continuous response with a cutoff value" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -60,7 +60,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">colasso</a>
+        <a class="navbar-link" href="../index.html">cornet</a>
         <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.0</span>
       </span>
     </div>
@@ -100,20 +100,19 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Logistic regression with a continuous response</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/bilasso.R'><code>R/bilasso.R</code></a></small>
-    <div class="hidden name"><code>bilasso.Rd</code></div>
+    <h1>Comparison</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
+    <div class="hidden name"><code>cornet_compare.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Implements logistic regression with a continuous response.</p>
+    <p>Compares models for a continuous response with a cutoff value</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>bilasso</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>npi</span> <span class='kw'>=</span> <span class='fl'>101</span>, <span class='kw'>pi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>nsigma</span> <span class='kw'>=</span> <span class='fl'>99</span>,
-  <span class='kw'>sigma</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>cornet_compare</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -135,26 +134,6 @@ numeric matrix with \(n\) rows (samples)
 and \(p\) columns (variables)</p></td>
     </tr>
     <tr>
-      <th>npi</th>
-      <td><p>number of <code>pi</code> values</p></td>
-    </tr>
-    <tr>
-      <th>pi</th>
-      <td><p>pi sequence<strong>:</strong>
-vector of values in the unit interval;
-or <code>NULL</code> (default sequence)</p></td>
-    </tr>
-    <tr>
-      <th>nsigma</th>
-      <td><p>number of <code>sigma</code> values</p></td>
-    </tr>
-    <tr>
-      <th>sigma</th>
-      <td><p>sigma sequence<strong>:</strong>
-vector of increasing positive values;
-or <code>NULL</code> (default sequence)</p></td>
-    </tr>
-    <tr>
       <th>nfolds</th>
       <td><p>number of folds</p></td>
     </tr>
@@ -169,34 +148,18 @@ or <code>NULL</code> (balance)</p></td>
       <td><p>loss function for binary classification
 (linear regression uses the deviance)</p></td>
     </tr>
-    <tr>
-      <th>...</th>
-      <td><p>further arguments passed to <code><a href='http://www.rdocumentation.org/packages/glmnet/topics/glmnet'>glmnet</a></code></p></td>
-    </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>- INCLUDE note on deviance (not comparable between lin and log models)
-- alpha: elastic net parameter<strong>:</strong>
-numeric between \(0\) (ridge) and \(1\) (lasso)
-- do not use "family"</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>200</span>
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'>rnorm</span>(<span class='no'>n</span>)
-<span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'>matrix</span>(<span class='fu'>rnorm</span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
-<span class='no'>net</span> <span class='kw'>&lt;-</span> <span class='fu'>bilasso</span>(<span class='kw'>y</span><span class='kw'>=</span><span class='no'>y</span>,<span class='kw'>cutoff</span><span class='kw'>=</span><span class='fl'>0</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)
-<span class='co'>### Add ... to all glmnet::glmnet calls !!! ###</span></div></pre>
+    <pre class="examples"><div class='input'><span class='fl'>NA</span></div><div class='output co'>#&gt; [1] NA</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#details">Details</a></li>
-      
+            
       <li><a href="#examples">Examples</a></li>
     </ul>
 

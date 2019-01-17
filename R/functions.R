@@ -62,9 +62,9 @@
 #' n <- 100; p <- 200
 #' y <- rnorm(n)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-#' net <- bilasso(y=y,cutoff=0,X=X)
+#' net <- cornet(y=y,cutoff=0,X=X)
 #' ### Add ... to all glmnet::glmnet calls !!! ###
-bilasso <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",...){
+cornet <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",...){
   
   #--- temporary ---
   # cutoff <- 0; npi <- 101; pi <- NULL; nsigma <- 99; sigma <- NULL; nfolds <- 10;  foldid <- NULL; type.measure <- "deviance"; logistic <- TRUE
@@ -73,18 +73,18 @@ bilasso <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fo
   test$grid <- TRUE
   
   #--- checks ---
-  colasso:::.check(x=y,type="vector")
+  cornet:::.check(x=y,type="vector")
   if(all(y %in% c(0,1))){warning("Binary response.",call.=FALSE)}
-  colasso:::.check(x=cutoff,type="scalar",min=min(y),max=max(y))
-  colasso:::.check(x=X,type="matrix")
+  cornet:::.check(x=cutoff,type="scalar",min=min(y),max=max(y))
+  cornet:::.check(x=X,type="matrix")
   if(length(y)!=nrow(X)){stop("Contradictory sample size.",call.=FALSE)}
-  colasso:::.check(x=npi,type="scalar",min=1)
-  colasso:::.check(x=pi,type="vector",min=0,max=1,null=TRUE)
-  colasso:::.check(x=nsigma,type="scalar",min=1)
-  colasso:::.check(x=sigma,type="vector",min=.Machine$double.eps,null=TRUE)
-  colasso:::.check(x=nfolds,type="scalar",min=3)
-  colasso:::.check(x=foldid,type="vector",values=seq_len(nfolds),null=TRUE)
-  colasso:::.check(x=type.measure,type="string",values=c("deviance","class","mse","mae")) # not auc (min/max confusion)
+  cornet:::.check(x=npi,type="scalar",min=1)
+  cornet:::.check(x=pi,type="vector",min=0,max=1,null=TRUE)
+  cornet:::.check(x=nsigma,type="scalar",min=1)
+  cornet:::.check(x=sigma,type="vector",min=.Machine$double.eps,null=TRUE)
+  cornet:::.check(x=nfolds,type="scalar",min=3)
+  cornet:::.check(x=foldid,type="vector",values=seq_len(nfolds),null=TRUE)
+  cornet:::.check(x=type.measure,type="string",values=c("deviance","class","mse","mae")) # not auc (min/max confusion)
   if(!is.null(list(...)$family)){stop("Reserved argument \"family\".",call.=FALSE)}
   n <- length(y)
   
@@ -153,14 +153,14 @@ bilasso <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fo
     net <- glmnet::glmnet(y=y0,x=X0,family="gaussian")
     temp_y <- stats::predict(object=net,newx=X1,type="response",s=fit$gaussian$lambda)
     pred$y[foldid==k,seq_len(ncol(temp_y))] <- temp_y
-    cvm <- colasso:::.loss(y=y1,fit=temp_y,family="gaussian",type.measure="deviance")[[1]]
+    cvm <- cornet:::.loss(y=y1,fit=temp_y,family="gaussian",type.measure="deviance")[[1]]
     y_hat <- temp_y[,which.min(cvm)]
     
     # logistic regression
     net <- glmnet::glmnet(y=z0,x=X0,family="binomial")
     temp_z <- stats::predict(object=net,newx=X1,type="response",s=fit$binomial$lambda)
     pred$z[foldid==k,seq_len(ncol(temp_z))] <- temp_z
-    cvm <- colasso:::.loss(y=z1,fit=temp_z,family="binomial",type.measure=type.measure)[[1]]
+    cvm <- cornet:::.loss(y=z1,fit=temp_z,family="binomial",type.measure=type.measure)[[1]]
     z_hat <- temp_z[,which.min(cvm)]
     
     # fusion (sigma)
@@ -192,19 +192,19 @@ bilasso <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fo
   #--- evaluation ---
   
   # deviance (not comparable between Gaussian and binomial families)
-  fit$gaussian$cvm <- colasso:::.loss(y=y,fit=pred$y,family="gaussian",type.measure="deviance")[[1]]
+  fit$gaussian$cvm <- cornet:::.loss(y=y,fit=pred$y,family="gaussian",type.measure="deviance")[[1]]
   fit$gaussian$lambda.min <- fit$gaussian$lambda[which.min(fit$gaussian$cvm)]
   
-  fit$binomial$cvm <- colasso:::.loss(y=z,fit=pred$z,family="binomial",type.measure=type.measure)[[1]]
+  fit$binomial$cvm <- cornet:::.loss(y=z,fit=pred$z,family="binomial",type.measure=type.measure)[[1]]
   fit$binomial$lambda.min <- fit$binomial$lambda[which.min(fit$binomial$cvm)]
 
   if(test$sigma){
-    #fit$sigma.cvm <- colasso:::.loss(y=z,fit=pred$sigma,family="binomial",type.measure=type.measure)[[1]]
+    #fit$sigma.cvm <- cornet:::.loss(y=z,fit=pred$sigma,family="binomial",type.measure=type.measure)[[1]]
     #fit$sigma.min1 <- fit$sigma[which.min(fit$sigma.cvm)]
   }
 
   if(test$pi){
-    #fit$pi.cvm <- colasso:::.loss(y=z,fit=pred$pi,family="binomial",type.measure=type.measure)[[1]] # trial
+    #fit$pi.cvm <- cornet:::.loss(y=z,fit=pred$pi,family="binomial",type.measure=type.measure)[[1]] # trial
     #fit$pi.min1 <- fit$pi[which.min(fit$pi.cvm)]
   }
 
@@ -213,7 +213,7 @@ bilasso <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fo
     fit$cvm <- matrix(data=NA,nrow=nsigma,ncol=npi,dimnames=dimnames)
     for(i in seq_len(nsigma)){
       for(j in seq_len(npi)){
-        fit$cvm[i,j] <- colasso:::.loss(y=z,fit=pred$grid[,i,j],family="binomial",type.measure=type.measure)[[1]]
+        fit$cvm[i,j] <- cornet:::.loss(y=z,fit=pred$grid[,i,j],family="binomial",type.measure=type.measure)[[1]]
       }
     }
     temp <- which(fit$cvm==min(fit$cvm),arr.ind=TRUE,useNames=TRUE)
@@ -230,7 +230,7 @@ bilasso <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fo
                    table=table(z),
                    test=as.data.frame(test))
 
-  class(fit) <- "bilasso"
+  class(fit) <- "cornet"
   return(fit)
 }
 
@@ -244,7 +244,7 @@ bilasso <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fo
 #' to do
 #'
 #' @param object
-#' bilasso object
+#' cornet object
 #' 
 #' @param ...
 #' to do
@@ -252,7 +252,7 @@ bilasso <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fo
 #' @examples
 #' NA
 #' 
-coef.bilasso <- function(object,...){
+coef.cornet <- function(object,...){
   
   if(length(list(...))!=0){warning("Ignoring arguments.")}
   
@@ -284,7 +284,7 @@ coef.bilasso <- function(object,...){
 #' @examples
 #' NA
 #' 
-plot.bilasso <- function(x,...){
+plot.cornet <- function(x,...){
   
   if(length(list(...))!=0){warning("Ignoring arguments.")}
 
@@ -319,7 +319,7 @@ plot.bilasso <- function(x,...){
 #' to do
 #'
 #' @param object
-#' bilasso object
+#' cornet object
 #' 
 #' @param newx
 #' covariates\strong{:}
@@ -335,7 +335,7 @@ plot.bilasso <- function(x,...){
 #' @examples
 #' NA
 #' 
-predict.bilasso <- function(object,newx,type="probability",...){
+predict.cornet <- function(object,newx,type="probability",...){
   
   if(length(list(...))!=0){warning("Ignoring arguments.")}
   
@@ -394,12 +394,12 @@ predict.bilasso <- function(object,newx,type="probability",...){
 #' @description
 #' Compares models for a continuous response with a cutoff value
 #'
-#' @inheritParams  bilasso
+#' @inheritParams  cornet
 #'
 #' @examples
 #' NA
 #' 
-bilasso_compare <- function(y,cutoff,X,nfolds=5,foldid=NULL,type.measure="deviance"){
+cornet_compare <- function(y,cutoff,X,nfolds=5,foldid=NULL,type.measure="deviance"){
   
   z <- 1*(y > cutoff)
   if(is.null(foldid)){
@@ -415,10 +415,10 @@ bilasso_compare <- function(y,cutoff,X,nfolds=5,foldid=NULL,type.measure="devian
   
   select <- list()
   for(i in seq_len(nfolds)){
-    fit <- colasso::bilasso(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],logistic=TRUE,type.measure=type.measure)
-    tryCatch(expr=colasso:::plot.bilasso(fit),error=function(x) NULL)
-    #colasso:::plot.bilasso(fit)
-    temp <- colasso:::predict.bilasso(fit,newx=X[fold==i,])
+    fit <- cornet::cornet(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],logistic=TRUE,type.measure=type.measure)
+    tryCatch(expr=cornet:::plot.cornet(fit),error=function(x) NULL)
+    #cornet:::plot.cornet(fit)
+    temp <- cornet:::predict.cornet(fit,newx=X[fold==i,])
     if(any(temp<0|temp>1)){stop("Outside unit interval.",call.=FALSE)}
     model <- colnames(pred)
     for(j in seq_along(model)){
@@ -427,7 +427,7 @@ bilasso_compare <- function(y,cutoff,X,nfolds=5,foldid=NULL,type.measure="devian
   }
   
   type <- c("deviance","class","mse","mae","auc")
-  loss <- lapply(X=type,FUN=function(x) colasso:::.loss(y=z,fit=pred,family="binomial",type.measure=x,foldid=fold)[[1]])
+  loss <- lapply(X=type,FUN=function(x) cornet:::.loss(y=z,fit=pred,family="binomial",type.measure=x,foldid=fold)[[1]])
   names(loss) <- type
 
   return(loss)
@@ -654,11 +654,11 @@ bilasso_compare <- function(y,cutoff,X,nfolds=5,foldid=NULL,type.measure="devian
 
 #--- Lost and found ------------------------------------------------------------
 
-# calibrate (for bilasso)
+# calibrate (for cornet)
 #if(test$calibrate){
 #  fit$calibrate <- CalibratR::calibrate(actual=z,predicted=pred$y[,which.min(fit$gaussian$cvm)],nCores=1,model_idx=5)$calibration_models
 #}
-# calibrate (for predict.bilasso)
+# calibrate (for predict.cornet)
 #if(test$calibrate){
 #  prob$calibrate <- CalibratR::predict_calibratR(calibration_models=x$calibrate,new=link,nCores=1)$GUESS_2
 #}

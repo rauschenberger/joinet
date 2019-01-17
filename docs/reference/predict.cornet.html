@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>to do — plot.bilasso • colasso</title>
+<title>to do — predict.cornet • cornet</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="to do — plot.bilasso" />
+<meta property="og:title" content="to do — predict.cornet" />
 
 <meta property="og:description" content="to do" />
 <meta name="twitter:card" content="summary" />
@@ -60,7 +60,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">colasso</a>
+        <a class="navbar-link" href="../index.html">cornet</a>
         <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.0</span>
       </span>
     </div>
@@ -101,8 +101,8 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>to do</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/bilasso.R'><code>R/bilasso.R</code></a></small>
-    <div class="hidden name"><code>plot.bilasso.Rd</code></div>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
+    <div class="hidden name"><code>predict.cornet.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -111,19 +111,29 @@
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for bilasso</span>
-<span class='fu'>plot</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for cornet</span>
+<span class='fu'>predict</span>(<span class='no'>object</span>, <span class='no'>newx</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"probability"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>to do</p></td>
+      <th>object</th>
+      <td><p>cornet object</p></td>
+    </tr>
+    <tr>
+      <th>newx</th>
+      <td><p>covariates<strong>:</strong>
+numeric matrix with \(n\) rows (samples)
+and \(p\) columns (variables)</p></td>
+    </tr>
+    <tr>
+      <th>type</th>
+      <td><p><code>"probability"</code>, <code>"odds"</code>, <code>"log-odds"</code></p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>further arguments</p></td>
+      <td><p>to do</p></td>
     </tr>
     </table>
     
