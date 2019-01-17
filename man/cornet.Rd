@@ -4,7 +4,7 @@
 \alias{cornet}
 \title{Logistic regression with a continuous response}
 \usage{
-cornet(y, cutoff, X, npi = 101, pi = NULL, nsigma = 99,
+cornet(y, cutoff, X, alpha = 1, npi = 101, pi = NULL, nsigma = 99,
   sigma = NULL, nfolds = 10, foldid = NULL,
   type.measure = "deviance", ...)
 }
@@ -18,6 +18,9 @@ value between \code{min(y)} and \code{max(y)}}
 \item{X}{covariates\strong{:}
 numeric matrix with \eqn{n} rows (samples)
 and \eqn{p} columns (variables)}
+
+\item{alpha}{elastic net mixing parameter\strong{:}
+numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
 \item{npi}{number of \code{pi} values}
 

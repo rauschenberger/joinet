@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Comparison — cornet_compare • cornet</title>
+<title>Comparison — .compare • cornet</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="Comparison — cornet_compare" />
+<meta property="og:title" content="Comparison — .compare" />
 
 <meta property="og:description" content="Compares models for a continuous response with a cutoff value" />
 <meta name="twitter:card" content="summary" />
@@ -102,7 +102,7 @@
     <div class="page-header">
     <h1>Comparison</h1>
     <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>cornet_compare.Rd</code></div>
+    <div class="hidden name"><code>dot-compare.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -111,7 +111,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>cornet_compare</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+    <pre class="usage"><span class='fu'>.compare</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -132,6 +132,11 @@ value between <code>min(y)</code> and <code>max(y)</code></p></td>
       <td><p>covariates<strong>:</strong>
 numeric matrix with \(n\) rows (samples)
 and \(p\) columns (variables)</p></td>
+    </tr>
+    <tr>
+      <th>alpha</th>
+      <td><p>elastic net mixing parameter<strong>:</strong>
+numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
     </tr>
     <tr>
       <th>nfolds</th>

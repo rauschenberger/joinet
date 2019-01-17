@@ -3,5 +3,5 @@
 S3method(coef,cornet)
 S3method(plot,cornet)
 S3method(predict,cornet)
+export(.compare)
 export(cornet)
-export(cornet_compare)

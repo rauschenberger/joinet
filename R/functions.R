@@ -21,6 +21,10 @@
 #' numeric matrix with \eqn{n} rows (samples)
 #' and \eqn{p} columns (variables)
 #' 
+#' @param alpha
+#' elastic net mixing parameter\strong{:}
+#' numeric between \eqn{0} (ridge) and \eqn{1} (lasso)
+#' 
 #' @param foldid
 #' fold identifiers\strong{:}
 #' vector with entries between \eqn{1} and \code{nfolds};
@@ -64,7 +68,7 @@
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' net <- cornet(y=y,cutoff=0,X=X)
 #' ### Add ... to all glmnet::glmnet calls !!! ###
-cornet <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",...){
+cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",...){
   
   #--- temporary ---
   # cutoff <- 0; npi <- 101; pi <- NULL; nsigma <- 99; sigma <- NULL; nfolds <- 10;  foldid <- NULL; type.measure <- "deviance"; logistic <- TRUE
@@ -77,6 +81,7 @@ cornet <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fol
   if(all(y %in% c(0,1))){warning("Binary response.",call.=FALSE)}
   cornet:::.check(x=cutoff,type="scalar",min=min(y),max=max(y))
   cornet:::.check(x=X,type="matrix")
+  cornet:::.check(x=alpha,type="scalar",min=0,max=1)
   if(length(y)!=nrow(X)){stop("Contradictory sample size.",call.=FALSE)}
   cornet:::.check(x=npi,type="scalar",min=1)
   cornet:::.check(x=pi,type="vector",min=0,max=1,null=TRUE)
@@ -98,8 +103,8 @@ cornet <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fol
   
   #--- model fitting ---
   fit <- list()
-  fit$gaussian <- glmnet::glmnet(y=y,x=X,family="gaussian")
-  fit$binomial <- glmnet::glmnet(y=z,x=X,family="binomial")
+  fit$gaussian <- glmnet::glmnet(y=y,x=X,family="gaussian",alpha=alpha)
+  fit$binomial <- glmnet::glmnet(y=z,x=X,family="binomial",alpha=alpha)
    
   #--- sigma sequence ---
   if(is.null(sigma)){
@@ -150,14 +155,14 @@ cornet <- function(y,cutoff,X,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,fol
     X1 <- X[foldid==k,,drop=FALSE]
     
     # linear regression
-    net <- glmnet::glmnet(y=y0,x=X0,family="gaussian")
+    net <- glmnet::glmnet(y=y0,x=X0,family="gaussian",alpha=alpha)
     temp_y <- stats::predict(object=net,newx=X1,type="response",s=fit$gaussian$lambda)
     pred$y[foldid==k,seq_len(ncol(temp_y))] <- temp_y
     cvm <- cornet:::.loss(y=y1,fit=temp_y,family="gaussian",type.measure="deviance")[[1]]
     y_hat <- temp_y[,which.min(cvm)]
     
     # logistic regression
-    net <- glmnet::glmnet(y=z0,x=X0,family="binomial")
+    net <- glmnet::glmnet(y=z0,x=X0,family="binomial",alpha=alpha)
     temp_z <- stats::predict(object=net,newx=X1,type="response",s=fit$binomial$lambda)
     pred$z[foldid==k,seq_len(ncol(temp_z))] <- temp_z
     cvm <- cornet:::.loss(y=z1,fit=temp_z,family="binomial",type.measure=type.measure)[[1]]
@@ -399,7 +404,7 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' @examples
 #' NA
 #' 
-cornet_compare <- function(y,cutoff,X,nfolds=5,foldid=NULL,type.measure="deviance"){
+.compare <- function(y,cutoff,X,alpha=1,nfolds=5,foldid=NULL,type.measure="deviance"){
   
   z <- 1*(y > cutoff)
   if(is.null(foldid)){
@@ -415,7 +420,7 @@ cornet_compare <- function(y,cutoff,X,nfolds=5,foldid=NULL,type.measure="devianc
   
   select <- list()
   for(i in seq_len(nfolds)){
-    fit <- cornet::cornet(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],logistic=TRUE,type.measure=type.measure)
+    fit <- cornet::cornet(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],alpha=alpha,logistic=TRUE,type.measure=type.measure)
     tryCatch(expr=cornet:::plot.cornet(fit),error=function(x) NULL)
     #cornet:::plot.cornet(fit)
     temp <- cornet:::predict.cornet(fit,newx=X[fold==i,])
