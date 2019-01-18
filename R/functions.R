@@ -303,16 +303,21 @@ plot.cornet <- function(x,...){
   graphics::par(xaxs="i",yaxs="i")
   graphics::plot.window(xlim=c(1-0.5,nsigma+0.5),ylim=c(1-0.5,npi+0.5))
   
-  sel <- which(x$sigma==x$sigma.min)
-  graphics::axis(side=1,at=c(1,sel,nsigma),labels=signif(x$sigma[c(1,sel,nsigma)],digits=2))
+  ssigma <- which(x$sigma==x$sigma.min)
+  graphics::axis(side=1,at=c(1,ssigma,nsigma),labels=signif(x$sigma[c(1,ssigma,nsigma)],digits=2))
   
-  sel <- which(x$pi==x$pi.min)
-  graphics::axis(side=2,at=c(1,sel,npi),labels=signif(x$pi[c(1,sel,npi)],digits=2))
+  spi <- which(x$pi==x$pi.min)
+  graphics::axis(side=2,at=c(1,spi,npi),labels=signif(x$pi[c(1,spi,npi)],digits=2))
   
   graphics::title(xlab=expression(sigma),ylab=expression(pi))
   #graphics::.filled.contour(x=seq_along(x$sigma),y=seq_along(x$pi),z=x$cvm,levels=levels,col=col)
   graphics::image(x=seq_along(x$sigma),y=seq_along(x$pi),z=x$cvm,breaks=levels,col=col,add=TRUE)
   graphics::box()
+  
+  #graphics::abline(v=ssigma,lty=2,col="grey")
+  #graphics::abline(h=spi,lty=2,col="grey")
+  
+  graphics::points(x=ssigma,y=spi,pch=4,col="black",cex=1)
   
 }
 
@@ -551,6 +556,19 @@ predict.cornet <- function(object,newx,type="probability",...){
   y <- stats::rnorm(n=n,mean=mean,sd=fac*stats::sd(mean))
   return(list(y=y,X=X))
 }
+
+#--- start trial ---
+if(FALSE){
+  n <- 1000
+  y_hat <- runif(n)
+  y <- y_hat > 0.9
+  y <- rbinom(n=n,size=1,prob=0.5)
+  foldid <- rep(1:10,length.out=n)
+  .loss(y=y,fit=y_hat,family="binomial",type.measure="auc",foldid=foldid)
+}
+#--- end trial ---
+
+
 
 # Correct this function in the palasso package (search twice for "# typo").
 .loss <- function (y,fit,family,type.measure,foldid=NULL){
