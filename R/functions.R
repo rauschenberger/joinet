@@ -405,11 +405,14 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' Compares models for a continuous response with a cutoff value
 #'
 #' @inheritParams  cornet
+#' 
+#' @param trial
+#' logical
 #'
 #' @examples
 #' NA
 #' 
-.compare <- function(y,cutoff,X,alpha=1,nfolds=5,foldid=NULL,type.measure="deviance"){
+.compare <- function(y,cutoff,X,alpha=1,nfolds=5,foldid=NULL,type.measure="deviance",trial=FALSE){
   
   z <- 1*(y > cutoff)
   if(is.null(foldid)){
@@ -439,8 +442,15 @@ predict.cornet <- function(object,newx,type="probability",...){
   type <- c("deviance","class","mse","mae","auc")
   loss <- lapply(X=type,FUN=function(x) cornet:::.loss(y=z,fit=pred,family="binomial",type.measure=x,foldid=fold)[[1]])
   names(loss) <- type
+  
+  if(trial){
+    list <- list(diff=(pred-z)^2,loss=loss)
+    return(list)
+  } else {
+    return(loss)
+  }
 
-  return(loss)
+  
 }
 
 #' @title

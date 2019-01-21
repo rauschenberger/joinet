@@ -5,7 +5,7 @@
 \title{Comparison}
 \usage{
 .compare(y, cutoff, X, alpha = 1, nfolds = 5, foldid = NULL,
-  type.measure = "deviance")
+  type.measure = "deviance", trial = FALSE)
 }
 \arguments{
 \item{y}{continuous response\strong{:}
@@ -29,6 +29,8 @@ or \code{NULL} (balance)}
 
 \item{type.measure}{loss function for binary classification
 (linear regression uses the deviance)}
+
+\item{trial}{logical}
 }
 \description{
 Compares models for a continuous response with a cutoff value
