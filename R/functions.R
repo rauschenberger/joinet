@@ -303,13 +303,7 @@ plot.cornet <- function(x,...){
   graphics::par(xaxs="i",yaxs="i")
   graphics::plot.window(xlim=c(1-0.5,nsigma+0.5),ylim=c(1-0.5,npi+0.5))
   
-  ssigma <- which(x$sigma==x$sigma.min)
-  graphics::axis(side=1,at=c(1,ssigma,nsigma),labels=signif(x$sigma[c(1,ssigma,nsigma)],digits=2))
-  
-  spi <- which(x$pi==x$pi.min)
-  graphics::axis(side=2,at=c(1,spi,npi),labels=signif(x$pi[c(1,spi,npi)],digits=2))
-  
-  graphics::title(xlab=expression(sigma),ylab=expression(pi))
+  graphics::title(xlab=expression(sigma),ylab=expression(pi),cex.lab=2)
   #graphics::.filled.contour(x=seq_along(x$sigma),y=seq_along(x$pi),z=x$cvm,levels=levels,col=col)
   graphics::image(x=seq_along(x$sigma),y=seq_along(x$pi),z=x$cvm,breaks=levels,col=col,add=TRUE)
   graphics::box()
@@ -317,7 +311,23 @@ plot.cornet <- function(x,...){
   #graphics::abline(v=ssigma,lty=2,col="grey")
   #graphics::abline(h=spi,lty=2,col="grey")
   
-  graphics::points(x=ssigma,y=spi,pch=4,col="black",cex=1)
+  ssigma <- which(x$sigma %in% x$sigma.min)
+  spi <- which(x$pi %in% x$pi.min)
+  
+  if(length(ssigma)==1 & length(spi)==1){
+    graphics::axis(side=1,at=c(1,ssigma,nsigma),labels=signif(x$sigma[c(1,ssigma,nsigma)],digits=2))
+    graphics::axis(side=2,at=c(1,spi,npi),labels=signif(x$pi[c(1,spi,npi)],digits=2))
+    graphics::points(x=ssigma,y=spi,pch=4,col="black",cex=1)
+  } else {
+    at <- seq(from=1,to=nsigma,length.out=5)
+    graphics::axis(side=1,at=at,labels=signif(x$sigma,digits=2)[at])
+    at <- seq(from=1,to=nsigma,length.out=5)
+    graphics::axis(side=2,at=at,labels=signif(x$pi,digits=2)[at])
+  }
+  
+  #a <- sapply(x$sigma.min,function(y) which(x$sigma==y))
+  #b <- sapply(x$pi.min,function(y) which(x$pi==y))
+  #graphics::points(x=a,y=b,pch=4,col="black",cex=1)
   
 }
 
@@ -395,7 +405,7 @@ predict.cornet <- function(object,newx,type="probability",...){
   return(as.data.frame(frame))
 }
 
-#--- Internal functions --------------------------------------------------------
+#--- Application ---------------------------------------------------------------
 
 #' @export
 #' @title
@@ -406,13 +416,10 @@ predict.cornet <- function(object,newx,type="probability",...){
 #'
 #' @inheritParams  cornet
 #' 
-#' @param trial
-#' logical
-#'
 #' @examples
 #' NA
 #' 
-.compare <- function(y,cutoff,X,alpha=1,nfolds=5,foldid=NULL,type.measure="deviance",trial=FALSE){
+.compare <- function(y,cutoff,X,alpha=1,nfolds=5,foldid=NULL,type.measure="deviance"){
   
   z <- 1*(y > cutoff)
   if(is.null(foldid)){
@@ -421,16 +428,14 @@ predict.cornet <- function(object,newx,type="probability",...){
     fold <- foldid
   }
   
-  #cols <- c("gaussian","binomial","sigma","pi","trial","grid","unit")
   cols <- c("gaussian","binomial","grid")
   pred <- matrix(data=NA,nrow=length(y),ncol=length(cols),
                  dimnames=list(NULL,cols))
   
   select <- list()
   for(i in seq_len(nfolds)){
-    fit <- cornet::cornet(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],alpha=alpha,logistic=TRUE,type.measure=type.measure)
+    fit <- cornet::cornet(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],alpha=alpha,type.measure=type.measure)
     tryCatch(expr=cornet:::plot.cornet(fit),error=function(x) NULL)
-    #cornet:::plot.cornet(fit)
     temp <- cornet:::predict.cornet(fit,newx=X[fold==i,])
     if(any(temp<0|temp>1)){stop("Outside unit interval.",call.=FALSE)}
     model <- colnames(pred)
@@ -443,15 +448,77 @@ predict.cornet <- function(object,newx,type="probability",...){
   loss <- lapply(X=type,FUN=function(x) cornet:::.loss(y=z,fit=pred,family="binomial",type.measure=x,foldid=fold)[[1]])
   names(loss) <- type
   
-  if(trial){
-    list <- list(diff=(pred-z)^2,loss=loss)
-    return(list)
-  } else {
-    return(loss)
-  }
-
+  #if(trial){
+  #  list <- list(diff=(pred-z)^2,fold=fold,loss=loss)
+  #  return(list)
+  #} else {
+  #  return(loss)
+  #}
   
+  return(loss)
+
 }
+
+
+#' @export
+#' @title
+#' Testing
+#'
+#' @description
+#' Compares models for a continuous response with a cutoff value (testing)
+#'
+#' @inheritParams cornet
+#' 
+#' @examples
+#' NA
+#' 
+.test <- function(y,cutoff,X,alpha=1,type.measure="deviance"){
+  
+  z <- 1*(y > cutoff)
+  fold <- palasso:::.folds(y=z,nfolds=5)
+  fold <- ifelse(fold==1,1,0)
+  
+  fit <- cornet::cornet(y=y[fold==0],cutoff=cutoff,X=X[fold==0,],alpha=alpha)
+  tryCatch(expr=cornet:::plot.cornet(fit),error=function(x) NULL)
+  pred <- cornet:::predict.cornet(fit,newx=X[fold==1,])
+  if(any(pred<0|pred>1)){stop("Outside unit interval.",call.=FALSE)}
+  
+  #res <- (pred-z[fold==1])^2 # MSE
+  #pvalue <- wilcox.test(x=res[,"binomial"],y=res[,"grid"],paired=TRUE,alternative="greater")$p.value
+  #colMeans(abs(pred-0.5)) # distance from 0.5
+  
+  limit <- 1e-05
+  pred[pred < limit] <- limit
+  pred[pred > 1 - limit] <- 1 - limit
+  res <- -2 * (y[fold==1] * log(pred) + (1 - y[fold==1]) * log(1 - pred))
+  pvalue <- stats::wilcox.test(x=res[,"binomial"],y=res[,"grid"],paired=TRUE,alternative="greater")$p.value
+  
+  return(pvalue)
+}
+
+# Simulates y and X.
+.simulate <- function(n,p,prob=0.2,fac=1){
+  beta <- stats::rnorm(n=p)
+  cond <- stats::rbinom(n=p,size=1,prob=prob)
+  beta[cond==0] <- 0
+  X <- matrix(stats::rnorm(n=n*p),nrow=n,ncol=p)
+  mean <- X %*% beta
+  y <- stats::rnorm(n=n,mean=mean,sd=fac*stats::sd(mean))
+  return(list(y=y,X=X))
+}
+
+#--- start trial ---
+if(FALSE){
+  n <- 1000
+  y_hat <- runif(n)
+  y <- y_hat > 0.9
+  y <- rbinom(n=n,size=1,prob=0.5)
+  foldid <- rep(1:10,length.out=n)
+  .loss(y=y,fit=y_hat,family="binomial",type.measure="auc",foldid=foldid)
+}
+#--- end trial ---
+
+#--- Internal functions --------------------------------------------------------
 
 #' @title
 #' Arguments
@@ -556,27 +623,6 @@ predict.cornet <- function(object,newx,type="probability",...){
   return(invisible(NULL))
 }
 
-# Simulates y and X.
-.simulate <- function(n,p,prob=0.2,fac=1){
-  beta <- stats::rnorm(n=p)
-  cond <- stats::rbinom(n=p,size=1,prob=prob)
-  beta[cond==0] <- 0
-  X <- matrix(stats::rnorm(n=n*p),nrow=n,ncol=p)
-  mean <- X %*% beta
-  y <- stats::rnorm(n=n,mean=mean,sd=fac*stats::sd(mean))
-  return(list(y=y,X=X))
-}
-
-#--- start trial ---
-if(FALSE){
-  n <- 1000
-  y_hat <- runif(n)
-  y <- y_hat > 0.9
-  y <- rbinom(n=n,size=1,prob=0.5)
-  foldid <- rep(1:10,length.out=n)
-  .loss(y=y,fit=y_hat,family="binomial",type.measure="auc",foldid=foldid)
-}
-#--- end trial ---
 
 
 

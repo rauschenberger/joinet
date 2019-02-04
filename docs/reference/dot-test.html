@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Comparison — .compare • cornet</title>
+<title>Testing — .test • cornet</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Comparison — .compare" />
+<meta property="og:title" content="Testing — .test" />
 
-<meta property="og:description" content="Compares models for a continuous response with a cutoff value" />
+<meta property="og:description" content="Compares models for a continuous response with a cutoff value (testing)" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -100,19 +100,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Comparison</h1>
+    <h1>Testing</h1>
     <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>dot-compare.Rd</code></div>
+    <div class="hidden name"><code>dot-test.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Compares models for a continuous response with a cutoff value</p>
+    <p>Compares models for a continuous response with a cutoff value (testing)</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>.compare</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>)</pre>
+    <pre class="usage"><span class='fu'>.test</span>(<span class='no'>y</span>, <span class='no'>cutoff</span>, <span class='no'>X</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,16 +136,6 @@ and \(p\) columns (variables)</p></td>
       <th>alpha</th>
       <td><p>elastic net mixing parameter<strong>:</strong>
 numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
-    </tr>
-    <tr>
-      <th>nfolds</th>
-      <td><p>number of folds</p></td>
-    </tr>
-    <tr>
-      <th>foldid</th>
-      <td><p>fold identifiers<strong>:</strong>
-vector with entries between \(1\) and <code>nfolds</code>;
-or <code>NULL</code> (balance)</p></td>
     </tr>
     <tr>
       <th>type.measure</th>
