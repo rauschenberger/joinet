@@ -303,7 +303,15 @@ plot.cornet <- function(x,...){
 
   k <- 100
   levels <- stats::quantile(x$cvm,probs=seq(from=0,to=1,length.out=k+1))
-  col <- colorspace::diverge_hsv(n=k)
+  
+  ## RColorBrewer
+  if("RColorBrewer" %in% .packages(all.available=TRUE)){
+    pal <- rev(c("white",RColorBrewer::brewer.pal(n=9,name="Blues")))
+    col <- grDevices::colorRampPalette(colors=pal)(k)
+  } else {
+    col <- grDevices::heat.colors(n=k)
+  }
+  
   nsigma <- length(x$sigma)
   npi <- length(x$pi)
   
@@ -324,7 +332,7 @@ plot.cornet <- function(x,...){
     graphics::axis(side=1,at=c(1,ssigma,nsigma),labels=signif(x$sigma[c(1,ssigma,nsigma)],digits=2))
     graphics::axis(side=2,at=c(1,spi,npi),labels=signif(x$pi[c(1,spi,npi)],digits=2))
     # point for tuned parameters
-    graphics::points(x=ssigma,y=spi,pch=4,col="black",cex=1)
+    graphics::points(x=ssigma,y=spi,pch=4,col="white",cex=1)
   } else {
     # axes with standard labels
     at <- seq(from=1,to=nsigma,length.out=5)
@@ -334,7 +342,7 @@ plot.cornet <- function(x,...){
     # points for selected parameters
     isigma <- sapply(x$sigma.min,function(y) which(x$sigma==y))
     ipi <- sapply(x$pi.min,function(y) which(x$pi==y))
-    graphics::points(x=isigma,y=ipi,pch=4,col="black",cex=1)
+    graphics::points(x=isigma,y=ipi,pch=4,col="white",cex=1)
   }
   
 }
