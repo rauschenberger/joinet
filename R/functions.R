@@ -243,16 +243,23 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
 
 #' @export
 #' @title
-#' to do
+#' Extract estimated coefficients
 #'
 #' @description
-#' to do
+#' Extracts estimated coefficients from linear and logistic regression,
+#' under the penalty parameter that minimises the cross-validated loss.
 #'
 #' @param object
-#' cornet object
+#' \link[cornet]{cornet} object
 #' 
 #' @param ...
-#' to do
+#' further arguments (not applicable)
+#' 
+#' @return
+#' This function returns a matrix with \eqn{n} rows and two columns,
+#' where \eqn{n} is the sample size. It includes the estimated coefficients
+#' from linear (first column, \code{"beta"})
+#' and logistic (second column, \code{"gamma"}) regression.
 #'
 #' @examples
 #' NA
@@ -275,16 +282,17 @@ coef.cornet <- function(object,...){
 
 #' @export
 #' @title
-#' to do
+#' Plot loss matrix
 #'
 #' @description
-#' to do
+#' Plots the loss for difference combinations of
+#' the weight (pi) and scale (sigma) paramters.
 #'
 #' @param x
-#' to do
+#' \link[cornet]{cornet} object
 #' 
 #' @param ...
-#' further arguments
+#' further arguments (not applicable)
 #'
 #' @examples
 #' NA
@@ -303,43 +311,49 @@ plot.cornet <- function(x,...){
   graphics::par(xaxs="i",yaxs="i")
   graphics::plot.window(xlim=c(1-0.5,nsigma+0.5),ylim=c(1-0.5,npi+0.5))
   
-  graphics::title(xlab=expression(sigma),ylab=expression(pi),cex.lab=2)
+  graphics::title(xlab=expression(sigma),ylab=expression(pi),cex.lab=1)
   #graphics::.filled.contour(x=seq_along(x$sigma),y=seq_along(x$pi),z=x$cvm,levels=levels,col=col)
   graphics::image(x=seq_along(x$sigma),y=seq_along(x$pi),z=x$cvm,breaks=levels,col=col,add=TRUE)
   graphics::box()
-  
-  #graphics::abline(v=ssigma,lty=2,col="grey")
-  #graphics::abline(h=spi,lty=2,col="grey")
   
   ssigma <- which(x$sigma %in% x$sigma.min)
   spi <- which(x$pi %in% x$pi.min)
   
   if(length(ssigma)==1 & length(spi)==1){
+    # axes with labels for tuned parameters
     graphics::axis(side=1,at=c(1,ssigma,nsigma),labels=signif(x$sigma[c(1,ssigma,nsigma)],digits=2))
     graphics::axis(side=2,at=c(1,spi,npi),labels=signif(x$pi[c(1,spi,npi)],digits=2))
+    # point for tuned parameters
     graphics::points(x=ssigma,y=spi,pch=4,col="black",cex=1)
   } else {
+    # axes with standard labels
     at <- seq(from=1,to=nsigma,length.out=5)
     graphics::axis(side=1,at=at,labels=signif(x$sigma,digits=2)[at])
     at <- seq(from=1,to=nsigma,length.out=5)
     graphics::axis(side=2,at=at,labels=signif(x$pi,digits=2)[at])
+    # points for selected parameters
+    isigma <- sapply(x$sigma.min,function(y) which(x$sigma==y))
+    ipi <- sapply(x$pi.min,function(y) which(x$pi==y))
+    graphics::points(x=isigma,y=ipi,pch=4,col="black",cex=1)
   }
-  
-  #a <- sapply(x$sigma.min,function(y) which(x$sigma==y))
-  #b <- sapply(x$pi.min,function(y) which(x$pi==y))
-  #graphics::points(x=a,y=b,pch=4,col="black",cex=1)
   
 }
 
 #' @export
 #' @title
-#' to do
+#' Predict binary outcome
 #'
 #' @description
-#' to do
-#'
+#' Predicts the binary outcome with linear, logistic, and combined regression.
+#' 
+#' @details
+#' For linear regression, this function tentatively transforms
+#' the predicted values to predicted probabilities,
+#' using a Gaussian distribution with a fixed mean (threshold)
+#' and a fixed variance (estimated variance of the numeric outcome).
+#' 
 #' @param object
-#' cornet object
+#' \link[cornet]{cornet} object
 #' 
 #' @param newx
 #' covariates\strong{:}
@@ -350,7 +364,7 @@ plot.cornet <- function(x,...){
 #' \code{"probability"}, \code{"odds"}, \code{"log-odds"}
 #' 
 #' @param ...
-#' to do
+#' further arguments (not applicable)
 #' 
 #' @examples
 #' NA

@@ -2,17 +2,18 @@
 % Please edit documentation in R/functions.R
 \name{plot.cornet}
 \alias{plot.cornet}
-\title{to do}
+\title{Plot loss matrix}
 \usage{
 \method{plot}{cornet}(x, ...)
 }
 \arguments{
-\item{x}{to do}
+\item{x}{\link[cornet]{cornet} object}
 
-\item{...}{further arguments}
+\item{...}{further arguments (not applicable)}
 }
 \description{
-to do
+Plots the loss for difference combinations of
+the weight (pi) and scale (sigma) paramters.
 }
 \examples{
 NA

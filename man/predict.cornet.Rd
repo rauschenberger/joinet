@@ -2,12 +2,12 @@
 % Please edit documentation in R/functions.R
 \name{predict.cornet}
 \alias{predict.cornet}
-\title{to do}
+\title{Predict binary outcome}
 \usage{
 \method{predict}{cornet}(object, newx, type = "probability", ...)
 }
 \arguments{
-\item{object}{cornet object}
+\item{object}{\link[cornet]{cornet} object}
 
 \item{newx}{covariates\strong{:}
 numeric matrix with \eqn{n} rows (samples)
@@ -15,10 +15,16 @@ and \eqn{p} columns (variables)}
 
 \item{type}{\code{"probability"}, \code{"odds"}, \code{"log-odds"}}
 
-\item{...}{to do}
+\item{...}{further arguments (not applicable)}
 }
 \description{
-to do
+Predicts the binary outcome with linear, logistic, and combined regression.
+}
+\details{
+For linear regression, this function tentatively transforms
+the predicted values to predicted probabilities,
+using a Gaussian distribution with a fixed mean (threshold)
+and a fixed variance (estimated variance of the numeric outcome).
 }
 \examples{
 NA

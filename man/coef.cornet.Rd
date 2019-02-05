@@ -2,17 +2,24 @@
 % Please edit documentation in R/functions.R
 \name{coef.cornet}
 \alias{coef.cornet}
-\title{to do}
+\title{Extract estimated coefficients}
 \usage{
 \method{coef}{cornet}(object, ...)
 }
 \arguments{
-\item{object}{cornet object}
+\item{object}{\link[cornet]{cornet} object}
 
-\item{...}{to do}
+\item{...}{further arguments (not applicable)}
+}
+\value{
+This function returns a matrix with \eqn{n} rows and two columns,
+where \eqn{n} is the sample size. It includes the estimated coefficients
+from linear (first column, \code{"beta"})
+and logistic (second column, \code{"gamma"}) regression.
 }
 \description{
-to do
+Extracts estimated coefficients from linear and logistic regression,
+under the penalty parameter that minimises the cross-validated loss.
 }
 \examples{
 NA
