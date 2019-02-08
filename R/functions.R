@@ -470,6 +470,37 @@ predict.cornet <- function(object,newx,type="probability",...){
   loss <- lapply(X=type,FUN=function(x) cornet:::.loss(y=z,fit=pred,family="binomial",type.measure=x,foldid=fold)[[1]])
   names(loss) <- type
   
+  ###################
+  ### start trial ###
+  
+  # squared deviance residuals
+  limit <- 1e-05
+  pred[pred < limit] <- limit
+  pred[pred > 1 - limit] <- 1 - limit
+  res <- -2 * (z * log(pred) + (1 - z) * log(1 - pred))
+  rxs <- res[,"binomial"]
+  rys <- res[,"grid"]
+  
+  ## examine differences per fold
+  loss$cv.diff <- loss$cv.size <- loss$cv.pval <- numeric()
+  for(i in seq_len(nfolds)){
+    cond <- fold==i
+    loss$cv.size[i] <- mean((rxs>rys)[cond])
+    loss$cv.diff[i] <- stats::median(((rys-rxs)/rxs)[cond])
+    loss$cv.pval[i] <- stats::wilcox.test(x=rxs[cond],y=rys[cond],paired=TRUE,
+                           alternative="greater")$p.value
+  }
+  
+  # examine all differences
+  loss$all.size <- mean(rxs>rys)
+  loss$all.diff <- stats::median((rys-rxs)/rxs)
+  loss$all.pval <- stats::wilcox.test(x=rxs,y=rys,paired=TRUE,
+                                 alternative="greater")$p.value
+  # The overall p-value is anti-conservative!
+  
+  ### end trial ###
+  #################
+  
   #if(trial){
   #  list <- list(diff=(pred-z)^2,fold=fold,loss=loss)
   #  return(list)
@@ -512,7 +543,8 @@ predict.cornet <- function(object,newx,type="probability",...){
   limit <- 1e-05
   pred[pred < limit] <- limit
   pred[pred > 1 - limit] <- 1 - limit
-  res <- -2 * (y[fold==1] * log(pred) + (1 - y[fold==1]) * log(1 - pred))
+  res <- -2 * (z[fold==1] * log(pred) + (1 - z[fold==1]) * log(1 - pred))
+  # Changed y to z (2019-02-08)
   pvalue <- stats::wilcox.test(x=res[,"binomial"],y=res[,"grid"],paired=TRUE,alternative="greater")$p.value
   
   return(pvalue)
