@@ -450,11 +450,12 @@ predict.cornet <- function(object,newx,type="probability",...){
     fold <- foldid
   }
   
-  cols <- c("gaussian","binomial","grid")
+  #--- cross-validated loss ---
+  
+  cols <- c("gaussian","binomial","combined")
   pred <- matrix(data=NA,nrow=length(y),ncol=length(cols),
                  dimnames=list(NULL,cols))
-  
-  select <- list()
+
   for(i in seq_len(nfolds)){
     fit <- cornet::cornet(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],alpha=alpha,type.measure=type.measure)
     tryCatch(expr=cornet:::plot.cornet(fit),error=function(x) NULL)
@@ -470,8 +471,7 @@ predict.cornet <- function(object,newx,type="probability",...){
   loss <- lapply(X=type,FUN=function(x) cornet:::.loss(y=z,fit=pred,family="binomial",type.measure=x,foldid=fold)[[1]])
   names(loss) <- type
   
-  ###################
-  ### start trial ###
+  #--- deviance residuals ---
   
   # squared deviance residuals
   limit <- 1e-05
@@ -479,34 +479,18 @@ predict.cornet <- function(object,newx,type="probability",...){
   pred[pred > 1 - limit] <- 1 - limit
   res <- -2 * (z * log(pred) + (1 - z) * log(1 - pred))
   rxs <- res[,"binomial"]
-  rys <- res[,"grid"]
+  rys <- res[,"combined"]
   
-  ## examine differences per fold
-  loss$cv.diff <- loss$cv.size <- loss$cv.pval <- numeric()
+  # residual increase/decrease
+  loss$resid.factor <- stats::median((rys-rxs)/rxs)
+  
+  # paired test for each fold
+  loss$resid.pvalue <- numeric()
   for(i in seq_len(nfolds)){
     cond <- fold==i
-    loss$cv.size[i] <- mean((rxs>rys)[cond])
-    loss$cv.diff[i] <- stats::median(((rys-rxs)/rxs)[cond])
-    loss$cv.pval[i] <- stats::wilcox.test(x=rxs[cond],y=rys[cond],paired=TRUE,
-                           alternative="greater")$p.value
+    loss$resid.pvalue[i] <- stats::wilcox.test(x=rxs[cond],y=rys[cond],
+          paired=TRUE,alternative="greater")$p.value
   }
-  
-  # examine all differences
-  loss$all.size <- mean(rxs>rys)
-  loss$all.diff <- stats::median((rys-rxs)/rxs)
-  loss$all.pval <- stats::wilcox.test(x=rxs,y=rys,paired=TRUE,
-                                 alternative="greater")$p.value
-  # The overall p-value is anti-conservative!
-  
-  ### end trial ###
-  #################
-  
-  #if(trial){
-  #  list <- list(diff=(pred-z)^2,fold=fold,loss=loss)
-  #  return(list)
-  #} else {
-  #  return(loss)
-  #}
   
   return(loss)
 
@@ -537,7 +521,7 @@ predict.cornet <- function(object,newx,type="probability",...){
   if(any(pred<0|pred>1)){stop("Outside unit interval.",call.=FALSE)}
   
   #res <- (pred-z[fold==1])^2 # MSE
-  #pvalue <- wilcox.test(x=res[,"binomial"],y=res[,"grid"],paired=TRUE,alternative="greater")$p.value
+  #pvalue <- wilcox.test(x=res[,"binomial"],y=res[,"combined"],paired=TRUE,alternative="greater")$p.value
   #colMeans(abs(pred-0.5)) # distance from 0.5
   
   limit <- 1e-05
@@ -545,7 +529,7 @@ predict.cornet <- function(object,newx,type="probability",...){
   pred[pred > 1 - limit] <- 1 - limit
   res <- -2 * (z[fold==1] * log(pred) + (1 - z[fold==1]) * log(1 - pred))
   # Changed y to z (2019-02-08)
-  pvalue <- stats::wilcox.test(x=res[,"binomial"],y=res[,"grid"],paired=TRUE,alternative="greater")$p.value
+  pvalue <- stats::wilcox.test(x=res[,"binomial"],y=res[,"combined"],paired=TRUE,alternative="greater")$p.value
   
   return(pvalue)
 }
