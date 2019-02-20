@@ -1,6 +1,5 @@
-# DO NOT CHANGE the "init" and "install" sections below
+# DO NOT CHANGE the "init" and "install" sections.
 
-# Download script file from GitHub
 init:
   ps: |
         $ErrorActionPreference = "Stop"
@@ -13,39 +12,9 @@ install:
 cache:
   - C:\RLibrary
 
-# Adapt as necessary starting from here
-
-environment:
-  global:
-    USE_RTOOLS: true
-    R_VERSION: release
-
 build_script:
-  - travis-tool.sh install_bioc_deps
   - travis-tool.sh install_deps
 
 test_script:
   - travis-tool.sh run_tests
 
-on_failure:
-  - 7z a failure.zip *.Rcheck\*
-  - appveyor PushArtifact failure.zip
-
-artifacts:
-  - path: '*.Rcheck\**\*.log'
-    name: Logs
-
-  - path: '*.Rcheck\**\*.out'
-    name: Logs
-
-  - path: '*.Rcheck\**\*.fail'
-    name: Logs
-
-  - path: '*.Rcheck\**\*.Rout'
-    name: Logs
-
-  - path: '\*_*.tar.gz'
-    name: Bits
-
-  - path: '\*_*.zip'
-    name: Bits

@@ -100,7 +100,7 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
   
   # fold identifiers
   if(is.null(foldid)){
-    foldid <- palasso:::.folds(y=z,nfolds=nfolds)
+    foldid <- cornet:::.folds(y=z,nfolds=nfolds)
   }
   
   #--- model fitting ---
@@ -453,7 +453,7 @@ predict.cornet <- function(object,newx,type="probability",...){
   
   z <- 1*(y > cutoff)
   if(is.null(foldid)){
-    fold <- palasso:::.folds(y=z,nfolds=nfolds)
+    fold <- cornet:::.folds(y=z,nfolds=nfolds)
   } else {
     fold <- foldid
   }
@@ -537,7 +537,7 @@ predict.cornet <- function(object,newx,type="probability",...){
 .test <- function(y,cutoff,X,alpha=1,type.measure="deviance"){
   
   z <- 1*(y > cutoff)
-  fold <- palasso:::.folds(y=z,nfolds=5)
+  fold <- cornet:::.folds(y=z,nfolds=5)
   fold <- ifelse(fold==1,1,0)
   
   fit <- cornet::cornet(y=y[fold==0],cutoff=cutoff,X=X[fold==0,],alpha=alpha)
@@ -686,8 +686,6 @@ if(FALSE){
 }
 
 
-
-
 # Correct this function in the palasso package (search twice for "# typo").
 .loss <- function (y,fit,family,type.measure,foldid=NULL){
   if (!is.list(fit)) {
@@ -791,6 +789,26 @@ if(FALSE){
     }
   }
   return(loss)
+}
+
+# Import this function from the palasso package.
+.folds <- function (y, nfolds, foldid = NULL){
+  if(!is.null(foldid)){
+    return(foldid)
+  }
+  #if (survival::is.Surv(y)){ # active in palasso
+  #  y <- y[, "status"] # active in palasso
+  #} # active in palasso
+  if(all(y %in% c(0, 1))){
+    foldid <- rep(x = NA, times = length(y))
+    foldid[y == 0] <- sample(x = rep(x = seq_len(nfolds), 
+                                     length.out = sum(y == 0)))
+    foldid[y == 1] <- sample(x = rep(x = seq_len(nfolds), 
+                                     length.out = sum(y == 1)))
+  } else {
+    foldid <- sample(x = rep(x = seq_len(nfolds), length.out = length(y)))
+  }
+  return(foldid)
 }
 
 #--- Lost and found ------------------------------------------------------------
