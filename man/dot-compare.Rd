@@ -31,7 +31,13 @@ or \code{NULL} (balance)}
 (linear regression uses the deviance)}
 }
 \description{
-Compares models for a continuous response with a cutoff value
+Compares models for a continuous response with a cutoff value.
+}
+\details{
+Uses k-fold cross-validation,
+fits linear, logistic, and combined regression,
+calculates different loss functions,
+and examines squared deviance residuals.
 }
 \examples{
 NA

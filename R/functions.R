@@ -67,14 +67,16 @@
 #' y <- rnorm(n)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' net <- cornet(y=y,cutoff=0,X=X)
+#' 
 #' ### Add ... to all glmnet::glmnet calls !!! ###
+#' 
 cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",...){
   
   #--- temporary ---
   # cutoff <- 0; npi <- 101; pi <- NULL; nsigma <- 99; sigma <- NULL; nfolds <- 10;  foldid <- NULL; type.measure <- "deviance"; logistic <- TRUE
   test <- list()
   test$sigma <- test$pi <- FALSE
-  test$grid <- TRUE
+  test$combined <- TRUE
   
   #--- checks ---
   cornet:::.check(x=y,type="vector")
@@ -140,9 +142,9 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
   if(test$pi){
     pred$pi <- matrix(data=NA,nrow=n,ncol=npi)
   }
-  if(test$grid){
+  if(test$combined){
     dimnames <- list(NULL,lab.sigma,lab.pi)
-    pred$grid <- array(data=NA,dim=c(n,nsigma,npi),dimnames=dimnames)
+    pred$combined <- array(data=NA,dim=c(n,nsigma,npi),dimnames=dimnames)
   }
 
   for(k in seq_len(nfolds)){
@@ -183,12 +185,12 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
       }
     }
 
-    # fusion (grid)
-    if(test$grid){
+    # fusion (combined)
+    if(test$combined){
       for(i in seq_along(fit$sigma)){
         for(j in seq_along(fit$pi)){
           cont <- stats::pnorm(q=y_hat,mean=cutoff,sd=fit$sigma[i])
-          pred$grid[foldid==k,i,j] <- fit$pi[j]*cont + (1-fit$pi[j])*z_hat
+          pred$combined[foldid==k,i,j] <- fit$pi[j]*cont + (1-fit$pi[j])*z_hat
         }
       }
     }
@@ -213,12 +215,12 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
     #fit$pi.min1 <- fit$pi[which.min(fit$pi.cvm)]
   }
 
-  if(test$grid){
+  if(test$combined){
     dimnames <- list(lab.sigma,lab.pi)
     fit$cvm <- matrix(data=NA,nrow=nsigma,ncol=npi,dimnames=dimnames)
     for(i in seq_len(nsigma)){
       for(j in seq_len(npi)){
-        fit$cvm[i,j] <- cornet:::.loss(y=z,fit=pred$grid[,i,j],family="binomial",type.measure=type.measure)[[1]]
+        fit$cvm[i,j] <- cornet:::.loss(y=z,fit=pred$combined[,i,j],family="binomial",type.measure=type.measure)[[1]]
       }
     }
     temp <- which(fit$cvm==min(fit$cvm),arr.ind=TRUE,useNames=TRUE)
@@ -404,9 +406,9 @@ predict.cornet <- function(object,newx,type="probability",...){
      #prob$pi <- x$pi.min*prob$gaussian + (1-x$pi.min)*prob$binomial
   }
  
-  if(test$grid){
+  if(test$combined){
     cont <- stats::pnorm(q=link,mean=x$cutoff,sd=x$sigma.min)
-    prob$grid <- x$pi.min*cont + (1-x$pi.min)*prob$binomial
+    prob$combined <- x$pi.min*cont + (1-x$pi.min)*prob$binomial
   }
   
   # consistency tests
@@ -434,8 +436,14 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' Comparison
 #'
 #' @description
-#' Compares models for a continuous response with a cutoff value
-#'
+#' Compares models for a continuous response with a cutoff value.
+#' 
+#' @details
+#' Uses k-fold cross-validation,
+#' fits linear, logistic, and combined regression,
+#' calculates different loss functions,
+#' and examines squared deviance residuals.
+#' 
 #' @inheritParams  cornet
 #' 
 #' @examples
@@ -484,6 +492,18 @@ predict.cornet <- function(object,newx,type="probability",...){
   # residual increase/decrease
   loss$resid.factor <- stats::median((rys-rxs)/rxs)
   
+  if(FALSE){# tests
+    # equality deviance
+    loss$deviance["binomial"]==mean(res[,"binomial"])
+    loss$deviance["combined"]==mean(res[,"combined"])
+    # percentage decrease
+    #range((rys-rxs)/rxs)
+    stats::median((rys-rxs)/rxs)
+    mean((rys-rxs)/rxs)
+    (sum(rys)-sum(rxs))/sum(rxs)
+    (loss$deviance["combined"]-loss$deviance["binomial"])/loss$deviance["binomial"]
+  } 
+  
   # paired test for each fold
   loss$resid.pvalue <- numeric()
   for(i in seq_len(nfolds)){
@@ -496,14 +516,19 @@ predict.cornet <- function(object,newx,type="probability",...){
 
 }
 
-
 #' @export
 #' @title
-#' Testing
+#' Single-split test
 #'
 #' @description
-#' Compares models for a continuous response with a cutoff value (testing)
-#'
+#' Compares models for a continuous response with a cutoff value.
+#' 
+#' @details
+#' Splits samples into 80% for training and 20% for testing,
+#' calculates squared deviance residuals of logistic and combined regression,
+#' conducts the paired one-sided Wilcoxon signed rank test,
+#' and returns the p-value.
+#' 
 #' @inheritParams cornet
 #' 
 #' @examples
@@ -528,7 +553,6 @@ predict.cornet <- function(object,newx,type="probability",...){
   pred[pred < limit] <- limit
   pred[pred > 1 - limit] <- 1 - limit
   res <- -2 * (z[fold==1] * log(pred) + (1 - z[fold==1]) * log(1 - pred))
-  # Changed y to z (2019-02-08)
   pvalue <- stats::wilcox.test(x=res[,"binomial"],y=res[,"combined"],paired=TRUE,alternative="greater")$p.value
   
   return(pvalue)

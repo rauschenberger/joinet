@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Testing — .test • cornet</title>
+<title>Single-split test — .test • cornet</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Testing — .test" />
+<meta property="og:title" content="Single-split test — .test" />
 
-<meta property="og:description" content="Compares models for a continuous response with a cutoff value (testing)" />
+<meta property="og:description" content="Compares models for a continuous response with a cutoff value." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -100,14 +100,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Testing</h1>
+    <h1>Single-split test</h1>
     <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
     <div class="hidden name"><code>dot-test.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Compares models for a continuous response with a cutoff value (testing)</p>
+    <p>Compares models for a continuous response with a cutoff value.</p>
     
     </div>
 
@@ -144,6 +144,13 @@ numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Splits samples into 80<!-- % for training and 20% for testing, -->
+calculates squared deviance residuals of logistic and combined regression,
+conducts the paired one-sided Wilcoxon signed rank test,
+and returns the p-value.</p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fl'>NA</span></div><div class='output co'>#&gt; [1] NA</div><div class='input'>
@@ -153,7 +160,9 @@ numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#details">Details</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

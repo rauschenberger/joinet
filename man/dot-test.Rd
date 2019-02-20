@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{.test}
 \alias{.test}
-\title{Testing}
+\title{Single-split test}
 \usage{
 .test(y, cutoff, X, alpha = 1, type.measure = "deviance")
 }
@@ -24,7 +24,13 @@ numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 (linear regression uses the deviance)}
 }
 \description{
-Compares models for a continuous response with a cutoff value (testing)
+Compares models for a continuous response with a cutoff value.
+}
+\details{
+Splits samples into 80% for training and 20% for testing,
+calculates squared deviance residuals of logistic and combined regression,
+conducts the paired one-sided Wilcoxon signed rank test,
+and returns the p-value.
 }
 \examples{
 NA
