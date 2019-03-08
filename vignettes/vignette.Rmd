@@ -1,0 +1,30 @@
+---
+title: Lasso and ridge regression for dichotomised outcomes
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{vignette}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Installation
+
+Installing the current release from [CRAN](https://CRAN.R-project.org/package=cornet):
+
+```{r,eval=FALSE}
+install.packages("cornet")
+```
+
+Installing the latest development version from [GitHub](https://github.com/rauschenberger/cornet):
+
+```{r,eval=FALSE}
+#install.packages("devtools")
+library(devtools)
+install_github("rauschenberger/cornet")
+```

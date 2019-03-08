@@ -2,6 +2,7 @@
 #--- Workhorse function --------------------------------------------------------
 
 #' @export
+#' @aliases cornet-package
 #' @title
 #' Logistic regression with a continuous response
 #' 
@@ -57,10 +58,29 @@
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
 #' 
 #' @details
-#' - INCLUDE note on deviance (not comparable between lin and log models)
-#' - alpha: elastic net parameter\strong{:}
-#' numeric between \eqn{0} (ridge) and \eqn{1} (lasso)
-#' - do not use "family"
+#' This function fits a \code{"gaussian"} model for the numeric response,
+#' and a \code{"binomial"} model for the binary response,
+#' meaning that the \code{glmnet} argument \code{family} is unavailable.
+#' Also if \code{type.measure} equals \code{"deviance"},
+#' the loss is uncomparable between linear and logistic regression.
+#' 
+#' @return
+#' Returns an object of class \code{cornet}, a list with multiple slots:
+#' \itemize{
+#'    \item \code{"gaussian"}: fitted linear model, class \code{glmnet}
+#'    \item \code{"binomial"}: fitted logistic model, class \code{glmnet}
+#'    \item \code{"sigma"}: scaling parameters \code{sigma},
+#'           vector of length \code{nsigma}
+#'    \item \code{"pi"}: weighting parameters \code{pi},
+#'           vector of length \code{npi}
+#'    \item \code{cvm}: evaluation loss,
+#'           matrix with \code{nsigma} rows and \code{npi} columns
+#'    \item \code{sigma.min}: optimal scaling parameter,
+#'           positive scalar
+#'    \item \code{pi.min}: optimal weighting parameter,
+#'           scalar in unit interval
+#'    \item \code{cutoff}: threshold for dichotomisation
+#' }
 #' 
 #' @examples
 #' n <- 100; p <- 200
@@ -68,14 +88,11 @@
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' net <- cornet(y=y,cutoff=0,X=X)
 #' 
-#' ### Add ... to all glmnet::glmnet calls !!! ###
-#' 
 cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",...){
   
   #--- temporary ---
   # cutoff <- 0; npi <- 101; pi <- NULL; nsigma <- 99; sigma <- NULL; nfolds <- 10;  foldid <- NULL; type.measure <- "deviance"; logistic <- TRUE
   test <- list()
-  test$sigma <- test$pi <- FALSE
   test$combined <- TRUE
   
   #--- checks ---
@@ -105,8 +122,8 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
   
   #--- model fitting ---
   fit <- list()
-  fit$gaussian <- glmnet::glmnet(y=y,x=X,family="gaussian",alpha=alpha)
-  fit$binomial <- glmnet::glmnet(y=z,x=X,family="binomial",alpha=alpha)
+  fit$gaussian <- glmnet::glmnet(y=y,x=X,family="gaussian",alpha=alpha,...)
+  fit$binomial <- glmnet::glmnet(y=z,x=X,family="binomial",alpha=alpha,...)
    
   #--- sigma sequence ---
   if(is.null(sigma)){
@@ -136,12 +153,6 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
   pred$y <- matrix(data=NA,nrow=n,ncol=length(fit$gaussian$lambda))
   pred$z <- matrix(data=NA,nrow=n,ncol=length(fit$binomial$lambda))
 
-  if(test$sigma){
-    pred$sigma <- matrix(data=NA,nrow=n,ncol=nsigma)
-  }
-  if(test$pi){
-    pred$pi <- matrix(data=NA,nrow=n,ncol=npi)
-  }
   if(test$combined){
     dimnames <- list(NULL,lab.sigma,lab.pi)
     pred$combined <- array(data=NA,dim=c(n,nsigma,npi),dimnames=dimnames)
@@ -157,35 +168,20 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
     X1 <- X[foldid==k,,drop=FALSE]
     
     # linear regression
-    net <- glmnet::glmnet(y=y0,x=X0,family="gaussian",alpha=alpha)
+    net <- glmnet::glmnet(y=y0,x=X0,family="gaussian",alpha=alpha,...)
     temp_y <- stats::predict(object=net,newx=X1,type="response",s=fit$gaussian$lambda)
     pred$y[foldid==k,seq_len(ncol(temp_y))] <- temp_y
     cvm <- cornet:::.loss(y=y1,fit=temp_y,family="gaussian",type.measure="deviance")[[1]]
     y_hat <- temp_y[,which.min(cvm)]
     
     # logistic regression
-    net <- glmnet::glmnet(y=z0,x=X0,family="binomial",alpha=alpha)
+    net <- glmnet::glmnet(y=z0,x=X0,family="binomial",alpha=alpha,...)
     temp_z <- stats::predict(object=net,newx=X1,type="response",s=fit$binomial$lambda)
     pred$z[foldid==k,seq_len(ncol(temp_z))] <- temp_z
     cvm <- cornet:::.loss(y=z1,fit=temp_z,family="binomial",type.measure=type.measure)[[1]]
     z_hat <- temp_z[,which.min(cvm)]
     
-    # fusion (sigma)
-    if(test$sigma){
-      for(i in seq_along(fit$sigma)){
-        #pred$sigma[foldid==k,i] <- stats::pnorm(q=y_hat,mean=cutoff,sd=fit$sigma[i])
-      }
-    }
-    
-    # fusion (pi)
-    if(test$pi){
-      for(i in seq_along(fit$pi)){
-        #cont <- stats::pnorm(q=y_hat,mean=cutoff,sd=stats::sd(y))
-        #pred$pi[foldid==k,i] <- fit$pi[i]*cont + (1-fit$pi[i])*z_hat
-      }
-    }
-
-    # fusion (combined)
+    # combined regression
     if(test$combined){
       for(i in seq_along(fit$sigma)){
         for(j in seq_along(fit$pi)){
@@ -194,27 +190,20 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
         }
       }
     }
+    
   }
   
   #--- evaluation ---
   
-  # deviance (not comparable between Gaussian and binomial families)
+  # linear loss
   fit$gaussian$cvm <- cornet:::.loss(y=y,fit=pred$y,family="gaussian",type.measure="deviance")[[1]]
   fit$gaussian$lambda.min <- fit$gaussian$lambda[which.min(fit$gaussian$cvm)]
   
+  # logistic loss
   fit$binomial$cvm <- cornet:::.loss(y=z,fit=pred$z,family="binomial",type.measure=type.measure)[[1]]
   fit$binomial$lambda.min <- fit$binomial$lambda[which.min(fit$binomial$cvm)]
 
-  if(test$sigma){
-    #fit$sigma.cvm <- cornet:::.loss(y=z,fit=pred$sigma,family="binomial",type.measure=type.measure)[[1]]
-    #fit$sigma.min1 <- fit$sigma[which.min(fit$sigma.cvm)]
-  }
-
-  if(test$pi){
-    #fit$pi.cvm <- cornet:::.loss(y=z,fit=pred$pi,family="binomial",type.measure=type.measure)[[1]] # trial
-    #fit$pi.min1 <- fit$pi[which.min(fit$pi.cvm)]
-  }
-
+  # combined loss
   if(test$combined){
     dimnames <- list(lab.sigma,lab.pi)
     fit$cvm <- matrix(data=NA,nrow=nsigma,ncol=npi,dimnames=dimnames)
@@ -306,7 +295,7 @@ plot.cornet <- function(x,...){
   k <- 100
   levels <- stats::quantile(x$cvm,probs=seq(from=0,to=1,length.out=k+1))
   
-  ## RColorBrewer
+  # colours
   if("RColorBrewer" %in% .packages(all.available=TRUE)){
     pal <- rev(c("white",RColorBrewer::brewer.pal(n=9,name="Blues")))
     col <- grDevices::colorRampPalette(colors=pal)(k)
@@ -390,7 +379,7 @@ predict.cornet <- function(object,newx,type="probability",...){
   .check(x=newx,type="matrix")
   .check(x=type,type="string",values=c("probability","odds","log-odds"))
   
-  # linear, logistic and mixed
+  # linear and logistic
   prob <- list()
   link <- as.numeric(stats::predict(object=x$gaussian,
                   newx=newx,s=x$gaussian$lambda.min,type="response"))
@@ -398,14 +387,7 @@ predict.cornet <- function(object,newx,type="probability",...){
   prob$binomial <- as.numeric(stats::predict(object=x$binomial,
                   newx=newx,s=x$binomial$lambda.min,type="response"))
   
-  if(test$sigma){
-    #prob$sigma <- stats::pnorm(q=link,mean=x$cutoff,sd=x$sigma.min)
-  }
-  
-  if(test$pi){
-     #prob$pi <- x$pi.min*prob$gaussian + (1-x$pi.min)*prob$binomial
-  }
- 
+  # combined
   if(test$combined){
     cont <- stats::pnorm(q=link,mean=x$cutoff,sd=x$sigma.min)
     prob$combined <- x$pi.min*cont + (1-x$pi.min)*prob$binomial
@@ -433,7 +415,7 @@ predict.cornet <- function(object,newx,type="probability",...){
 
 #' @export
 #' @title
-#' Comparison
+#' Performance measurement by cross-validation
 #'
 #' @description
 #' Compares models for a continuous response with a cutoff value.
@@ -491,18 +473,6 @@ predict.cornet <- function(object,newx,type="probability",...){
   
   # residual increase/decrease
   loss$resid.factor <- stats::median((rys-rxs)/rxs)
-  
-  if(FALSE){# tests
-    # equality deviance
-    loss$deviance["binomial"]==mean(res[,"binomial"])
-    loss$deviance["combined"]==mean(res[,"combined"])
-    # percentage decrease
-    #range((rys-rxs)/rxs)
-    stats::median((rys-rxs)/rxs)
-    mean((rys-rxs)/rxs)
-    (sum(rys)-sum(rxs))/sum(rxs)
-    (loss$deviance["combined"]-loss$deviance["binomial"])/loss$deviance["binomial"]
-  } 
   
   # paired test for each fold
   loss$resid.pvalue <- numeric()
@@ -568,17 +538,6 @@ predict.cornet <- function(object,newx,type="probability",...){
   y <- stats::rnorm(n=n,mean=mean,sd=fac*stats::sd(mean))
   return(list(y=y,X=X))
 }
-
-#--- start trial ---
-if(FALSE){
-  n <- 1000
-  y_hat <- runif(n)
-  y <- y_hat > 0.9
-  y <- rbinom(n=n,size=1,prob=0.5)
-  foldid <- rep(1:10,length.out=n)
-  .loss(y=y,fit=y_hat,family="binomial",type.measure="auc",foldid=foldid)
-}
-#--- end trial ---
 
 #--- Internal functions --------------------------------------------------------
 
@@ -685,8 +644,7 @@ if(FALSE){
   return(invisible(NULL))
 }
 
-
-# Correct this function in the palasso package (search twice for "# typo").
+# Import this function from the palasso package.
 .loss <- function (y,fit,family,type.measure,foldid=NULL){
   if (!is.list(fit)) {
     fit <- list(fit)
@@ -810,44 +768,3 @@ if(FALSE){
   }
   return(foldid)
 }
-
-#--- Lost and found ------------------------------------------------------------
-
-# calibrate (for cornet)
-#if(test$calibrate){
-#  fit$calibrate <- CalibratR::calibrate(actual=z,predicted=pred$y[,which.min(fit$gaussian$cvm)],nCores=1,model_idx=5)$calibration_models
-#}
-# calibrate (for predict.cornet)
-#if(test$calibrate){
-#  prob$calibrate <- CalibratR::predict_calibratR(calibration_models=x$calibrate,new=link,nCores=1)$GUESS_2
-#}
-
-.args <- function(...){
-  args <- list(...)
-  names <- names(formals(glmnet::glmnet))
-  if(!is.null(args$family)){
-    warning("Unexpected argument \"family\".",call.=FALSE) 
-  }
-  if(any(!names(args) %in% names)){
-    stop("Unexpected argument.",call.=FALSE)
-  }
-  if(is.null(args$alpha)) {
-    args$alpha <- 1
-  }
-  if(is.null(args$nlambda)){
-    args$nlambda <- 100
-  }
-  if(is.null(args$lambda)){
-    if(is.null(args$nlambda)){
-      args$nlambda <- 100
-    }
-  } else {
-    args$nlambda <- length(args$lambda)
-  }
-  return(args)
-}
-
-
-
-
-

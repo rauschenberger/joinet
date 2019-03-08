@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{.compare}
 \alias{.compare}
-\title{Comparison}
+\title{Performance measurement by cross-validation}
 \usage{
 .compare(y, cutoff, X, alpha = 1, nfolds = 5, foldid = NULL,
   type.measure = "deviance")

@@ -2,6 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{cornet}
 \alias{cornet}
+\alias{cornet-package}
 \title{Logistic regression with a continuous response}
 \usage{
 cornet(y, cutoff, X, alpha = 1, npi = 101, pi = NULL, nsigma = 99,
@@ -45,21 +46,38 @@ or \code{NULL} (balance)}
 
 \item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}}
 }
+\value{
+Returns an object of class \code{cornet}, a list with multiple slots:
+\itemize{
+   \item \code{"gaussian"}: fitted linear model, class \code{glmnet}
+   \item \code{"binomial"}: fitted logistic model, class \code{glmnet}
+   \item \code{"sigma"}: scaling parameters \code{sigma},
+          vector of length \code{nsigma}
+   \item \code{"pi"}: weighting parameters \code{pi},
+          vector of length \code{npi}
+   \item \code{cvm}: evaluation loss,
+          matrix with \code{nsigma} rows and \code{npi} columns
+   \item \code{sigma.min}: optimal scaling parameter,
+          positive scalar
+   \item \code{pi.min}: optimal weighting parameter,
+          scalar in unit interval
+   \item \code{cutoff}: threshold for dichotomisation
+}
+}
 \description{
 Implements logistic regression with a continuous response.
 }
 \details{
-- INCLUDE note on deviance (not comparable between lin and log models)
-- alpha: elastic net parameter\strong{:}
-numeric between \eqn{0} (ridge) and \eqn{1} (lasso)
-- do not use "family"
+This function fits a \code{"gaussian"} model for the numeric response,
+and a \code{"binomial"} model for the binary response,
+meaning that the \code{glmnet} argument \code{family} is unavailable.
+Also if \code{type.measure} equals \code{"deviance"},
+the loss is uncomparable between linear and logistic regression.
 }
 \examples{
 n <- 100; p <- 200
 y <- rnorm(n)
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 net <- cornet(y=y,cutoff=0,X=X)
-
-### Add ... to all glmnet::glmnet calls !!! ###
 
 }
