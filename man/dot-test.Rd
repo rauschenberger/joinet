@@ -11,7 +11,7 @@
 vector of length \eqn{n}}
 
 \item{cutoff}{cutoff point for dichotomising response into classes\strong{:}
-value between \code{min(y)} and \code{max(y)}}
+\emph{meaningful} value between \code{min(y)} and \code{max(y)}}
 
 \item{X}{covariates\strong{:}
 numeric matrix with \eqn{n} rows (samples)

@@ -16,6 +16,6 @@ logical}
 Verifies whether two or more arguments are identical.
 }
 \examples{
-NA
+cornet:::.equal(1,1,1)
 
 }

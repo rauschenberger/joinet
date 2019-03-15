@@ -14,7 +14,7 @@ cornet(y, cutoff, X, alpha = 1, npi = 101, pi = NULL, nsigma = 99,
 vector of length \eqn{n}}
 
 \item{cutoff}{cutoff point for dichotomising response into classes\strong{:}
-value between \code{min(y)} and \code{max(y)}}
+\emph{meaningful} value between \code{min(y)} and \code{max(y)}}
 
 \item{X}{covariates\strong{:}
 numeric matrix with \eqn{n} rows (samples)
@@ -23,13 +23,13 @@ and \eqn{p} columns (variables)}
 \item{alpha}{elastic net mixing parameter\strong{:}
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
-\item{npi}{number of \code{pi} values}
+\item{npi}{number of \code{pi} values (weighting)}
 
 \item{pi}{pi sequence\strong{:}
 vector of values in the unit interval;
 or \code{NULL} (default sequence)}
 
-\item{nsigma}{number of \code{sigma} values}
+\item{nsigma}{number of \code{sigma} values (scaling)}
 
 \item{sigma}{sigma sequence\strong{:}
 vector of increasing positive values;
@@ -49,11 +49,11 @@ or \code{NULL} (balance)}
 \value{
 Returns an object of class \code{cornet}, a list with multiple slots:
 \itemize{
-   \item \code{"gaussian"}: fitted linear model, class \code{glmnet}
-   \item \code{"binomial"}: fitted logistic model, class \code{glmnet}
-   \item \code{"sigma"}: scaling parameters \code{sigma},
+   \item \code{gaussian}: fitted linear model, class \code{glmnet}
+   \item \code{binomial}: fitted logistic model, class \code{glmnet}
+   \item \code{sigma}: scaling parameters \code{sigma},
           vector of length \code{nsigma}
-   \item \code{"pi"}: weighting parameters \code{pi},
+   \item \code{pi}: weighting parameters \code{pi},
           vector of length \code{npi}
    \item \code{cvm}: evaluation loss,
           matrix with \code{nsigma} rows and \code{npi} columns
@@ -65,13 +65,14 @@ Returns an object of class \code{cornet}, a list with multiple slots:
 }
 }
 \description{
-Implements logistic regression with a continuous response.
+Implements logistic regression with a continuous response
+in high-dimensional settings.
 }
 \details{
-This function fits a \code{"gaussian"} model for the numeric response,
-and a \code{"binomial"} model for the binary response,
+This function fits a \emph{gaussian} model for the numeric response,
+and a \emph{binomial} model for the binary response,
 meaning that the \code{glmnet} argument \code{family} is unavailable.
-Also if \code{type.measure} equals \code{"deviance"},
+Even if \code{type.measure} equals \code{"deviance"},
 the loss is uncomparable between linear and logistic regression.
 }
 \examples{
@@ -80,4 +81,9 @@ y <- rnorm(n)
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 net <- cornet(y=y,cutoff=0,X=X)
 
+}
+\seealso{
+Methods for objects of class \code{cornet} include
+\code{\link[=coef.cornet]{coef}} and
+\code{\link[=predict.cornet]{predict}}.
 }

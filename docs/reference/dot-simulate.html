@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Predict binary outcome — predict.cornet • cornet</title>
+<title>Data simulation — .simulate • cornet</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Predict binary outcome — predict.cornet" />
+<meta property="og:title" content="Data simulation — .simulate" />
 
-<meta property="og:description" content="Predicts the binary outcome with linear, logistic, and combined regression." />
+<meta property="og:description" content="Simulates data for unit tests" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,53 +112,52 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Predict binary outcome</h1>
+    <h1>Data simulation</h1>
     <small class="dont-index">Source: <a href='https://github.com/rauschenberger/cornet/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>predict.cornet.Rd</code></div>
+    <div class="hidden name"><code>dot-simulate.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Predicts the binary outcome with linear, logistic, and combined regression.</p>
+    <p>Simulates data for unit tests</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for cornet</span>
-<span class='fu'>predict</span>(<span class='no'>object</span>, <span class='no'>newx</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"probability"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>.simulate</span>(<span class='no'>n</span>, <span class='no'>p</span>, <span class='kw'>prob</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>fac</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p><a href='cornet.html'>cornet</a> object</p></td>
+      <th>n</th>
+      <td><p>sample size<strong>:</strong>
+positive integer</p></td>
     </tr>
     <tr>
-      <th>newx</th>
-      <td><p>covariates<strong>:</strong>
-numeric matrix with \(n\) rows (samples)
-and \(p\) columns (variables)</p></td>
+      <th>p</th>
+      <td><p>covariate space<strong>:</strong>
+positive integer</p></td>
     </tr>
     <tr>
-      <th>type</th>
-      <td><p><code>"probability"</code>, <code>"odds"</code>, <code>"log-odds"</code></p></td>
+      <th>prob</th>
+      <td><p>(approximate) proportion of causal covariates<strong>:</strong>
+numeric between \(0\) and \(1\)</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>further arguments (not applicable)</p></td>
+      <th>fac</th>
+      <td><p>noise factor<strong>:</strong>
+positive real number</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>For linear regression, this function tentatively transforms
-the predicted values to predicted probabilities,
-using a Gaussian distribution with a fixed mean (threshold)
-and a fixed variance (estimated variance of the numeric outcome).</p>
+    <p>Returns invisible list with elements <code>y</code> and <code>X</code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fl'>NA</span></div><div class='output co'>#&gt; [1] NA</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>cornet</span><span class='kw ns'>:::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/cornet/topics/dot-simulate'>.simulate</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>10</span>,<span class='kw'>p</span><span class='kw'>=</span><span class='fl'>20</span>,<span class='kw'>prob</span><span class='kw'>=</span><span class='fl'>0.2</span>,<span class='kw'>fac</span><span class='kw'>=</span><span class='fl'>2</span>)
+<span class='fu'>names</span>(<span class='no'>data</span>)</div><div class='output co'>#&gt; [1] "y" "X"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -166,7 +165,7 @@ and a fixed variance (estimated variance of the numeric outcome).</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#details">Details</a></li>
+      <li><a href="#value">Value</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

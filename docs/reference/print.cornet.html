@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Predict binary outcome — predict.cornet • cornet</title>
+<title>Combined regression — print.cornet • cornet</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Predict binary outcome — predict.cornet" />
+<meta property="og:title" content="Combined regression — print.cornet" />
 
-<meta property="og:description" content="Predicts the binary outcome with linear, logistic, and combined regression." />
+<meta property="og:description" content="Prints summary of cornet object." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,36 +112,26 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Predict binary outcome</h1>
+    <h1>Combined regression</h1>
     <small class="dont-index">Source: <a href='https://github.com/rauschenberger/cornet/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>predict.cornet.Rd</code></div>
+    <div class="hidden name"><code>print.cornet.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Predicts the binary outcome with linear, logistic, and combined regression.</p>
+    <p>Prints summary of cornet object.</p>
     
     </div>
 
     <pre class="usage"><span class='co'># S3 method for cornet</span>
-<span class='fu'>predict</span>(<span class='no'>object</span>, <span class='no'>newx</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"probability"</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>print</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
+      <th>x</th>
       <td><p><a href='cornet.html'>cornet</a> object</p></td>
-    </tr>
-    <tr>
-      <th>newx</th>
-      <td><p>covariates<strong>:</strong>
-numeric matrix with \(n\) rows (samples)
-and \(p\) columns (variables)</p></td>
-    </tr>
-    <tr>
-      <th>type</th>
-      <td><p><code>"probability"</code>, <code>"odds"</code>, <code>"log-odds"</code></p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -149,12 +139,14 @@ and \(p\) columns (variables)</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>For linear regression, this function tentatively transforms
-the predicted values to predicted probabilities,
-using a Gaussian distribution with a fixed mean (threshold)
-and a fixed variance (estimated variance of the numeric outcome).</p>
+    <p>Returns sample size \(n\),
+number of covariates \(p\),
+information on dichotomisation,
+tuned scaling parameter (sigma),
+tuned weighting parameter (pi),
+and corresponding loss.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -166,7 +158,7 @@ and a fixed variance (estimated variance of the numeric outcome).</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#details">Details</a></li>
+      <li><a href="#value">Value</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

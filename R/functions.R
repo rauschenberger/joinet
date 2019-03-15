@@ -7,7 +7,8 @@
 #' Logistic regression with a continuous response
 #' 
 #' @description
-#' Implements logistic regression with a continuous response.
+#' Implements logistic regression with a continuous response
+#' in high-dimensional settings.
 #'  
 #' @param y
 #' continuous response\strong{:}
@@ -15,7 +16,7 @@
 #' 
 #' @param cutoff
 #' cutoff point for dichotomising response into classes\strong{:}
-#' value between \code{min(y)} and \code{max(y)}
+#' \emph{meaningful} value between \code{min(y)} and \code{max(y)}
 #' 
 #' @param X
 #' covariates\strong{:}
@@ -44,7 +45,7 @@
 #' or \code{NULL} (default sequence)
 #' 
 #' @param npi
-#' number of \code{pi} values
+#' number of \code{pi} values (weighting)
 #' 
 #' @param sigma
 #' sigma sequence\strong{:}
@@ -52,26 +53,26 @@
 #' or \code{NULL} (default sequence)
 #' 
 #' @param nsigma
-#' number of \code{sigma} values
+#' number of \code{sigma} values (scaling)
 #' 
 #' @param ...
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
 #' 
 #' @details
-#' This function fits a \code{"gaussian"} model for the numeric response,
-#' and a \code{"binomial"} model for the binary response,
+#' This function fits a \emph{gaussian} model for the numeric response,
+#' and a \emph{binomial} model for the binary response,
 #' meaning that the \code{glmnet} argument \code{family} is unavailable.
-#' Also if \code{type.measure} equals \code{"deviance"},
+#' Even if \code{type.measure} equals \code{"deviance"},
 #' the loss is uncomparable between linear and logistic regression.
 #' 
 #' @return
 #' Returns an object of class \code{cornet}, a list with multiple slots:
 #' \itemize{
-#'    \item \code{"gaussian"}: fitted linear model, class \code{glmnet}
-#'    \item \code{"binomial"}: fitted logistic model, class \code{glmnet}
-#'    \item \code{"sigma"}: scaling parameters \code{sigma},
+#'    \item \code{gaussian}: fitted linear model, class \code{glmnet}
+#'    \item \code{binomial}: fitted logistic model, class \code{glmnet}
+#'    \item \code{sigma}: scaling parameters \code{sigma},
 #'           vector of length \code{nsigma}
-#'    \item \code{"pi"}: weighting parameters \code{pi},
+#'    \item \code{pi}: weighting parameters \code{pi},
 #'           vector of length \code{npi}
 #'    \item \code{cvm}: evaluation loss,
 #'           matrix with \code{nsigma} rows and \code{npi} columns
@@ -81,6 +82,11 @@
 #'           scalar in unit interval
 #'    \item \code{cutoff}: threshold for dichotomisation
 #' }
+#' 
+#' @seealso
+#' Methods for objects of class \code{cornet} include
+#' \code{\link[=coef.cornet]{coef}} and
+#' \code{\link[=predict.cornet]{predict}}.
 #' 
 #' @examples
 #' n <- 100; p <- 200
@@ -96,19 +102,19 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
   test$combined <- TRUE
   
   #--- checks ---
-  cornet:::.check(x=y,type="vector")
+  .check(x=y,type="vector")
   if(all(y %in% c(0,1))){warning("Binary response.",call.=FALSE)}
-  cornet:::.check(x=cutoff,type="scalar",min=min(y),max=max(y))
-  cornet:::.check(x=X,type="matrix")
-  cornet:::.check(x=alpha,type="scalar",min=0,max=1)
+  .check(x=cutoff,type="scalar",min=min(y),max=max(y))
+  .check(x=X,type="matrix")
+  .check(x=alpha,type="scalar",min=0,max=1)
   if(length(y)!=nrow(X)){stop("Contradictory sample size.",call.=FALSE)}
-  cornet:::.check(x=npi,type="scalar",min=1)
-  cornet:::.check(x=pi,type="vector",min=0,max=1,null=TRUE)
-  cornet:::.check(x=nsigma,type="scalar",min=1)
-  cornet:::.check(x=sigma,type="vector",min=.Machine$double.eps,null=TRUE)
-  cornet:::.check(x=nfolds,type="scalar",min=3)
-  cornet:::.check(x=foldid,type="vector",values=seq_len(nfolds),null=TRUE)
-  cornet:::.check(x=type.measure,type="string",values=c("deviance","class","mse","mae")) # not auc (min/max confusion)
+  .check(x=npi,type="scalar",min=1)
+  .check(x=pi,type="vector",min=0,max=1,null=TRUE)
+  .check(x=nsigma,type="scalar",min=1)
+  .check(x=sigma,type="vector",min=.Machine$double.eps,null=TRUE)
+  .check(x=nfolds,type="scalar",min=3)
+  .check(x=foldid,type="vector",values=seq_len(nfolds),null=TRUE)
+  .check(x=type.measure,type="string",values=c("deviance","class","mse","mae")) # not auc (min/max confusion)
   if(!is.null(list(...)$family)){stop("Reserved argument \"family\".",call.=FALSE)}
   n <- length(y)
   
@@ -117,7 +123,7 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
   
   # fold identifiers
   if(is.null(foldid)){
-    foldid <- cornet:::.folds(y=z,nfolds=nfolds)
+    foldid <- palasso:::.folds(y=z,nfolds=nfolds)
   }
   
   #--- model fitting ---
@@ -171,14 +177,14 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
     net <- glmnet::glmnet(y=y0,x=X0,family="gaussian",alpha=alpha,...)
     temp_y <- stats::predict(object=net,newx=X1,type="response",s=fit$gaussian$lambda)
     pred$y[foldid==k,seq_len(ncol(temp_y))] <- temp_y
-    cvm <- cornet:::.loss(y=y1,fit=temp_y,family="gaussian",type.measure="deviance")[[1]]
+    cvm <- palasso:::.loss(y=y1,fit=temp_y,family="gaussian",type.measure="deviance")[[1]]
     y_hat <- temp_y[,which.min(cvm)]
     
     # logistic regression
     net <- glmnet::glmnet(y=z0,x=X0,family="binomial",alpha=alpha,...)
     temp_z <- stats::predict(object=net,newx=X1,type="response",s=fit$binomial$lambda)
     pred$z[foldid==k,seq_len(ncol(temp_z))] <- temp_z
-    cvm <- cornet:::.loss(y=z1,fit=temp_z,family="binomial",type.measure=type.measure)[[1]]
+    cvm <- palasso:::.loss(y=z1,fit=temp_z,family="binomial",type.measure=type.measure)[[1]]
     z_hat <- temp_z[,which.min(cvm)]
     
     # combined regression
@@ -196,11 +202,11 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
   #--- evaluation ---
   
   # linear loss
-  fit$gaussian$cvm <- cornet:::.loss(y=y,fit=pred$y,family="gaussian",type.measure="deviance")[[1]]
+  fit$gaussian$cvm <- palasso:::.loss(y=y,fit=pred$y,family="gaussian",type.measure="deviance")[[1]]
   fit$gaussian$lambda.min <- fit$gaussian$lambda[which.min(fit$gaussian$cvm)]
   
   # logistic loss
-  fit$binomial$cvm <- cornet:::.loss(y=z,fit=pred$z,family="binomial",type.measure=type.measure)[[1]]
+  fit$binomial$cvm <- palasso:::.loss(y=z,fit=pred$z,family="binomial",type.measure=type.measure)[[1]]
   fit$binomial$lambda.min <- fit$binomial$lambda[which.min(fit$binomial$cvm)]
 
   # combined loss
@@ -209,7 +215,7 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
     fit$cvm <- matrix(data=NA,nrow=nsigma,ncol=npi,dimnames=dimnames)
     for(i in seq_len(nsigma)){
       for(j in seq_len(npi)){
-        fit$cvm[i,j] <- cornet:::.loss(y=z,fit=pred$combined[,i,j],family="binomial",type.measure=type.measure)[[1]]
+        fit$cvm[i,j] <- palasso:::.loss(y=z,fit=pred$combined[,i,j],family="binomial",type.measure=type.measure)[[1]]
       }
     }
     temp <- which(fit$cvm==min(fit$cvm),arr.ind=TRUE,useNames=TRUE)
@@ -223,7 +229,10 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
   fit$cutoff <- cutoff
   fit$info <- list(type.measure=type.measure,
                    sd.y=stats::sd(y),
+                   "+"=sum(z==1),
+                   "-"=sum(z==0),
                    table=table(z),
+                   n=n,p=ncol(X),
                    test=as.data.frame(test))
 
   class(fit) <- "cornet"
@@ -231,6 +240,43 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
 }
 
 #--- Methods -------------------------------------------------------------------
+
+#' @export
+#' @title
+#' Combined regression
+#'
+#' @description
+#' Prints summary of cornet object.
+#'
+#' @param x
+#' \link[cornet]{cornet} object
+#' 
+#' @param ...
+#' further arguments (not applicable)
+#' 
+#' @return
+#' Returns sample size \eqn{n},
+#' number of covariates \eqn{p},
+#' information on dichotomisation,
+#' tuned scaling parameter (sigma),
+#' tuned weighting parameter (pi),
+#' and corresponding loss.
+#'
+#' @examples
+#' NA
+#' 
+print.cornet <- function(x,...){
+  cat("cornet object:\n")
+  cat(paste0("n = ",x$info$n,","," p = ",x$info$p),"\n")
+  cat(paste0("z = I(y > ",signif(x$cutoff,digits=2),"): "))
+  cat(paste0(x$info$"+","+"," vs ",x$info$"-","-"),"\n")
+  cat(paste0("sigma.min = ",signif(x$sigma.min,digits=1)),"\n")
+  cat(paste0("pi.min = ",round(x$pi.min,digits=2)),"\n")
+  type <- x$info$type.measure
+  value <- signif(x$cvm[names(x$sigma.min),names(x$pi.min)],digits=2)
+  cat(paste0(type," = ",value))
+  return(invisible(NULL))
+}
 
 #' @export
 #' @title
@@ -270,14 +316,13 @@ coef.cornet <- function(object,...){
   return(coef)
 }
 
-
 #' @export
 #' @title
 #' Plot loss matrix
 #'
 #' @description
-#' Plots the loss for difference combinations of
-#' the weight (pi) and scale (sigma) paramters.
+#' Plots the loss for different combinations of
+#' scaling (sigma) and weighting (pi) parameters.
 #'
 #' @param x
 #' \link[cornet]{cornet} object
@@ -411,134 +456,6 @@ predict.cornet <- function(object,newx,type="probability",...){
   return(as.data.frame(frame))
 }
 
-#--- Application ---------------------------------------------------------------
-
-#' @export
-#' @title
-#' Performance measurement by cross-validation
-#'
-#' @description
-#' Compares models for a continuous response with a cutoff value.
-#' 
-#' @details
-#' Uses k-fold cross-validation,
-#' fits linear, logistic, and combined regression,
-#' calculates different loss functions,
-#' and examines squared deviance residuals.
-#' 
-#' @inheritParams  cornet
-#' 
-#' @examples
-#' NA
-#' 
-.compare <- function(y,cutoff,X,alpha=1,nfolds=5,foldid=NULL,type.measure="deviance"){
-  
-  z <- 1*(y > cutoff)
-  if(is.null(foldid)){
-    fold <- cornet:::.folds(y=z,nfolds=nfolds)
-  } else {
-    fold <- foldid
-  }
-  
-  #--- cross-validated loss ---
-  
-  cols <- c("gaussian","binomial","combined")
-  pred <- matrix(data=NA,nrow=length(y),ncol=length(cols),
-                 dimnames=list(NULL,cols))
-
-  for(i in seq_len(nfolds)){
-    fit <- cornet::cornet(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],alpha=alpha,type.measure=type.measure)
-    tryCatch(expr=cornet:::plot.cornet(fit),error=function(x) NULL)
-    temp <- cornet:::predict.cornet(fit,newx=X[fold==i,])
-    if(any(temp<0|temp>1)){stop("Outside unit interval.",call.=FALSE)}
-    model <- colnames(pred)
-    for(j in seq_along(model)){
-      pred[fold==i,model[j]] <- temp[[model[j]]]
-    }
-  }
-  
-  type <- c("deviance","class","mse","mae","auc")
-  loss <- lapply(X=type,FUN=function(x) cornet:::.loss(y=z,fit=pred,family="binomial",type.measure=x,foldid=fold)[[1]])
-  names(loss) <- type
-  
-  #--- deviance residuals ---
-  
-  # squared deviance residuals
-  limit <- 1e-05
-  pred[pred < limit] <- limit
-  pred[pred > 1 - limit] <- 1 - limit
-  res <- -2 * (z * log(pred) + (1 - z) * log(1 - pred))
-  rxs <- res[,"binomial"]
-  rys <- res[,"combined"]
-  
-  # residual increase/decrease
-  loss$resid.factor <- stats::median((rys-rxs)/rxs)
-  
-  # paired test for each fold
-  loss$resid.pvalue <- numeric()
-  for(i in seq_len(nfolds)){
-    cond <- fold==i
-    loss$resid.pvalue[i] <- stats::wilcox.test(x=rxs[cond],y=rys[cond],
-          paired=TRUE,alternative="greater")$p.value
-  }
-  
-  return(loss)
-
-}
-
-#' @export
-#' @title
-#' Single-split test
-#'
-#' @description
-#' Compares models for a continuous response with a cutoff value.
-#' 
-#' @details
-#' Splits samples into 80% for training and 20% for testing,
-#' calculates squared deviance residuals of logistic and combined regression,
-#' conducts the paired one-sided Wilcoxon signed rank test,
-#' and returns the p-value.
-#' 
-#' @inheritParams cornet
-#' 
-#' @examples
-#' NA
-#' 
-.test <- function(y,cutoff,X,alpha=1,type.measure="deviance"){
-  
-  z <- 1*(y > cutoff)
-  fold <- cornet:::.folds(y=z,nfolds=5)
-  fold <- ifelse(fold==1,1,0)
-  
-  fit <- cornet::cornet(y=y[fold==0],cutoff=cutoff,X=X[fold==0,],alpha=alpha)
-  tryCatch(expr=cornet:::plot.cornet(fit),error=function(x) NULL)
-  pred <- cornet:::predict.cornet(fit,newx=X[fold==1,])
-  if(any(pred<0|pred>1)){stop("Outside unit interval.",call.=FALSE)}
-  
-  #res <- (pred-z[fold==1])^2 # MSE
-  #pvalue <- wilcox.test(x=res[,"binomial"],y=res[,"combined"],paired=TRUE,alternative="greater")$p.value
-  #colMeans(abs(pred-0.5)) # distance from 0.5
-  
-  limit <- 1e-05
-  pred[pred < limit] <- limit
-  pred[pred > 1 - limit] <- 1 - limit
-  res <- -2 * (z[fold==1] * log(pred) + (1 - z[fold==1]) * log(1 - pred))
-  pvalue <- stats::wilcox.test(x=res[,"binomial"],y=res[,"combined"],paired=TRUE,alternative="greater")$p.value
-  
-  return(pvalue)
-}
-
-# Simulates y and X.
-.simulate <- function(n,p,prob=0.2,fac=1){
-  beta <- stats::rnorm(n=p)
-  cond <- stats::rbinom(n=p,size=1,prob=prob)
-  beta[cond==0] <- 0
-  X <- matrix(stats::rnorm(n=n*p),nrow=n,ncol=p)
-  mean <- X %*% beta
-  y <- stats::rnorm(n=n,mean=mean,sd=fac*stats::sd(mean))
-  return(list(y=y,X=X))
-}
-
 #--- Internal functions --------------------------------------------------------
 
 #' @title
@@ -555,7 +472,7 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' logical
 #' 
 #' @examples 
-#' NA
+#' cornet:::.equal(1,1,1)
 #' 
 .equal <- function(...,na.rm=FALSE){
   list <- list(...)
@@ -605,7 +522,7 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' logical
 #'
 #' @examples
-#' NA
+#' cornet:::.check(0.5,type="scalar",min=0,max=1)
 #' 
 .check <- function(x,type,miss=FALSE,min=NULL,max=NULL,values=NULL,inf=FALSE,null=FALSE){
   name <- deparse(substitute(x))
@@ -644,127 +561,284 @@ predict.cornet <- function(object,newx,type="probability",...){
   return(invisible(NULL))
 }
 
-# Import this function from the palasso package.
-.loss <- function (y,fit,family,type.measure,foldid=NULL){
-  if (!is.list(fit)) {
-    fit <- list(fit)
+
+#--- Application ---------------------------------------------------------------
+
+#' @title
+#' Performance measurement by cross-validation
+#'
+#' @description
+#' Compares models for a continuous response with a cutoff value.
+#' 
+#' @details
+#' Uses k-fold cross-validation,
+#' fits linear, logistic, and combined regression,
+#' calculates different loss functions,
+#' and examines squared deviance residuals.
+#' 
+#' @inheritParams  cornet
+#' 
+#' @examples
+#' NA
+#' 
+.compare <- function(y,cutoff,X,alpha=1,nfolds=5,foldid=NULL,type.measure="deviance"){
+  
+  z <- 1*(y > cutoff)
+  if(is.null(foldid)){
+    fold <- palasso:::.folds(y=z,nfolds=nfolds)
+  } else {
+    fold <- foldid
   }
-  loss <- list()
-  for (i in seq_along(fit)) {
-    if (is.vector(fit[[i]])) {
-      fit[[i]] <- as.matrix(fit[[i]])
-    }
-    if (is.null(foldid) & (family == "cox" | type.measure == 
-                           "auc")) {
-      stop("Missing foldid.", call. = FALSE)
-    }
-    if (family == "gaussian") {
-      if (type.measure %in% c("deviance", "mse")) {
-        loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
-                           FUN = function(x) mean((x - y)^2))
-      }
-      else if (type.measure == "mae") {
-        loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
-                           FUN = function(x) mean(abs(x - y)))
-      }
-      else {
-        stop("Invalid type measure.", call. = FALSE)
-      }
-    }
-    else if (family == "binomial") {
-      if (type.measure == "deviance") {
-        limit <- 1e-05
-        fit[[i]][fit[[i]] < limit] <- limit
-        fit[[i]][fit[[i]] > 1 - limit] <- 1 - limit
-        loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
-                           FUN = function(x) mean(-2 * (y * log(x) + (1 - 
-                                                                        y) * log(1 - x))))
-      }
-      else if (type.measure == "mse") {
-        loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
-                           FUN = function(x) 2 * mean((x - y)^2))
-      }
-      else if (type.measure == "mae") {
-        loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
-                           FUN = function(x) 2 * mean(abs(x - y)))
-      }
-      else if (type.measure == "class") {
-        loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
-                           FUN = function(x) mean(abs(round(x) - y)))
-      }
-      else if (type.measure == "auc") {
-        weights <- table(foldid)
-        cvraw <- matrix(data = NA, nrow = length(weights), 
-                        ncol = ncol(fit[[i]])) # typo in palasso package !
-        for (k in seq_along(weights)) {
-          cvraw[k, ] <- apply(X = fit[[i]], MARGIN = 2, 
-                              FUN = function(x) glmnet::auc(y = y[foldid == 
-                                                                    k], prob = x[foldid == k]))
-        }
-        loss[[i]] <- apply(X = cvraw, MARGIN = 2, FUN = function(x) stats::weighted.mean(x = x, 
-                                                                                         w = weights, na.rm = TRUE))
-        names(loss[[i]]) <- colnames(fit[[i]]) # typo in palasso package!
-      }
-      else {
-        stop("Invalid type measure.", call. = FALSE)
-      }
-    }
-    else if (family == "poisson") {
-      if (type.measure == "deviance") {
-        loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
-                           FUN = function(x) mean(2 * (ifelse(y == 0, 
-                                                              0, y * log(y/x)) - y + x), na.rm = TRUE))
-      }
-      else if (type.measure == "mse") {
-        loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
-                           FUN = function(x) mean((x - y)^2))
-      }
-      else if (type.measure == "mae") {
-        loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
-                           FUN = function(x) mean(abs(x - y)))
-      }
-      else {
-        stop("Invalid type measure.", call. = FALSE)
-      }
-    }
-    else if (family == "cox") {
-      if (type.measure == "deviance") {
-        weights <- tapply(X = y[, "status"], INDEX = foldid, 
-                          FUN = sum)
-        loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
-                           FUN = function(x) stats::weighted.mean(x = x/weights, 
-                                                                  w = weights, na.rm = TRUE))
-      }
-      else {
-        stop("Invalid type measure.", call. = FALSE)
-      }
-    }
-    else {
-      stop("Invalid family.", call. = FALSE)
-    }
-    if (sum(diff(is.na(loss[[i]]))) == 1) {
-      loss[[i]] <- loss[[i]][!is.na(loss[[i]])]
+  
+  #--- cross-validated loss ---
+  
+  cols <- c("gaussian","binomial","combined")
+  pred <- matrix(data=NA,nrow=length(y),ncol=length(cols),
+                 dimnames=list(NULL,cols))
+  
+  for(i in seq_len(nfolds)){
+    fit <- cornet::cornet(y=y[fold!=i],cutoff=cutoff,X=X[fold!=i,],alpha=alpha,type.measure=type.measure)
+    tryCatch(expr=plot.cornet(fit),error=function(x) NULL)
+    temp <- predict.cornet(fit,newx=X[fold==i,])
+    if(any(temp<0|temp>1)){stop("Outside unit interval.",call.=FALSE)}
+    model <- colnames(pred)
+    for(j in seq_along(model)){
+      pred[fold==i,model[j]] <- temp[[model[j]]]
     }
   }
+  
+  type <- c("deviance","class","mse","mae","auc")
+  loss <- lapply(X=type,FUN=function(x) palasso:::.loss(y=z,fit=pred,family="binomial",type.measure=x,foldid=fold)[[1]])
+  names(loss) <- type
+  
+  #--- deviance residuals ---
+  
+  # squared deviance residuals
+  limit <- 1e-05
+  pred[pred < limit] <- limit
+  pred[pred > 1 - limit] <- 1 - limit
+  res <- -2 * (z * log(pred) + (1 - z) * log(1 - pred))
+  rxs <- res[,"binomial"]
+  rys <- res[,"combined"]
+  
+  # residual increase/decrease
+  loss$resid.factor <- stats::median((rys-rxs)/rxs)
+  
+  # paired test for each fold
+  loss$resid.pvalue <- numeric()
+  for(i in seq_len(nfolds)){
+    cond <- fold==i
+    loss$resid.pvalue[i] <- stats::wilcox.test(x=rxs[cond],y=rys[cond],
+                                               paired=TRUE,alternative="greater")$p.value
+  }
+  
   return(loss)
+  
 }
 
-# Import this function from the palasso package.
-.folds <- function (y, nfolds, foldid = NULL){
-  if(!is.null(foldid)){
-    return(foldid)
-  }
-  #if (survival::is.Surv(y)){ # active in palasso
-  #  y <- y[, "status"] # active in palasso
-  #} # active in palasso
-  if(all(y %in% c(0, 1))){
-    foldid <- rep(x = NA, times = length(y))
-    foldid[y == 0] <- sample(x = rep(x = seq_len(nfolds), 
-                                     length.out = sum(y == 0)))
-    foldid[y == 1] <- sample(x = rep(x = seq_len(nfolds), 
-                                     length.out = sum(y == 1)))
-  } else {
-    foldid <- sample(x = rep(x = seq_len(nfolds), length.out = length(y)))
-  }
-  return(foldid)
+#' @title
+#' Single-split test
+#'
+#' @description
+#' Compares models for a continuous response with a cutoff value.
+#' 
+#' @details
+#' Splits samples into 80% for training and 20% for testing,
+#' calculates squared deviance residuals of logistic and combined regression,
+#' conducts the paired one-sided Wilcoxon signed rank test,
+#' and returns the p-value.
+#' 
+#' @inheritParams cornet
+#' 
+#' @examples
+#' NA
+#' 
+.test <- function(y,cutoff,X,alpha=1,type.measure="deviance"){
+  
+  z <- 1*(y > cutoff)
+  fold <- palasso:::.folds(y=z,nfolds=5)
+  fold <- ifelse(fold==1,1,0)
+  
+  fit <- cornet::cornet(y=y[fold==0],cutoff=cutoff,X=X[fold==0,],alpha=alpha)
+  tryCatch(expr=plot.cornet(fit),error=function(x) NULL)
+  pred <- predict.cornet(fit,newx=X[fold==1,])
+  if(any(pred<0|pred>1)){stop("Outside unit interval.",call.=FALSE)}
+  
+  #res <- (pred-z[fold==1])^2 # MSE
+  #pvalue <- wilcox.test(x=res[,"binomial"],y=res[,"combined"],paired=TRUE,alternative="greater")$p.value
+  #colMeans(abs(pred-0.5)) # distance from 0.5
+  
+  limit <- 1e-05
+  pred[pred < limit] <- limit
+  pred[pred > 1 - limit] <- 1 - limit
+  res <- -2 * (z[fold==1] * log(pred) + (1 - z[fold==1]) * log(1 - pred))
+  pvalue <- stats::wilcox.test(x=res[,"binomial"],y=res[,"combined"],paired=TRUE,alternative="greater")$p.value
+  
+  return(pvalue)
 }
+
+#' @title
+#' Data simulation
+#'
+#' @description
+#' Simulates data for unit tests
+#' 
+#' @param n
+#' sample size\strong{:}
+#' positive integer
+#' 
+#' @param p
+#' covariate space\strong{:}
+#' positive integer
+#' 
+#' @param prob
+#' (approximate) proportion of causal covariates\strong{:}
+#' numeric between \eqn{0} and \eqn{1}
+#' 
+#' @param fac
+#' noise factor\strong{:}
+#' positive real number
+#' 
+#' @return
+#' Returns invisible list with elements \code{y} and \code{X}.
+#' 
+#' @examples
+#' data <- cornet:::.simulate(n=10,p=20,prob=0.2,fac=2)
+#' names(data)
+#' 
+.simulate <- function(n,p,prob=0.2,fac=1){
+  beta <- stats::rnorm(n=p)
+  cond <- stats::rbinom(n=p,size=1,prob=prob)
+  beta[cond==0] <- 0
+  X <- matrix(stats::rnorm(n=n*p),nrow=n,ncol=p)
+  mean <- X %*% beta
+  y <- stats::rnorm(n=n,mean=mean,sd=fac*stats::sd(mean))
+  return(invisible(list(y=y,X=X)))
+}
+
+#--- Legacy --------------------------------------------------------------------
+
+# # Import this function from the palasso package.
+# .loss <- function (y,fit,family,type.measure,foldid=NULL){
+#   if (!is.list(fit)) {
+#     fit <- list(fit)
+#   }
+#   loss <- list()
+#   for (i in seq_along(fit)) {
+#     if (is.vector(fit[[i]])) {
+#       fit[[i]] <- as.matrix(fit[[i]])
+#     }
+#     if (is.null(foldid) & (family == "cox" | type.measure == 
+#                            "auc")) {
+#       stop("Missing foldid.", call. = FALSE)
+#     }
+#     if (family == "gaussian") {
+#       if (type.measure %in% c("deviance", "mse")) {
+#         loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
+#                            FUN = function(x) mean((x - y)^2))
+#       }
+#       else if (type.measure == "mae") {
+#         loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
+#                            FUN = function(x) mean(abs(x - y)))
+#       }
+#       else {
+#         stop("Invalid type measure.", call. = FALSE)
+#       }
+#     }
+#     else if (family == "binomial") {
+#       if (type.measure == "deviance") {
+#         limit <- 1e-05
+#         fit[[i]][fit[[i]] < limit] <- limit
+#         fit[[i]][fit[[i]] > 1 - limit] <- 1 - limit
+#         loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
+#                            FUN = function(x) mean(-2 * (y * log(x) + (1 - 
+#                                                                         y) * log(1 - x))))
+#       }
+#       else if (type.measure == "mse") {
+#         loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
+#                            FUN = function(x) 2 * mean((x - y)^2))
+#       }
+#       else if (type.measure == "mae") {
+#         loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
+#                            FUN = function(x) 2 * mean(abs(x - y)))
+#       }
+#       else if (type.measure == "class") {
+#         loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
+#                            FUN = function(x) mean(abs(round(x) - y)))
+#       }
+#       else if (type.measure == "auc") {
+#         weights <- table(foldid)
+#         cvraw <- matrix(data = NA, nrow = length(weights), 
+#                         ncol = ncol(fit[[i]])) # typo in palasso package !
+#         for (k in seq_along(weights)) {
+#           cvraw[k, ] <- apply(X = fit[[i]], MARGIN = 2, 
+#                               FUN = function(x) glmnet::auc(y = y[foldid == 
+#                                                                     k], prob = x[foldid == k]))
+#         }
+#         loss[[i]] <- apply(X = cvraw, MARGIN = 2, FUN = function(x) stats::weighted.mean(x = x, 
+#                                                                                          w = weights, na.rm = TRUE))
+#         names(loss[[i]]) <- colnames(fit[[i]]) # typo in palasso package!
+#       }
+#       else {
+#         stop("Invalid type measure.", call. = FALSE)
+#       }
+#     }
+#     else if (family == "poisson") {
+#       if (type.measure == "deviance") {
+#         loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
+#                            FUN = function(x) mean(2 * (ifelse(y == 0, 
+#                                                               0, y * log(y/x)) - y + x), na.rm = TRUE))
+#       }
+#       else if (type.measure == "mse") {
+#         loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
+#                            FUN = function(x) mean((x - y)^2))
+#       }
+#       else if (type.measure == "mae") {
+#         loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
+#                            FUN = function(x) mean(abs(x - y)))
+#       }
+#       else {
+#         stop("Invalid type measure.", call. = FALSE)
+#       }
+#     }
+#     else if (family == "cox") {
+#       if (type.measure == "deviance") {
+#         weights <- tapply(X = y[, "status"], INDEX = foldid, 
+#                           FUN = sum)
+#         loss[[i]] <- apply(X = fit[[i]], MARGIN = 2, 
+#                            FUN = function(x) stats::weighted.mean(x = x/weights, 
+#                                                                   w = weights, na.rm = TRUE))
+#       }
+#       else {
+#         stop("Invalid type measure.", call. = FALSE)
+#       }
+#     }
+#     else {
+#       stop("Invalid family.", call. = FALSE)
+#     }
+#     if (sum(diff(is.na(loss[[i]]))) == 1) {
+#       loss[[i]] <- loss[[i]][!is.na(loss[[i]])]
+#     }
+#   }
+#   return(loss)
+# }
+# 
+# # Import this function from the palasso package.
+# .folds <- function (y, nfolds, foldid = NULL){
+#   if(!is.null(foldid)){
+#     return(foldid)
+#   }
+#   #if (survival::is.Surv(y)){ # active in palasso
+#   #  y <- y[, "status"] # active in palasso
+#   #} # active in palasso
+#   if(all(y %in% c(0, 1))){
+#     foldid <- rep(x = NA, times = length(y))
+#     foldid[y == 0] <- sample(x = rep(x = seq_len(nfolds), 
+#                                      length.out = sum(y == 0)))
+#     foldid[y == 1] <- sample(x = rep(x = seq_len(nfolds), 
+#                                      length.out = sum(y == 1)))
+#   } else {
+#     foldid <- sample(x = rep(x = seq_len(nfolds), length.out = length(y)))
+#   }
+#   return(foldid)
+# }

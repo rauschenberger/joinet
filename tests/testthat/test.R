@@ -5,7 +5,7 @@ y <- list$y; X <- list$X
 
 # penalised regression
 cutoff <- 1
-foldid <- cornet:::.folds(y=y>cutoff,nfolds=10)
+foldid <- palasso:::.folds(y=y>cutoff,nfolds=10)
 fit <- cornet::cornet(y=y,cutoff=cutoff,X=X,foldid=foldid)
 net <- list()
 net$gaussian <- glmnet::cv.glmnet(y=y,x=X,family="gaussian",foldid=foldid)
@@ -45,5 +45,4 @@ testthat::test_that("predicted values (logistic)",{
   b <- as.numeric(stats::predict(object=net$binomial,newx=X,s="lambda.min",type="response"))
   testthat::expect_true(all(a==b))
 })
-
 

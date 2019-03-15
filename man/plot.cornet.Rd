@@ -12,8 +12,8 @@
 \item{...}{further arguments (not applicable)}
 }
 \description{
-Plots the loss for difference combinations of
-the weight (pi) and scale (sigma) paramters.
+Plots the loss for different combinations of
+scaling (sigma) and weighting (pi) parameters.
 }
 \examples{
 NA

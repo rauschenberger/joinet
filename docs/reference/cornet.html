@@ -32,7 +32,8 @@
 
 <meta property="og:title" content="Logistic regression with a continuous response — cornet" />
 
-<meta property="og:description" content="Implements logistic regression with a continuous response." />
+<meta property="og:description" content="Implements logistic regression with a continuous response
+in high-dimensional settings." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -95,7 +96,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/rauschenberger/colasso">
+  <a href="https://github.com/rauschenberger/cornet">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -113,13 +114,14 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Logistic regression with a continuous response</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/colasso/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/rauschenberger/cornet/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
     <div class="hidden name"><code>cornet.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Implements logistic regression with a continuous response.</p>
+    <p>Implements logistic regression with a continuous response
+in high-dimensional settings.</p>
     
     </div>
 
@@ -138,7 +140,7 @@ vector of length \(n\)</p></td>
     <tr>
       <th>cutoff</th>
       <td><p>cutoff point for dichotomising response into classes<strong>:</strong>
-value between <code>min(y)</code> and <code>max(y)</code></p></td>
+<em>meaningful</em> value between <code>min(y)</code> and <code>max(y)</code></p></td>
     </tr>
     <tr>
       <th>X</th>
@@ -153,7 +155,7 @@ numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
     </tr>
     <tr>
       <th>npi</th>
-      <td><p>number of <code>pi</code> values</p></td>
+      <td><p>number of <code>pi</code> values (weighting)</p></td>
     </tr>
     <tr>
       <th>pi</th>
@@ -163,7 +165,7 @@ or <code>NULL</code> (default sequence)</p></td>
     </tr>
     <tr>
       <th>nsigma</th>
-      <td><p>number of <code>sigma</code> values</p></td>
+      <td><p>number of <code>sigma</code> values (scaling)</p></td>
     </tr>
     <tr>
       <th>sigma</th>
@@ -195,11 +197,11 @@ or <code>NULL</code> (balance)</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Returns an object of class <code>cornet</code>, a list with multiple slots:</p><ul>
-<li><p><code>"gaussian"</code>: fitted linear model, class <code>glmnet</code></p></li>
-<li><p><code>"binomial"</code>: fitted logistic model, class <code>glmnet</code></p></li>
-<li><p><code>"sigma"</code>: scaling parameters <code>sigma</code>,
+<li><p><code>gaussian</code>: fitted linear model, class <code>glmnet</code></p></li>
+<li><p><code>binomial</code>: fitted logistic model, class <code>glmnet</code></p></li>
+<li><p><code>sigma</code>: scaling parameters <code>sigma</code>,
           vector of length <code>nsigma</code></p></li>
-<li><p><code>"pi"</code>: weighting parameters <code>pi</code>,
+<li><p><code>pi</code>: weighting parameters <code>pi</code>,
           vector of length <code>npi</code></p></li>
 <li><p><code>cvm</code>: evaluation loss,
           matrix with <code>nsigma</code> rows and <code>npi</code> columns</p></li>
@@ -213,11 +215,17 @@ or <code>NULL</code> (balance)</p></td>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This function fits a <code>"gaussian"</code> model for the numeric response,
-and a <code>"binomial"</code> model for the binary response,
+    <p>This function fits a <em>gaussian</em> model for the numeric response,
+and a <em>binomial</em> model for the binary response,
 meaning that the <code>glmnet</code> argument <code>family</code> is unavailable.
-Also if <code>type.measure</code> equals <code>"deviance"</code>,
+Even if <code>type.measure</code> equals <code>"deviance"</code>,
 the loss is uncomparable between linear and logistic regression.</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Methods for objects of class <code>cornet</code> include
+<code><a href='coef.cornet.html'>coef</a></code> and
+<code><a href='predict.cornet.html'>predict</a></code>.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -234,6 +242,8 @@ the loss is uncomparable between linear and logistic regression.</p>
       <li><a href="#value">Value</a></li>
 
       <li><a href="#details">Details</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>
