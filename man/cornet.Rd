@@ -13,7 +13,7 @@ cornet(y, cutoff, X, alpha = 1, npi = 101, pi = NULL, nsigma = 99,
 \item{y}{continuous outcome\strong{:}
 vector of length \eqn{n}}
 
-\item{cutoff}{cutoff point for dichotomising outcome into classes\strong{:}
+\item{cutoff}{cut-off point for dichotomising outcome into classes\strong{:}
 \emph{meaningful} value between \code{min(y)} and \code{max(y)}}
 
 \item{X}{features\strong{:}

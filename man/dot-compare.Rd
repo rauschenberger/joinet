@@ -11,7 +11,7 @@
 \item{y}{continuous outcome\strong{:}
 vector of length \eqn{n}}
 
-\item{cutoff}{cutoff point for dichotomising outcome into classes\strong{:}
+\item{cutoff}{cut-off point for dichotomising outcome into classes\strong{:}
 \emph{meaningful} value between \code{min(y)} and \code{max(y)}}
 
 \item{X}{features\strong{:}
@@ -31,7 +31,7 @@ or \code{NULL} (balance)}
 (linear regression uses the deviance)}
 }
 \description{
-Compares models for a continuous response with a cutoff value.
+Compares models for a continuous response with a cut-off value.
 }
 \details{
 Uses k-fold cross-validation,

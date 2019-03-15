@@ -15,7 +15,7 @@
 #' vector of length \eqn{n}
 #' 
 #' @param cutoff
-#' cutoff point for dichotomising outcome into classes\strong{:}
+#' cut-off point for dichotomising outcome into classes\strong{:}
 #' \emph{meaningful} value between \code{min(y)} and \code{max(y)}
 #' 
 #' @param X
@@ -575,7 +575,7 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' Performance measurement by cross-validation
 #'
 #' @description
-#' Compares models for a continuous response with a cutoff value.
+#' Compares models for a continuous response with a cut-off value.
 #' 
 #' @details
 #' Uses k-fold cross-validation,
@@ -647,7 +647,7 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' Single-split test
 #'
 #' @description
-#' Compares models for a continuous response with a cutoff value.
+#' Compares models for a continuous response with a cut-off value.
 #' 
 #' @details
 #' Splits samples into 80% for training and 20% for testing,

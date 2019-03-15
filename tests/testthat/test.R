@@ -56,6 +56,14 @@ testthat::test_that("predicted probabilities",{ # important!
   testthat::expect_true(all(a==b))
 })
 
+testthat::test_that("estimated coefficients",{ # important!
+  a <- cornet:::coef.cornet(fit)
+  b <- as.numeric(stats::coef(object=net$gaussian,s="lambda.min"))
+  c <- as.numeric(stats::coef(object=net$binomial,s="lambda.min"))
+  cond <- all(a[,"beta"]==b) & all(a[,"gamma"]==c)
+  testthat::expect_true(cond)
+})
+
 testthat::test_that("tuning parameters",{
   a <- (0 <= fit$sigma.min) & is.finite(fit$sigma.min)
   b <- (0 <= fit$pi.min) & (fit$pi.min <= 1)
