@@ -1,5 +1,7 @@
 
+
 # data simulation
+set.seed(1)
 list <- cornet:::.simulate(n=100,p=200)
 y <- list$y; X <- list$X
 

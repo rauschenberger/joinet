@@ -3,7 +3,7 @@
 \name{cornet}
 \alias{cornet}
 \alias{cornet-package}
-\title{Logistic regression with a continuous response}
+\title{Combined regression}
 \usage{
 cornet(y, cutoff, X, alpha = 1, npi = 101, pi = NULL, nsigma = 99,
   sigma = NULL, nfolds = 10, foldid = NULL,
@@ -65,7 +65,7 @@ Returns an object of class \code{cornet}, a list with multiple slots:
 }
 }
 \description{
-Implements logistic regression with a continuous response
+Implements logistic regression for dichotomised outcomes
 in high-dimensional settings.
 }
 \details{

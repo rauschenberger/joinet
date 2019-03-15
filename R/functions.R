@@ -4,10 +4,10 @@
 #' @export
 #' @aliases cornet-package
 #' @title
-#' Logistic regression with a continuous response
+#' Combined regression
 #' 
 #' @description
-#' Implements logistic regression with a continuous response
+#' Implements logistic regression for dichotomised outcomes
 #' in high-dimensional settings.
 #'  
 #' @param y
