@@ -1,7 +1,8 @@
 
 
+#for(i in 1:100){
+
 # data simulation
-set.seed(1)
 list <- cornet:::.simulate(n=100,p=200)
 y <- list$y; X <- list$X
 
@@ -47,4 +48,6 @@ testthat::test_that("predicted values (logistic)",{
   b <- as.numeric(stats::predict(object=net$binomial,newx=X,s="lambda.min",type="response"))
   testthat::expect_true(all(a==b))
 })
+
+#}
 

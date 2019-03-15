@@ -7,19 +7,19 @@
 #' Combined regression
 #' 
 #' @description
-#' Implements logistic regression for dichotomised outcomes
+#' Implements logistic regression for dichotomised outcomes 
 #' in high-dimensional settings.
 #'  
 #' @param y
-#' continuous response\strong{:}
+#' continuous outcome\strong{:}
 #' vector of length \eqn{n}
 #' 
 #' @param cutoff
-#' cutoff point for dichotomising response into classes\strong{:}
+#' cutoff point for dichotomising outcome into classes\strong{:}
 #' \emph{meaningful} value between \code{min(y)} and \code{max(y)}
 #' 
 #' @param X
-#' covariates\strong{:}
+#' features\strong{:}
 #' numeric matrix with \eqn{n} rows (samples)
 #' and \eqn{p} columns (variables)
 #' 
@@ -63,7 +63,7 @@
 #' and a \emph{binomial} model for the binary response,
 #' meaning that the \code{glmnet} argument \code{family} is unavailable.
 #' Even if \code{type.measure} equals \code{"deviance"},
-#' the loss is uncomparable between linear and logistic regression.
+#' the loss is incomparable between linear and logistic regression.
 #' 
 #' @return
 #' Returns an object of class \code{cornet}, a list with multiple slots:
@@ -524,6 +524,8 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' @examples
 #' cornet:::.check(0.5,type="scalar",min=0,max=1)
 #' 
+#' #.check(x=c(1,2,3,4,45),type="vector",values=1:10)
+#' 
 .check <- function(x,type,miss=FALSE,min=NULL,max=NULL,values=NULL,inf=FALSE,null=FALSE){
   name <- deparse(substitute(x))
   if(null && is.null(x)){
@@ -552,7 +554,7 @@ predict.cornet <- function(object,newx,type="probability",...){
   if(!is.null(max) && any(x>max)){
     stop(paste0("expecting ",name," <= ",max),call.=FALSE)
   }
-  if(!is.null(values) && !(x %in% values)){
+  if(!is.null(values) && any(!x %in% values)){
     stop(paste0("Argument \"",name,"\" contains invalid values."),call.=FALSE)
   }
   if(!inf && any(is.infinite(values))){
@@ -560,7 +562,6 @@ predict.cornet <- function(object,newx,type="probability",...){
   }
   return(invisible(NULL))
 }
-
 
 #--- Application ---------------------------------------------------------------
 

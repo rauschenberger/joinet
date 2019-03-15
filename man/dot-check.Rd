@@ -36,4 +36,6 @@ Verifies whether an argument matches formal requirements.
 \examples{
 cornet:::.check(0.5,type="scalar",min=0,max=1)
 
+#.check(x=c(1,2,3,4,45),type="vector",values=1:10)
+
 }

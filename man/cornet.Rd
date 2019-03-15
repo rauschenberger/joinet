@@ -10,13 +10,13 @@ cornet(y, cutoff, X, alpha = 1, npi = 101, pi = NULL, nsigma = 99,
   type.measure = "deviance", ...)
 }
 \arguments{
-\item{y}{continuous response\strong{:}
+\item{y}{continuous outcome\strong{:}
 vector of length \eqn{n}}
 
-\item{cutoff}{cutoff point for dichotomising response into classes\strong{:}
+\item{cutoff}{cutoff point for dichotomising outcome into classes\strong{:}
 \emph{meaningful} value between \code{min(y)} and \code{max(y)}}
 
-\item{X}{covariates\strong{:}
+\item{X}{features\strong{:}
 numeric matrix with \eqn{n} rows (samples)
 and \eqn{p} columns (variables)}
 
@@ -65,7 +65,7 @@ Returns an object of class \code{cornet}, a list with multiple slots:
 }
 }
 \description{
-Implements logistic regression for dichotomised outcomes
+Implements logistic regression for dichotomised outcomes 
 in high-dimensional settings.
 }
 \details{
@@ -73,7 +73,7 @@ This function fits a \emph{gaussian} model for the numeric response,
 and a \emph{binomial} model for the binary response,
 meaning that the \code{glmnet} argument \code{family} is unavailable.
 Even if \code{type.measure} equals \code{"deviance"},
-the loss is uncomparable between linear and logistic regression.
+the loss is incomparable between linear and logistic regression.
 }
 \examples{
 n <- 100; p <- 200

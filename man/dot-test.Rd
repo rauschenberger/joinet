@@ -7,13 +7,13 @@
 .test(y, cutoff, X, alpha = 1, type.measure = "deviance")
 }
 \arguments{
-\item{y}{continuous response\strong{:}
+\item{y}{continuous outcome\strong{:}
 vector of length \eqn{n}}
 
-\item{cutoff}{cutoff point for dichotomising response into classes\strong{:}
+\item{cutoff}{cutoff point for dichotomising outcome into classes\strong{:}
 \emph{meaningful} value between \code{min(y)} and \code{max(y)}}
 
-\item{X}{covariates\strong{:}
+\item{X}{features\strong{:}
 numeric matrix with \eqn{n} rows (samples)
 and \eqn{p} columns (variables)}
 
