@@ -88,11 +88,17 @@
 #' \code{\link[=coef.cornet]{coef}} and
 #' \code{\link[=predict.cornet]{predict}}.
 #' 
+#' @references 
+#' A Rauschenberger, E Glaab (2019).
+#' "Lasso and ridge regression with dichotomised outcomes".
+#' \emph{Manuscript in preparation}.
+#' 
 #' @examples
 #' n <- 100; p <- 200
 #' y <- rnorm(n)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' net <- cornet(y=y,cutoff=0,X=X)
+#' net
 #' 
 cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfolds=10,foldid=NULL,type.measure="deviance",...){
   
@@ -219,7 +225,7 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
       }
     }
     temp <- which(fit$cvm==min(fit$cvm),arr.ind=TRUE,useNames=TRUE)
-    if(nrow(temp)>1){warning("MULTIPLE!",call.=FALSE);temp <- temp[1,,drop=FALSE]}
+    if(nrow(temp)>1){warning("Multiple!",call.=FALSE);temp <- temp[1,,drop=FALSE]}
     fit$sigma.min <- fit$sigma[temp[1]]
     fit$pi.min <- fit$pi[temp[2]]
     if(fit$cvm[names(fit$sigma.min),names(fit$pi.min)]!=min(fit$cvm)){stop("Internal error.")}

@@ -1,3 +1,3 @@
-## cornet 0.0.0 (2019-01-17)
+## cornet 0.0.1 (2019-03-15)
 
-* Added functions
+* first submission

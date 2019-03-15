@@ -10,11 +10,15 @@ Lasso and ridge regression for dichotomised outcomes (extending [glmnet](https:/
 Installation
 ------------
 
-Install the current release from [CRAN](https://CRAN.R-project.org/package=cornet), or the latest development version from [GitHub](https://github.com/rauschenberger/cornet):
+Install the current release from [CRAN](https://CRAN.R-project.org/package=cornet):
 
 ``` r
 install.packages("cornet")
+```
 
+or the latest development version from [GitHub](https://github.com/rauschenberger/cornet):
+
+``` r
 #install.packages("devtools")
 devtools::install_github("rauschenberger/cornet")
 ```
@@ -22,4 +26,4 @@ devtools::install_github("rauschenberger/cornet")
 Reference
 ---------
 
-A Rauschenberger, and E Glaab (2019). "Lasso and ridge regression for dichotomised outcomes". Manuscript in preparation.
+Armin Rauschenberger and Enrico Glaab (2019). "Lasso and ridge regression for dichotomised outcomes". *Manuscript in preparation.*

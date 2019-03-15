@@ -80,7 +80,13 @@ n <- 100; p <- 200
 y <- rnorm(n)
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 net <- cornet(y=y,cutoff=0,X=X)
+net
 
+}
+\references{
+A Rauschenberger, E Glaab (2019).
+"Lasso and ridge regression with dichotomised outcomes".
+\emph{Manuscript in preparation}.
 }
 \seealso{
 Methods for objects of class \code{cornet} include
