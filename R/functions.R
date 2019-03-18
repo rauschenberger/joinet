@@ -586,10 +586,10 @@ predict.cornet <- function(object,newx,type="probability",...){
   if(!cond){
     stop(paste0("Argument \"",name,"\" does not match formal requirements."),call.=FALSE)
   }
-  if(!is.null(dim) && (length(dim)==1 & length(x)!=dim)){
+  if(!is.null(dim) && length(dim)==1 && length(x)!=dim){
       stop(paste0("Argument \"",name,"\" has invalid length."),call.=FALSE)
   }
-  if(!is.null(dim) && (length(dim)>1 & any(dim(x)!=dim,na.rm=TRUE))){
+  if(!is.null(dim) && length(dim)>1 && any(dim(x)!=dim,na.rm=TRUE)){
       stop(paste0("Argument \"",name,"\" has invalid dimensions."),call.=FALSE)
   }
   
