@@ -1,3 +1,11 @@
+Thanks for your suggestions!
+
+# Changes
+
+- More details in description field.
+- Reference in description field.
+- Executable examples in all help files.
+
 # Notes
 
-- Reference with DOI will be added after publication.
+- DOI will be added after publication.

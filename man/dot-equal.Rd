@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{.equal}
 \alias{.equal}
-\title{Arguments}
+\title{Equality}
 \usage{
 .equal(..., na.rm = FALSE)
 }

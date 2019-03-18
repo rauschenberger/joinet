@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{.compare}
 \alias{.compare}
-\title{Performance measurement by cross-validation}
+\title{Performance measurement}
 \usage{
 .compare(y, cutoff, X, alpha = 1, nfolds = 5, foldid = NULL,
   type.measure = "deviance")
@@ -21,14 +21,16 @@ and \eqn{p} columns (variables)}
 \item{alpha}{elastic net mixing parameter\strong{:}
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
-\item{nfolds}{number of folds}
+\item{nfolds}{number of folds\strong{:}
+integer between \eqn{3} and \eqn{n}}
 
 \item{foldid}{fold identifiers\strong{:}
 vector with entries between \eqn{1} and \code{nfolds};
 or \code{NULL} (balance)}
 
-\item{type.measure}{loss function for binary classification
-(linear regression uses the deviance)}
+\item{type.measure}{loss function for binary classification\strong{:}
+character \code{"deviance"}, \code{"mse"}, \code{"mae"},
+or \code{"class"} (see \code{\link[glmnet]{cv.glmnet}})}
 }
 \description{
 Compares models for a continuous response with a cut-off value.
@@ -40,6 +42,10 @@ calculates different loss functions,
 and examines squared deviance residuals.
 }
 \examples{
-NA
+\donttest{n <- 100; p <- 200
+y <- rnorm(n)
+X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+loss <- cornet:::.compare(y=y,cutoff=0,X=X)
+loss}
 
 }

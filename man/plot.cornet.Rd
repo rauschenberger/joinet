@@ -11,11 +11,24 @@
 
 \item{...}{further arguments (not applicable)}
 }
+\value{
+This function plots the evaluation loss (\code{cvm}).
+Whereas the matrix has sigma in the rows, and pi in the columns,
+the plot has sigma on the \eqn{x}-axis, and pi on the \eqn{y}-axis.
+For all combinations of sigma and pi, the colour indicates the loss.
+If the R package \code{RColorBrewer} is installed,
+blue represents low. Otherwise, red represents low.
+White always represents high.
+}
 \description{
 Plots the loss for different combinations of
 scaling (sigma) and weighting (pi) parameters.
 }
 \examples{
-NA
+\donttest{n <- 100; p <- 200
+y <- rnorm(n)
+X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+net <- cornet(y=y,cutoff=0,X=X)
+plot(net)}
 
 }

@@ -4,13 +4,16 @@
 \alias{.check}
 \title{Arguments}
 \usage{
-.check(x, type, miss = FALSE, min = NULL, max = NULL,
+.check(x, type, dim = NULL, miss = FALSE, min = NULL, max = NULL,
   values = NULL, inf = FALSE, null = FALSE)
 }
 \arguments{
 \item{x}{argument}
 
 \item{type}{character \code{"string"}, \code{"scalar"}, \code{"vector"}, \code{"matrix"}}
+
+\item{dim}{vector/matrix dimensionality\strong{:}
+integer scalar/vector}
 
 \item{miss}{accept missing values\strong{:}
 logical}
@@ -35,7 +38,5 @@ Verifies whether an argument matches formal requirements.
 }
 \examples{
 cornet:::.check(0.5,type="scalar",min=0,max=1)
-
-#.check(x=c(1,2,3,4,45),type="vector",values=1:10)
 
 }

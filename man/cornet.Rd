@@ -26,7 +26,7 @@ numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 \item{npi}{number of \code{pi} values (weighting)}
 
 \item{pi}{pi sequence\strong{:}
-vector of values in the unit interval;
+vector of increasing values in the unit interval;
 or \code{NULL} (default sequence)}
 
 \item{nsigma}{number of \code{sigma} values (scaling)}
@@ -35,14 +35,16 @@ or \code{NULL} (default sequence)}
 vector of increasing positive values;
 or \code{NULL} (default sequence)}
 
-\item{nfolds}{number of folds}
+\item{nfolds}{number of folds\strong{:}
+integer between \eqn{3} and \eqn{n}}
 
 \item{foldid}{fold identifiers\strong{:}
 vector with entries between \eqn{1} and \code{nfolds};
 or \code{NULL} (balance)}
 
-\item{type.measure}{loss function for binary classification
-(linear regression uses the deviance)}
+\item{type.measure}{loss function for binary classification\strong{:}
+character \code{"deviance"}, \code{"mse"}, \code{"mae"},
+or \code{"class"} (see \code{\link[glmnet]{cv.glmnet}})}
 
 \item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}}
 }
@@ -65,15 +67,20 @@ Returns an object of class \code{cornet}, a list with multiple slots:
 }
 }
 \description{
-Implements logistic regression for dichotomised outcomes 
-in high-dimensional settings.
+Implements lasso and ridge regression for dichotomised outcomes.
+Such outcomes are not naturally but artificially binary.
+They indicate whether an underlying measurement is greater than a threshold.
 }
 \details{
-This function fits a \emph{gaussian} model for the numeric response,
-and a \emph{binomial} model for the binary response,
-meaning that the \code{glmnet} argument \code{family} is unavailable.
-Even if \code{type.measure} equals \code{"deviance"},
-the loss is incomparable between linear and logistic regression.
+The argument \code{family} is unavailable, because
+this function fits a \emph{gaussian} model for the numeric response,
+and a \emph{binomial} model for the binary response.
+
+Linear regression uses the loss function \code{"deviance"} (or \code{"mse"}),
+but the loss is incomparable between linear and logistic regression.
+
+The loss function \code{"auc"} is unavailable for internal cross-validation.
+If at all, use \code{"auc"} for external cross-validation only.
 }
 \examples{
 n <- 100; p <- 200

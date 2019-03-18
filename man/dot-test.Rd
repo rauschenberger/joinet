@@ -20,8 +20,9 @@ and \eqn{p} columns (variables)}
 \item{alpha}{elastic net mixing parameter\strong{:}
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
-\item{type.measure}{loss function for binary classification
-(linear regression uses the deviance)}
+\item{type.measure}{loss function for binary classification\strong{:}
+character \code{"deviance"}, \code{"mse"}, \code{"mae"},
+or \code{"class"} (see \code{\link[glmnet]{cv.glmnet}})}
 }
 \description{
 Compares models for a continuous response with a cut-off value.
@@ -33,6 +34,9 @@ conducts the paired one-sided Wilcoxon signed rank test,
 and returns the p-value.
 }
 \examples{
-NA
+\donttest{n <- 100; p <- 200
+y <- rnorm(n)
+X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+cornet:::.test(y=y,cutoff=0,X=X)}
 
 }

@@ -27,6 +27,10 @@ using a Gaussian distribution with a fixed mean (threshold)
 and a fixed variance (estimated variance of the numeric outcome).
 }
 \examples{
-NA
+\donttest{n <- 100; p <- 200
+y <- rnorm(n)
+X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+net <- cornet(y=y,cutoff=0,X=X)
+predict(net,newx=X)}
 
 }

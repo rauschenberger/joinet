@@ -7,9 +7,10 @@
 #' Combined regression
 #' 
 #' @description
-#' Implements logistic regression for dichotomised outcomes 
-#' in high-dimensional settings.
-#'  
+#' Implements lasso and ridge regression for dichotomised outcomes.
+#' Such outcomes are not naturally but artificially binary.
+#' They indicate whether an underlying measurement is greater than a threshold.
+#'
 #' @param y
 #' continuous outcome\strong{:}
 #' vector of length \eqn{n}
@@ -33,15 +34,17 @@
 #' or \code{NULL} (balance)
 #' 
 #' @param nfolds
-#' number of folds
+#' number of folds\strong{:}
+#' integer between \eqn{3} and \eqn{n}
 #' 
 #' @param type.measure
-#' loss function for binary classification
-#' (linear regression uses the deviance)
+#' loss function for binary classification\strong{:}
+#' character \code{"deviance"}, \code{"mse"}, \code{"mae"},
+#' or \code{"class"} (see \code{\link[glmnet]{cv.glmnet}})
 #' 
 #' @param pi
 #' pi sequence\strong{:}
-#' vector of values in the unit interval;
+#' vector of increasing values in the unit interval;
 #' or \code{NULL} (default sequence)
 #' 
 #' @param npi
@@ -59,11 +62,15 @@
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
 #' 
 #' @details
-#' This function fits a \emph{gaussian} model for the numeric response,
-#' and a \emph{binomial} model for the binary response,
-#' meaning that the \code{glmnet} argument \code{family} is unavailable.
-#' Even if \code{type.measure} equals \code{"deviance"},
-#' the loss is incomparable between linear and logistic regression.
+#' The argument \code{family} is unavailable, because
+#' this function fits a \emph{gaussian} model for the numeric response,
+#' and a \emph{binomial} model for the binary response.
+#' 
+#' Linear regression uses the loss function \code{"deviance"} (or \code{"mse"}),
+#' but the loss is incomparable between linear and logistic regression.
+#' 
+#' The loss function \code{"auc"} is unavailable for internal cross-validation.
+#' If at all, use \code{"auc"} for external cross-validation only.
 #' 
 #' @return
 #' Returns an object of class \code{cornet}, a list with multiple slots:
@@ -108,21 +115,22 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
   test$combined <- TRUE
   
   #--- checks ---
+  n <- length(y)
   .check(x=y,type="vector")
   if(all(y %in% c(0,1))){warning("Binary response.",call.=FALSE)}
   .check(x=cutoff,type="scalar",min=min(y),max=max(y))
-  .check(x=X,type="matrix")
-  .check(x=alpha,type="scalar",min=0,max=1)
   if(length(y)!=nrow(X)){stop("Contradictory sample size.",call.=FALSE)}
+  .check(x=X,type="matrix",dim=c(n,NA))
+  .check(x=alpha,type="scalar",min=0,max=1)
   .check(x=npi,type="scalar",min=1)
   .check(x=pi,type="vector",min=0,max=1,null=TRUE)
   .check(x=nsigma,type="scalar",min=1)
   .check(x=sigma,type="vector",min=.Machine$double.eps,null=TRUE)
-  .check(x=nfolds,type="scalar",min=3)
-  .check(x=foldid,type="vector",values=seq_len(nfolds),null=TRUE)
-  .check(x=type.measure,type="string",values=c("deviance","class","mse","mae")) # not auc (min/max confusion)
+  .check(x=nfolds,type="scalar",min=3,max=n)
+  .check(x=foldid,type="vector",dim=n,values=seq_len(nfolds),null=TRUE)
+  .check(x=type.measure,type="string",values=c("deviance","mse","mae","class"))
+  # never auc (min/max confusion)!
   if(!is.null(list(...)$family)){stop("Reserved argument \"family\".",call.=FALSE)}
-  n <- length(y)
   
   # binarisation
   z <- 1*(y > cutoff)
@@ -269,7 +277,11 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
 #' and corresponding loss.
 #'
 #' @examples
-#' NA
+#' \donttest{n <- 100; p <- 200
+#' y <- rnorm(n)
+#' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+#' net <- cornet(y=y,cutoff=0,X=X)
+#' print(net)}
 #' 
 print.cornet <- function(x,...){
   cat("cornet object:\n")
@@ -301,11 +313,15 @@ print.cornet <- function(x,...){
 #' @return
 #' This function returns a matrix with \eqn{n} rows and two columns,
 #' where \eqn{n} is the sample size. It includes the estimated coefficients
-#' from linear (first column, \code{"beta"})
-#' and logistic (second column, \code{"gamma"}) regression.
+#' from linear regression (1st column, \code{"beta"})
+#' and logistic regression (2nd column, \code{"gamma"}).
 #'
 #' @examples
-#' NA
+#' \donttest{n <- 100; p <- 200
+#' y <- rnorm(n)
+#' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+#' net <- cornet(y=y,cutoff=0,X=X)
+#' coef(net)}
 #' 
 coef.cornet <- function(object,...){
   
@@ -335,9 +351,22 @@ coef.cornet <- function(object,...){
 #' 
 #' @param ...
 #' further arguments (not applicable)
-#'
+#' 
+#' @return
+#' This function plots the evaluation loss (\code{cvm}).
+#' Whereas the matrix has sigma in the rows, and pi in the columns,
+#' the plot has sigma on the \eqn{x}-axis, and pi on the \eqn{y}-axis.
+#' For all combinations of sigma and pi, the colour indicates the loss.
+#' If the R package \code{RColorBrewer} is installed,
+#' blue represents low. Otherwise, red represents low.
+#' White always represents high.
+#' 
 #' @examples
-#' NA
+#' \donttest{n <- 100; p <- 200
+#' y <- rnorm(n)
+#' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+#' net <- cornet(y=y,cutoff=0,X=X)
+#' plot(net)}
 #' 
 plot.cornet <- function(x,...){
   
@@ -417,7 +446,11 @@ plot.cornet <- function(x,...){
 #' further arguments (not applicable)
 #' 
 #' @examples
-#' NA
+#' \donttest{n <- 100; p <- 200
+#' y <- rnorm(n)
+#' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+#' net <- cornet(y=y,cutoff=0,X=X)
+#' predict(net,newx=X)}
 #' 
 predict.cornet <- function(object,newx,type="probability",...){
   
@@ -465,7 +498,7 @@ predict.cornet <- function(object,newx,type="probability",...){
 #--- Internal functions --------------------------------------------------------
 
 #' @title
-#' Arguments
+#' Equality
 #'
 #' @description
 #' Verifies whether two or more arguments are identical.
@@ -503,6 +536,10 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' @param type
 #' character \code{"string"}, \code{"scalar"}, \code{"vector"}, \code{"matrix"}
 #' 
+#' @param dim
+#' vector/matrix dimensionality\strong{:}
+#' integer scalar/vector
+#' 
 #' @param miss
 #' accept missing values\strong{:}
 #' logical
@@ -530,9 +567,7 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' @examples
 #' cornet:::.check(0.5,type="scalar",min=0,max=1)
 #' 
-#' #.check(x=c(1,2,3,4,45),type="vector",values=1:10)
-#' 
-.check <- function(x,type,miss=FALSE,min=NULL,max=NULL,values=NULL,inf=FALSE,null=FALSE){
+.check <- function(x,type,dim=NULL,miss=FALSE,min=NULL,max=NULL,values=NULL,inf=FALSE,null=FALSE){
   name <- deparse(substitute(x))
   if(null && is.null(x)){
     return(invisible(NULL)) 
@@ -551,6 +586,36 @@ predict.cornet <- function(object,newx,type="probability",...){
   if(!cond){
     stop(paste0("Argument \"",name,"\" does not match formal requirements."),call.=FALSE)
   }
+  if(!is.null(dim) && (length(dim)==1 & length(x)!=dim)){
+      stop(paste0("Argument \"",name,"\" has invalid length."),call.=FALSE)
+  }
+  if(!is.null(dim) && (length(dim)>1 & any(dim(x)!=dim,na.rm=TRUE))){
+      stop(paste0("Argument \"",name,"\" has invalid dimensions."),call.=FALSE)
+  }
+  
+  #   } else if(length(dim)==2){
+  #     if(!is.na(dim[1]) && nrow(x)!=dim[1]){
+  #       stop(paste0("Argument \"",name,"\" has invalid row number."),call.=FALSE)
+  #     }
+  #     if(!is.na(dim[2]) && ncol(x)!=dim[2]){
+  #       stop(paste0("Argument \"",name,"\" has invalid column number."),call.=FALSE)
+  #     }
+  #   } else {
+  #     
+  #   }
+  # }
+  
+  # if(!is.null(length) && length(x)!=length){
+  #   stop(paste0("Argument \"",name,"\" has invalid length."),call.=FALSE)
+  # }
+  # if(!is.null(nrow) && nrow(x)!=nrow){
+  #   stop(paste0("Argument \"",name,"\" has invalid row number."),call.=FALSE)
+  # }
+  # if(!is.null(ncol) && ncol(x)!=ncol){
+  #   stop(paste0("Argument \"",name,"\" has invalid column number."),call.=FALSE)
+  # }
+  
+  
   if(!miss && any(is.na(x))){
     stop(paste0("Argument \"",name,"\" contains missing values."),call.=FALSE)
   }
@@ -572,7 +637,7 @@ predict.cornet <- function(object,newx,type="probability",...){
 #--- Application ---------------------------------------------------------------
 
 #' @title
-#' Performance measurement by cross-validation
+#' Performance measurement
 #'
 #' @description
 #' Compares models for a continuous response with a cut-off value.
@@ -586,7 +651,11 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' @inheritParams  cornet
 #' 
 #' @examples
-#' NA
+#' \donttest{n <- 100; p <- 200
+#' y <- rnorm(n)
+#' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+#' loss <- cornet:::.compare(y=y,cutoff=0,X=X)
+#' loss}
 #' 
 .compare <- function(y,cutoff,X,alpha=1,nfolds=5,foldid=NULL,type.measure="deviance"){
   
@@ -658,7 +727,10 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' @inheritParams cornet
 #' 
 #' @examples
-#' NA
+#' \donttest{n <- 100; p <- 200
+#' y <- rnorm(n)
+#' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+#' cornet:::.test(y=y,cutoff=0,X=X)}
 #' 
 .test <- function(y,cutoff,X,alpha=1,type.measure="deviance"){
   
