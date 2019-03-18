@@ -1,0 +1,45 @@
+template:
+  params:
+    bootswatch: spacelab
+
+authors:
+  Armin Rauschenberger:
+    href: https://rauschenberger.github.io
+
+home:
+   links:
+   - text: "Download package"
+     href: https://github.com/rauschenberger/cornet
+
+navbar:
+  title: "cornet"
+  left:
+    - text: "functions"
+      href: reference/index.html
+    - text: "vignette"
+      href: articles/vignette.html
+    - text: "article"
+      href: articles/article.html
+    - text: "news"
+      href: news/index.html
+  right:
+    - icon: fa-github
+      href: https://github.com/rauschenberger/cornet
+    - icon: fa-download
+      href: https://cran.r-project.org/package=cornet
+
+reference:
+  - title: "User functions"
+    contents:
+      - cornet
+      - predict.cornet
+      - coef.cornet
+      - plot.cornet
+      - print.cornet
+  - title: "Internal functions"
+    contents:
+      - .simulate
+      - .test
+      - .compare
+      - .equal
+      - .check

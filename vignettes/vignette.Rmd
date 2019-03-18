@@ -27,3 +27,7 @@ or the latest development version from [GitHub](https://github.com/rauschenberge
 #install.packages("devtools")
 devtools::install_github("rauschenberger/cornet")
 ```
+
+Armin Rauschenberger and Enrico Glaab (2019).
+"Lasso and ridge regression for dichotomised outcomes".
+*Manuscript in preparation.*

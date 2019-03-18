@@ -91,8 +91,8 @@ net
 
 }
 \references{
-A Rauschenberger, E Glaab (2019).
-"Lasso and ridge regression with dichotomised outcomes".
+Armin Rauschenberger and Enrico Glaab (2019).
+"Lasso and ridge regression for dichotomised outcomes".
 \emph{Manuscript in preparation}.
 }
 \seealso{

@@ -1,0 +1,16 @@
+---
+title: Lasso and ridge regression for dichotomised outcomes
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{article}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The `cornet` manuscript is in preparation. Click [here](https://CRAN.R-project.org/package=cornet) for the R package.
+
+## Reference
+
+Armin Rauschenberger and Enrico Glaab (2019).
+"Lasso and ridge regression for dichotomised outcomes".
+*Manuscript in preparation.*
