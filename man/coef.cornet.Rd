@@ -14,18 +14,18 @@
 \value{
 This function returns a matrix with \eqn{n} rows and two columns,
 where \eqn{n} is the sample size. It includes the estimated coefficients
-from linear regression (1st column, \code{"beta"})
-and logistic regression (2nd column, \code{"gamma"}).
+from linear regression (1st column: \code{"beta"})
+and logistic regression (2nd column: \code{"gamma"}).
 }
 \description{
 Extracts estimated coefficients from linear and logistic regression,
 under the penalty parameter that minimises the cross-validated loss.
 }
 \examples{
-\donttest{n <- 100; p <- 200
+n <- 100; p <- 200
 y <- rnorm(n)
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 net <- cornet(y=y,cutoff=0,X=X)
-coef(net)}
+coef(net)
 
 }

@@ -1,10 +1,8 @@
-Thanks for your suggestions!
+Thanks!
 
 # Changes
 
-- More details in description field.
-- Reference in description field.
-- Executable examples in all help files.
+- examples without \donttest{}, or with \donttest{} and \dontshow{}
 
 # Notes
 

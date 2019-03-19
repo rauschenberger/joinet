@@ -277,11 +277,11 @@ cornet <- function(y,cutoff,X,alpha=1,npi=101,pi=NULL,nsigma=99,sigma=NULL,nfold
 #' and corresponding loss.
 #'
 #' @examples
-#' \donttest{n <- 100; p <- 200
+#' n <- 100; p <- 200
 #' y <- rnorm(n)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' net <- cornet(y=y,cutoff=0,X=X)
-#' print(net)}
+#' print(net)
 #' 
 print.cornet <- function(x,...){
   cat("cornet object:\n")
@@ -313,15 +313,15 @@ print.cornet <- function(x,...){
 #' @return
 #' This function returns a matrix with \eqn{n} rows and two columns,
 #' where \eqn{n} is the sample size. It includes the estimated coefficients
-#' from linear regression (1st column, \code{"beta"})
-#' and logistic regression (2nd column, \code{"gamma"}).
+#' from linear regression (1st column: \code{"beta"})
+#' and logistic regression (2nd column: \code{"gamma"}).
 #'
 #' @examples
-#' \donttest{n <- 100; p <- 200
+#' n <- 100; p <- 200
 #' y <- rnorm(n)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' net <- cornet(y=y,cutoff=0,X=X)
-#' coef(net)}
+#' coef(net)
 #' 
 coef.cornet <- function(object,...){
   
@@ -362,11 +362,11 @@ coef.cornet <- function(object,...){
 #' White always represents high.
 #' 
 #' @examples
-#' \donttest{n <- 100; p <- 200
+#' n <- 100; p <- 200
 #' y <- rnorm(n)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' net <- cornet(y=y,cutoff=0,X=X)
-#' plot(net)}
+#' plot(net)
 #' 
 plot.cornet <- function(x,...){
   
@@ -446,11 +446,11 @@ plot.cornet <- function(x,...){
 #' further arguments (not applicable)
 #' 
 #' @examples
-#' \donttest{n <- 100; p <- 200
+#' n <- 100; p <- 200
 #' y <- rnorm(n)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' net <- cornet(y=y,cutoff=0,X=X)
-#' predict(net,newx=X)}
+#' predict(net,newx=X)
 #' 
 predict.cornet <- function(object,newx,type="probability",...){
   
@@ -651,6 +651,11 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' @inheritParams  cornet
 #' 
 #' @examples
+#' \dontshow{n <- 100; p <- 20
+#' y <- rnorm(n)
+#' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+#' loss <- cornet:::.compare(y=y,cutoff=0,X=X,nfolds=2)
+#' loss}
 #' \donttest{n <- 100; p <- 200
 #' y <- rnorm(n)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
@@ -727,10 +732,10 @@ predict.cornet <- function(object,newx,type="probability",...){
 #' @inheritParams cornet
 #' 
 #' @examples
-#' \donttest{n <- 100; p <- 200
+#' n <- 100; p <- 200
 #' y <- rnorm(n)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-#' cornet:::.test(y=y,cutoff=0,X=X)}
+#' cornet:::.test(y=y,cutoff=0,X=X)
 #' 
 .test <- function(y,cutoff,X,alpha=1,type.measure="deviance"){
   
@@ -794,6 +799,7 @@ predict.cornet <- function(object,newx,type="probability",...){
   y <- stats::rnorm(n=n,mean=mean,sd=fac*stats::sd(mean))
   return(invisible(list(y=y,X=X)))
 }
+
 
 #--- Legacy --------------------------------------------------------------------
 

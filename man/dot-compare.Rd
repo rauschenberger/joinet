@@ -42,6 +42,11 @@ calculates different loss functions,
 and examines squared deviance residuals.
 }
 \examples{
+\dontshow{n <- 100; p <- 20
+y <- rnorm(n)
+X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+loss <- cornet:::.compare(y=y,cutoff=0,X=X,nfolds=2)
+loss}
 \donttest{n <- 100; p <- 200
 y <- rnorm(n)
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)

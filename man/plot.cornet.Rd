@@ -25,10 +25,10 @@ Plots the loss for different combinations of
 scaling (sigma) and weighting (pi) parameters.
 }
 \examples{
-\donttest{n <- 100; p <- 200
+n <- 100; p <- 200
 y <- rnorm(n)
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 net <- cornet(y=y,cutoff=0,X=X)
-plot(net)}
+plot(net)
 
 }

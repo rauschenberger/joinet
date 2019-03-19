@@ -23,10 +23,10 @@ and corresponding loss.
 Prints summary of cornet object.
 }
 \examples{
-\donttest{n <- 100; p <- 200
+n <- 100; p <- 200
 y <- rnorm(n)
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 net <- cornet(y=y,cutoff=0,X=X)
-print(net)}
+print(net)
 
 }
