@@ -1,5 +1,5 @@
 ---
-title: Combined Regression
+title: Multivariate Elastic Net
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{vignette}
@@ -15,19 +15,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Installation
 
-Install the current release from [CRAN](https://CRAN.R-project.org/package=cornet):
+Install the current release from [CRAN](https://CRAN.R-project.org/package=mixnet):
 
 ```{r,eval=FALSE}
-install.packages("cornet")
+install.packages("mixnet")
 ```
 
-or the latest development version from [GitHub](https://github.com/rauschenberger/cornet):
+or the latest development version from [GitHub](https://github.com/rauschenberger/mixnet):
 
 ```{r,eval=FALSE}
 #install.packages("devtools")
-devtools::install_github("rauschenberger/cornet")
+devtools::install_github("rauschenberger/mixnet")
 ```
 
 Armin Rauschenberger and Enrico Glaab (2019).
-"Lasso and ridge regression for dichotomised outcomes".
+"Improved elastic net regression through stacked generalisation".
 *Manuscript in preparation.*

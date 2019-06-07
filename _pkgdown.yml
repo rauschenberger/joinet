@@ -9,10 +9,10 @@ authors:
 home:
    links:
    - text: "Download package"
-     href: https://github.com/rauschenberger/cornet
+     href: https://github.com/rauschenberger/stanet
 
 navbar:
-  title: "cornet"
+  title: "stanet"
   left:
     - text: "functions"
       href: reference/index.html
@@ -24,22 +24,16 @@ navbar:
       href: news/index.html
   right:
     - icon: fa-github
-      href: https://github.com/rauschenberger/cornet
+      href: https://github.com/rauschenberger/stanet
     - icon: fa-download
-      href: https://cran.r-project.org/package=cornet
+      href: https://cran.r-project.org/package=stanet
 
 reference:
   - title: "User functions"
     contents:
-      - cornet
-      - predict.cornet
-      - coef.cornet
-      - plot.cornet
-      - print.cornet
+      - stacker
+      - predict.stacker
+      - coef.stacker
+      - weights.stacker
   - title: "Internal functions"
     contents:
-      - .simulate
-      - .test
-      - .compare
-      - .equal
-      - .check

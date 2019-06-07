@@ -1,8 +1,5 @@
-Thanks!
 
 # Changes
-
-- examples without \donttest{}, or with \donttest{} and \dontshow{}
 
 # Notes
 

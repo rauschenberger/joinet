@@ -1,5 +1,5 @@
 ---
-title: Lasso and ridge regression for dichotomised outcomes
+title: Stacked Elastic Net
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{article}
@@ -7,10 +7,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-The `cornet` manuscript is in preparation. Click [here](https://CRAN.R-project.org/package=cornet) for the R package.
+The `mixnet` manuscript is in preparation. Click [here](https://CRAN.R-project.org/package=mixnet) for the R package.
 
 ## Reference
 
 Armin Rauschenberger and Enrico Glaab (2019).
-"Lasso and ridge regression for dichotomised outcomes".
+"Multivariate regression through stacked generalisation".
 *Manuscript in preparation.*

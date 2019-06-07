@@ -1,16 +1,16 @@
-Package: cornet
+Package: mixnet
 Version: 0.0.1
-Title: Elastic Net with Dichotomised Outcomes
-Description: Implements lasso and ridge regression for dichotomised outcomes (Rauschenberger et al. 2019). Such outcomes are not naturally but artificially binary. They indicate whether an underlying measurement is greater than a threshold.
+Title: Multivariate Regression
+Description: Implements high-dimensional multivariate regression by stacking (Rauschenberger et al. 2019).
 Depends: R (>= 3.0.0)
-Imports: glmnet, palasso
-Suggests: knitr, testthat
-Enhances: RColorBrewer
-Authors@R: person("Armin","Rauschenberger",email="a.rauschenberger@vumc.nl",role=c("aut","cre"))
+Imports: glmnet, palasso, cornet
+Suggests: knitr, testthat, MASS
+Enhances: RColorBrewer, spls, SiER, MRCE
+Authors@R: person("Armin","Rauschenberger",email="armin.rauschenberger@uni.lu",role=c("aut","cre"))
 VignetteBuilder: knitr
 License: GPL-3
 LazyData: true
 Language: en-GB
 RoxygenNote: 6.1.1
-URL: https://github.com/rauschenberger/cornet
-BugReports: https://github.com/rauschenberger/cornet/issues
+URL: https://github.com/rauschenberger/stanet
+BugReports: https://github.com/rauschenberger/stanet/issues

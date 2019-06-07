@@ -1,3 +1,3 @@
-## cornet 0.0.1 (2019-03-15)
+## mixnet 0.0.1 (2019-06-01)
 
 * first submission

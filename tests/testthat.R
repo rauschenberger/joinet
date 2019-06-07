@@ -1,4 +1,4 @@
 library(testthat)
-library(cornet)
+library(mixnet)
 
-testthat::test_check(package="cornet",stop_on_warning=FALSE)
+testthat::test_check(package="mixnet",stop_on_warning=FALSE)

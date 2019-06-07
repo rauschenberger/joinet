@@ -1,94 +1,57 @@
 
-
-# data simulation
 set.seed(1)
-list <- cornet:::.simulate(n=100,p=200)
-y <- list$y; X <- list$X
+n <- 30; q <- 3; p <- 20
+Y <- matrix(c(rnorm(n),rbinom(n,size=1,prob=0.5),rpois(n,lambda=4)),
+            nrow=n,ncol=q)
+X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+family <- c("gaussian","binomial","poisson")
+foldid <- palasso:::.folds(y=Y[,2],nfolds=5)
+object <- mixnet::mixnet(Y=Y,X=X,family=family,foldid=foldid)
 
-# penalised regression
-cutoff <- 1
-foldid <- palasso:::.folds(y=y>cutoff,nfolds=10)
-fit <- cornet::cornet(y=y,cutoff=cutoff,X=X,foldid=foldid)
-net <- list()
-net$gaussian <- glmnet::cv.glmnet(y=y,x=X,family="gaussian",foldid=foldid)
-net$binomial <- glmnet::cv.glmnet(y=y>cutoff,x=X,family="binomial",foldid=foldid)
-
-#--- cornet equals glmnet ---
-
-for(dist in c("gaussian","binomial")){
-  
-  testthat::test_that("cross-validated loss",{
-    a <- fit[[dist]]$sigma.cvm
-    b <- net[[dist]]$cvm
-    diff <- abs(a[seq_along(b)]-b)
-    testthat::expect_true(all(diff<1e-06))
-  })
-  
-  testthat::test_that("optimal lambda",{
-    a <- fit[[dist]]$lambda.min
-    b <- net[[dist]]$lambda.min
-    testthat::expect_true(a==b)
-  })
-  
-  testthat::test_that("lambda sequence",{
-    a <- fit[[dist]]$lambda
-    b <- net[[dist]]$lambda
-    testthat::expect_true(all(a[seq_along(b)]==b))
-  })
-  
-  testthat::test_that("predicted values",{
-    a <- stats::predict(object=fit[[dist]],newx=X)
-    b <- stats::predict(object=net[[dist]]$glmnet.fit,newx=X)
-    testthat::expect_true(all(a==b))
-  })
-  
-  testthat::test_that("coefficients",{
-    a <- fit[[dist]]$beta
-    b <- net[[dist]]$glmnet.fit$beta
-    testthat::expect_true(all(a==b))
-  })
-  
+glmnet <- list()
+for(i in seq_len(q)){
+  glmnet[[i]] <- glmnet::cv.glmnet(x=X,y=Y[,i],family=family[i],foldid=foldid)
 }
 
-#--- other checks ---
-
-testthat::test_that("predicted probabilities",{ # important!
-  a <- cornet:::predict.cornet(object=fit,newx=X)$binomial
-  b <- as.numeric(stats::predict(object=net$binomial,newx=X,s="lambda.min",type="response"))
-  testthat::expect_true(all(a==b))
+testthat::test_that("lambda: glmnet = stacknet",{
+  for(i in seq_len(q)){
+    a <- glmnet[[i]]$lambda
+    b <- object$base[[i]]$lambda
+    max <- min(length(a),length(b))
+    cond <- all(a[seq_len(max)]==b[seq_len(max)])
+    testthat::expect_true(cond)
+  }
 })
 
-testthat::test_that("estimated coefficients",{ # important!
-  a <- cornet:::coef.cornet(fit)
-  b <- as.numeric(stats::coef(object=net$gaussian,s="lambda.min"))
-  c <- as.numeric(stats::coef(object=net$binomial,s="lambda.min"))
-  cond <- all(a[,"beta"]==b) & all(a[,"gamma"]==c)
+testthat::test_that("cvm: glmnet = stacknet",{
+  for(i in seq_len(q)){
+    a <- glmnet[[i]]$cvm
+    b <- object$base[[i]]$cvm
+    max <- min(length(a),length(b))
+    cond <- all(abs(a[seq_len(max)]-b[seq_len(max)])<1e-06)
+    testthat::expect_true(cond)
+  }
+})
+
+testthat::test_that("glmnet.fit: glmnet = stacknet",{
+  for(i in seq_len(q)){
+    a <- glmnet[[i]]$glmnet.fit
+    b <- object$base[[i]]$glmnet.fit
+    names <- setdiff(x=names(a),y="call")
+    for(j in names){
+      cond <- all(a[[j]]==b[[j]])
+      testthat::expect_true(cond)
+    }
+  }
+})
+
+testthat::test_that("stacking = pooling",{
+  pred0 <- mixnet:::predict.mixnet(object,newx=X)$meta
+  coef <- mixnet:::coef.mixnet(object)
+  pred1 <- matrix(data=NA,nrow=n,ncol=q)
+  for(i in seq_len(q)){
+    pred1[,i] <- mixnet:::.mean.function(coef$alpha[i] + X %*% coef$beta[,i],family=family[i])
+  }
+  cond <- all(abs(pred0-pred1)<1e-06)
   testthat::expect_true(cond)
-})
-
-testthat::test_that("tuning parameters",{
-  a <- (0 <= fit$sigma.min) & is.finite(fit$sigma.min)
-  b <- (0 <= fit$pi.min) & (fit$pi.min <= 1)
-  c <- min(fit$cvm) == fit$cvm[names(fit$sigma.min),names(fit$pi.min)]
-  testthat::expect_true(all(a,b,c))
-})
-
-testthat::test_that("print function",{
-  a <- cornet:::print.cornet(fit)
-  testthat::expect_true(is.null(a))
-})
-
-testthat::test_that("plot function",{
-  a <- cornet:::plot.cornet(fit)
-  testthat::expect_true(is.null(a))
-})
-
-testthat::test_that("hidden compare function",{
-  res <- cornet:::.compare(y=y,cutoff=cutoff,X=X,nfolds=2)
-  cornet:::.check(x=res$resid.pvalue,min=0,max=1,type="vector")
-})
-
-testthat::test_that("hidden test function",{
-  p <- cornet:::.test(y=y,cutoff=cutoff,X=X)
-  cornet:::.check(x=p,min=0,max=1,type="scalar")
 })
