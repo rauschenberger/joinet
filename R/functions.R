@@ -44,7 +44,7 @@
 #' 
 #' @param alpha.meta
 #' elastic net mixing parameter for meta learner\strong{:}
-#' numeric between \eqn{0} (ridge) and \eqn{1} (lasso),
+#' numeric between \eqn{0} (ridge) and \eqn{1} (lasso)
 #' 
 #' @param ...
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
@@ -58,13 +58,19 @@
 #' The \eqn{q} outcomes should be positively correlated.
 #' Avoid negative correlations by changing the sign of the variable.
 #' 
+#' elastic net mixing parameters:
+#' \code{alpha.base} controls input-output effects,
+#' \code{alpha.meta} controls output-output effects;
+#' ridge (\eqn{0}) renders dense models,
+#' lasso (\eqn{1}) renders sparse models
+#' 
 #' @examples
 #' n <- 30; q <- 2; p <- 20
 #' Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' object <- mixnet(Y=Y,X=X)
 #' 
-mixnet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,...){
+mixnet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=0,alpha.meta=0,...){
   
   #--- temporary ---
   # family <- "gaussian"; nfolds <- 10; foldid <- NULL; type.measure <- "deviance"
@@ -255,7 +261,6 @@ predict.mixnet <- function(object,newx,type="response",...){
   }
   
   list <- list(base=base,meta=meta)
-  
   
   if(type=="response"){
     for(i in seq_len(q)){

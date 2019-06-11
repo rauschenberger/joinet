@@ -46,7 +46,7 @@ vector of length \eqn{1} or \eqn{q} with entries
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
 \item{alpha.meta}{elastic net mixing parameter for meta learner\strong{:}
-numeric between \eqn{0} (ridge) and \eqn{1} (lasso),}
+numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
 \item{mnorm}{multivariate normal regression\strong{:}
 logical}

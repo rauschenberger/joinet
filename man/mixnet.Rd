@@ -5,7 +5,7 @@
 \title{Multivariate Elastic Net Regression}
 \usage{
 mixnet(Y, X, family = "gaussian", nfolds = 10, foldid = NULL,
-  type.measure = "deviance", alpha.base = 1, alpha.meta = 0, ...)
+  type.measure = "deviance", alpha.base = 0, alpha.meta = 0, ...)
 }
 \arguments{
 \item{Y}{outputs\strong{:}
@@ -36,7 +36,7 @@ vector of length \eqn{1} or \eqn{q} with entries
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
 \item{alpha.meta}{elastic net mixing parameter for meta learner\strong{:}
-numeric between \eqn{0} (ridge) and \eqn{1} (lasso),}
+numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
 \item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}}
 }
@@ -46,6 +46,12 @@ Implements multivariate elastic net regression.
 \details{
 The \eqn{q} outcomes should be positively correlated.
 Avoid negative correlations by changing the sign of the variable.
+
+elastic net mixing parameters:
+\code{alpha.base} controls input-output effects,
+\code{alpha.meta} controls output-output effects;
+ridge (\eqn{0}) renders dense models,
+lasso (\eqn{1}) renders sparse models
 }
 \examples{
 n <- 30; q <- 2; p <- 20

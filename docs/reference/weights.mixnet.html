@@ -140,10 +140,10 @@ i.e. the weights for the base learners.</p>
     <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>30</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>20</span>
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'>matrix</span>(<span class='fu'>rnorm</span>(<span class='no'>n</span>*<span class='no'>q</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>q</span>)
 <span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'>matrix</span>(<span class='fu'>rnorm</span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
-<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mixnet.html'>mixnet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Negative correlation!</span></div><div class='input'><span class='fu'>weights</span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                      y1            y2
-#&gt; (Intercept) 0.283699496 -8.542418e-02
-#&gt; V1          0.001318683  3.818776e-38
-#&gt; V2          0.015338791  0.000000e+00</div><div class='input'>
+<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mixnet.html'>mixnet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Negative correlation!</span></div><div class='input'><span class='fu'>weights</span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                       y1          y2
+#&gt; (Intercept) 2.827364e-01 -0.08542418
+#&gt; V1          3.158520e-37  0.00000000
+#&gt; V2          3.171601e-36  0.00000000</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
