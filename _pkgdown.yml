@@ -9,10 +9,10 @@ authors:
 home:
    links:
    - text: "Download package"
-     href: https://github.com/rauschenberger/mixnet
+     href: https://github.com/rauschenberger/joinet
 
 navbar:
-  title: "mixnet"
+  title: "joinet"
   left:
     - text: "functions"
       href: reference/index.html
@@ -24,17 +24,17 @@ navbar:
       href: news/index.html
   right:
     - icon: fa-github
-      href: https://github.com/rauschenberger/mixnet
+      href: https://github.com/rauschenberger/joinet
     - icon: fa-download
-      href: https://cran.r-project.org/package=mixnet
+      href: https://cran.r-project.org/package=joinet
 
 reference:
   - title: "User functions"
     contents:
-      - mixnet
-      - predict.mixnet
-      - coef.mixnet
-      - weights.mixnet
+      - joinet
+      - predict.joinet
+      - coef.joinet
+      - weights.joinet
   - title: "Internal functions"
     contents:
-      - cv.mixnet
+      - cv.joinet
