@@ -2,6 +2,7 @@
 #--- Main function -------------------------------------------------------------
 
 #' @export
+#' @aliases mixnet-package
 #' @title
 #' Multivariate Elastic Net Regression
 #' 
@@ -76,6 +77,9 @@ mixnet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   # family <- "gaussian"; nfolds <- 10; foldid <- NULL; type.measure <- "deviance"
   
   #--- checks ---
+  Y <- as.matrix(Y)
+  X <- as.matrix(X)
+  
   cornet:::.check(x=Y,type="matrix",miss=TRUE)
   if(any(stats::cor(Y,use="pairwise.complete.obs")<0,na.rm=TRUE)){warning("Negative correlation!",call.=FALSE)}
   cornet:::.check(x=X,type="matrix")
@@ -209,7 +213,7 @@ mixnet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
 
 #' @export
 #' @title
-#' Makes Predictions
+#' Make Predictions
 #'
 #' @description
 #' Predicts outcome from features with stacked model.
@@ -230,8 +234,9 @@ mixnet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
 #' 
 #' @examples
 #' n <- 30; q <- 2; p <- 20
-#' Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
+#' #Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
 #' Y <- matrix(rbinom(n=n*q,size=1,prob=0.5),nrow=n,ncol=q)
+#' #Y <- matrix(rpois(n=n*q,lambda=4),nrow=n,ncol=q)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' object <- mixnet(Y=Y,X=X,family="binomial")
 #' y_hat <- predict(object,newx=X)
@@ -241,6 +246,7 @@ predict.mixnet <- function(object,newx,type="response",...){
   
   x <- object; rm(object)
   
+  newx <- as.matrix(newx)
   cornet:::.check(x=newx,type="matrix")
   
   q <- length(x$base)
@@ -282,7 +288,8 @@ predict.mixnet <- function(object,newx,type="response",...){
 #'
 #' @description
 #' Extracts pooled coefficients.
-#' (The meta learners weights the coefficients from the base learners.)
+#' (The meta learners linearly combines
+#' the coefficients from the base learners.)
 #' 
 #' @param object
 #' \link[mixnet]{mixnet} object
@@ -356,7 +363,6 @@ coef.mixnet <- function(object,...){
 #' object <- mixnet(Y=Y,X=X)
 #' weights(object)
 #' 
-# object <- mixnet(Y=Y,X=X)
 weights.mixnet <- function(object,...){
   if(length(list(...))!=0){warning("Ignoring argument.",call.=FALSE)}
   x <- object$meta
@@ -373,15 +379,7 @@ print.mixnet <- function(x,...){
 
 #--- Manuscript functions ------------------------------------------------------
 
-# @param spls
-# sparse partial least squares (logical)
-# @param mnorm
-# multivariate normal regression (logical)
-# @param mrce
-# multivariate regression with covariance estimation (logical)
-
-
-
+#' @export
 #' @title
 #' Model comparison
 #'
@@ -408,31 +406,20 @@ print.mixnet <- function(x,...){
 #' between \eqn{1} and \code{nfolds.int};
 #' or \code{NULL}
 #' 
-#' @param mnorm
-#' multivariate normal regression\strong{:}
-#' logical
-#' 
-#' @param spls
-#' sparse partial least squares\strong{:}
-#' logical
-#' 
-#' @param sier
-#' high-dimensional multivariate regression\strong{:}
-#' logical
-#' 
-#' @param mrce
-#' multivariate regression with covariance estimation\strong{:}
-#' logical
+#' @param mnorm,spls,sier,mrce
+#' experimental arguments\strong{:}
+#' logical (install packages \code{spls}, \code{SiER}, or \code{MRCE})
 #' 
 #' @param ...
 #' further arguments passed to \code{\link[glmnet]{glmnet}} and \code{\link[glmnet]{cv.glmnet}}
 #' 
 #' @examples
-#' NA
+#' n <- 40; q <- 2; p <- 20
+#' Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
+#' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+#' cv.mixnet(Y=Y,X=X)
 #' 
-compare <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,sier=FALSE,mrce=FALSE,...){
-  
-  # family <- "gaussian"; nfolds <- 5; foldid <- NULL; type.measure <- "deviance"; alpha.base=1;alpha.meta=0;spls=FALSE;mnorm=FALSE;sier=FALSE;mrce=FALSE
+cv.mixnet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,sier=FALSE,mrce=FALSE,...){
   
   n <- nrow(Y)
   q <- ncol(Y)
@@ -482,6 +469,7 @@ compare <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=
     x1 <- X1[,cond]
     y0 <- apply(X=Y0,MARGIN=2,FUN=function(x) ifelse(is.na(x),sample(x[!is.na(x)],size=1),x))
     all(Y0==y0,na.rm=TRUE)
+    
     if(mnorm){
       net <- glmnet::cv.glmnet(x=X0,y=y0,family="mgaussian",foldid=foldid,...) # ellipsis
       pred$mnorm[foldid.ext==i,] <- glmnet::predict.cv.glmnet(object=net,newx=X1,s="lambda.min",type="response")

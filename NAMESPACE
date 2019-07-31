@@ -3,5 +3,6 @@
 S3method(coef,mixnet)
 S3method(predict,mixnet)
 S3method(weights,mixnet)
+export(cv.mixnet)
 export(mixnet)
 importFrom(stats,weights)

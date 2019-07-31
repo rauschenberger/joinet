@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{predict.mixnet}
 \alias{predict.mixnet}
-\title{Makes Predictions}
+\title{Make Predictions}
 \usage{
 \method{predict}{mixnet}(object, newx, type = "response", ...)
 }
@@ -22,8 +22,9 @@ Predicts outcome from features with stacked model.
 }
 \examples{
 n <- 30; q <- 2; p <- 20
-Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
+#Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
 Y <- matrix(rbinom(n=n*q,size=1,prob=0.5),nrow=n,ncol=q)
+#Y <- matrix(rpois(n=n*q,lambda=4),nrow=n,ncol=q)
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 object <- mixnet(Y=Y,X=X,family="binomial")
 y_hat <- predict(object,newx=X)

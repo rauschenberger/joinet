@@ -2,6 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{mixnet}
 \alias{mixnet}
+\alias{mixnet-package}
 \title{Multivariate Elastic Net Regression}
 \usage{
 mixnet(Y, X, family = "gaussian", nfolds = 10, foldid = NULL,

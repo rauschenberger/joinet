@@ -13,7 +13,8 @@
 }
 \description{
 Extracts pooled coefficients.
-(The meta learners weights the coefficients from the base learners.)
+(The meta learners linearly combines
+the coefficients from the base learners.)
 }
 \examples{
 n <- 30; q <- 2; p <- 20
