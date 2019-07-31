@@ -92,18 +92,35 @@
 <p>or the latest development version from <a href="https://github.com/rauschenberger/joinet">GitHub</a>:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">#install.packages("devtools")</span></a>
 <a class="sourceLine" id="cb2-2" title="2">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"rauschenberger/joinet"</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co">#install.packages("plsgenomics")</span></a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(Ecoli,<span class="dt">package=</span><span class="st">"plsgenomics"</span>)</a>
-<a class="sourceLine" id="cb3-3" title="3">X &lt;-<span class="st"> </span>Ecoli<span class="op">$</span>CONNECdata</a>
-<a class="sourceLine" id="cb3-4" title="4">Y &lt;-<span class="st"> </span>Ecoli<span class="op">$</span>GEdata</a>
-<a class="sourceLine" id="cb3-5" title="5">loss &lt;-<span class="st"> </span>joinet<span class="op">:::</span><span class="kw"><a href="../reference/cv.joinet.html">cv.joinet</a></span>(<span class="dt">Y=</span>Y,<span class="dt">X=</span>X)</a></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co">#install.packages("BiocManager")</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="co">#BiocManager::install("mixOmics")</span></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(liver.toxicity,<span class="dt">package=</span><span class="st">"mixOmics"</span>)</a>
-<a class="sourceLine" id="cb4-4" title="4">X &lt;-<span class="st"> </span>liver.toxicity<span class="op">$</span>gene</a>
-<a class="sourceLine" id="cb4-5" title="5">Y &lt;-<span class="st"> </span>liver.toxicity<span class="op">$</span>clinic</a>
-<a class="sourceLine" id="cb4-6" title="6">Y<span class="op">$</span>Cholesterol.mg.dL. &lt;-<span class="st"> </span><span class="op">-</span>Y<span class="op">$</span>Cholesterol.mg.dL.</a>
-<a class="sourceLine" id="cb4-7" title="7">loss &lt;-<span class="st"> </span>joinet<span class="op">:::</span><span class="kw"><a href="../reference/cv.joinet.html">cv.joinet</a></span>(<span class="dt">Y=</span>Y,<span class="dt">X=</span>X)</a></code></pre></div>
+<p>Access the help pages with:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">?joinet</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/help">help</a></span>(joinet)</a></code></pre></div>
+<!--
+
+```r
+#install.packages("plsgenomics")
+data(Ecoli,package="plsgenomics")
+X <- Ecoli$CONNECdata
+Y <- Ecoli$GEdata
+loss <- joinet:::cv.joinet(Y=Y,X=X)
+```
+
+
+```r
+#install.packages("BiocManager")
+#BiocManager::install("mixOmics")
+data(liver.toxicity,package="mixOmics")
+X <- liver.toxicity$gene
+Y <- liver.toxicity$clinic
+Y$Cholesterol.mg.dL. <- -Y$Cholesterol.mg.dL.
+loss <- joinet:::cv.joinet(Y=Y,X=X)
+```
+
+-->
+</div>
+<div id="reference" class="section level2">
+<h2 class="hasAnchor">
+<a href="#reference" class="anchor"></a>Reference</h2>
 <p>Armin Rauschenberger and Enrico Glaab (2019). “Multivariate regression through stacked generalisation”. <em>Manuscript in preparation.</em></p>
 </div>
   </div>
@@ -114,6 +131,7 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#installation">Installation</a></li>
+      <li><a href="#reference">Reference</a></li>
       </ul>
 </div>
       </div>

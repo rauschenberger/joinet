@@ -28,6 +28,14 @@ or the latest development version from [GitHub](https://github.com/rauschenberge
 devtools::install_github("rauschenberger/joinet")
 ```
 
+Access the help pages with:
+
+```{r,eval=FALSE}
+?joinet
+help(joinet)
+```
+
+<!--
 ```{r,eval=FALSE}
 #install.packages("plsgenomics")
 data(Ecoli,package="plsgenomics")
@@ -45,6 +53,10 @@ Y <- liver.toxicity$clinic
 Y$Cholesterol.mg.dL. <- -Y$Cholesterol.mg.dL.
 loss <- joinet:::cv.joinet(Y=Y,X=X)
 ```
+
+-->
+
+## Reference
 
 Armin Rauschenberger and Enrico Glaab (2019).
 "Multivariate regression through stacked generalisation".
