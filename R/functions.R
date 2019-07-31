@@ -1,4 +1,8 @@
 
+#.loss <- get(".loss",envir=asNamespace("palasso"))
+#.folds <- get(".folds",envir=asNamespace("palasso"))
+#.check <- get(".check",envir=asNamespace("cornet"))
+
 #--- Main function -------------------------------------------------------------
 
 #' @export
