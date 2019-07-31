@@ -96,14 +96,14 @@
 <a class="sourceLine" id="cb3-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(Ecoli,<span class="dt">package=</span><span class="st">"plsgenomics"</span>)</a>
 <a class="sourceLine" id="cb3-3" title="3">X &lt;-<span class="st"> </span>Ecoli<span class="op">$</span>CONNECdata</a>
 <a class="sourceLine" id="cb3-4" title="4">Y &lt;-<span class="st"> </span>Ecoli<span class="op">$</span>GEdata</a>
-<a class="sourceLine" id="cb3-5" title="5">loss &lt;-<span class="st"> </span>joinet<span class="op">:::</span><span class="kw">cv.joinet</span>(<span class="dt">Y=</span>Y,<span class="dt">X=</span>X)</a></code></pre></div>
+<a class="sourceLine" id="cb3-5" title="5">loss &lt;-<span class="st"> </span>joinet<span class="op">:::</span><span class="kw"><a href="../reference/cv.joinet.html">cv.joinet</a></span>(<span class="dt">Y=</span>Y,<span class="dt">X=</span>X)</a></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co">#install.packages("BiocManager")</span></a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="co">#BiocManager::install("mixOmics")</span></a>
 <a class="sourceLine" id="cb4-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(liver.toxicity,<span class="dt">package=</span><span class="st">"mixOmics"</span>)</a>
 <a class="sourceLine" id="cb4-4" title="4">X &lt;-<span class="st"> </span>liver.toxicity<span class="op">$</span>gene</a>
 <a class="sourceLine" id="cb4-5" title="5">Y &lt;-<span class="st"> </span>liver.toxicity<span class="op">$</span>clinic</a>
 <a class="sourceLine" id="cb4-6" title="6">Y<span class="op">$</span>Cholesterol.mg.dL. &lt;-<span class="st"> </span><span class="op">-</span>Y<span class="op">$</span>Cholesterol.mg.dL.</a>
-<a class="sourceLine" id="cb4-7" title="7">loss &lt;-<span class="st"> </span>joinet<span class="op">:::</span><span class="kw">cv.joinet</span>(<span class="dt">Y=</span>Y,<span class="dt">X=</span>X)</a></code></pre></div>
+<a class="sourceLine" id="cb4-7" title="7">loss &lt;-<span class="st"> </span>joinet<span class="op">:::</span><span class="kw"><a href="../reference/cv.joinet.html">cv.joinet</a></span>(<span class="dt">Y=</span>Y,<span class="dt">X=</span>X)</a></code></pre></div>
 <p>Armin Rauschenberger and Enrico Glaab (2019). “Multivariate regression through stacked generalisation”. <em>Manuscript in preparation.</em></p>
 </div>
   </div>

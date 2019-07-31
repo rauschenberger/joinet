@@ -129,7 +129,7 @@ i.e. the weights for the base learners.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>joinet object</p></td>
+      <td><p><a href='joinet.html'>joinet</a> object</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -142,7 +142,7 @@ i.e. the weights for the base learners.</p>
     <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>30</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>20</span>
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>q</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>q</span>)
 <span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
-<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'>joinet</span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Negative correlation!</span></div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/weights'>weights</a></span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                   y1         y2
+<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Negative correlation!</span></div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/weights'>weights</a></span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                   y1         y2
 #&gt; (Intercept) 0.565532 -0.3929572
 #&gt; V1          0.000000  3.3142619
 #&gt; V2          2.494110  0.1431946</div><div class='input'>
