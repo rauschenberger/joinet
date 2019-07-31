@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extract Weights — weights.mixnet • mixnet</title>
+<title>Extract Weights — weights.joinet • joinet</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="Extract Weights — weights.mixnet" />
+<meta property="og:title" content="Extract Weights — weights.joinet" />
 
 <meta property="og:description" content="Extracts coefficients from the meta learner,
 i.e. the weights for the base learners." />
@@ -63,7 +63,7 @@ i.e. the weights for the base learners." />
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">mixnet</a>
+        <a class="navbar-link" href="../index.html">joinet</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
       </span>
     </div>
@@ -111,7 +111,7 @@ i.e. the weights for the base learners." />
     <div class="page-header">
     <h1>Extract Weights</h1>
     <small class="dont-index">Source: <a href='https://github.com/rauschenberger/mixnet/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>weights.mixnet.Rd</code></div>
+    <div class="hidden name"><code>weights.joinet.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -121,7 +121,7 @@ i.e. the weights for the base learners.</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for mixnet</span>
+    <pre class="usage"><span class='co'># S3 method for joinet</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/weights'>weights</a></span>(<span class='no'>object</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -129,7 +129,7 @@ i.e. the weights for the base learners.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p><a href='mixnet.html'>mixnet</a> object</p></td>
+      <td><p>joinet object</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -142,7 +142,7 @@ i.e. the weights for the base learners.</p>
     <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>30</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>20</span>
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>q</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>q</span>)
 <span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
-<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mixnet.html'>mixnet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Negative correlation!</span></div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/weights'>weights</a></span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                   y1         y2
+<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'>joinet</span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Negative correlation!</span></div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/weights'>weights</a></span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                   y1         y2
 #&gt; (Intercept) 0.565532 -0.3929572
 #&gt; V1          0.000000  3.3142619
 #&gt; V2          2.494110  0.1431946</div><div class='input'>

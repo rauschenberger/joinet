@@ -2,7 +2,7 @@
 #--- Main function -------------------------------------------------------------
 
 #' @export
-#' @aliases mixnet-package
+#' @aliases joinet-package
 #' @title
 #' Multivariate Elastic Net Regression
 #' 
@@ -69,9 +69,9 @@
 #' n <- 30; q <- 2; p <- 20
 #' Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-#' object <- mixnet(Y=Y,X=X)
+#' object <- joinet(Y=Y,X=X)
 #' 
-mixnet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=0,alpha.meta=0,...){
+joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=0,alpha.meta=0,...){
   
   #--- temporary ---
   # family <- "gaussian"; nfolds <- 10; foldid <- NULL; type.measure <- "deviance"
@@ -181,7 +181,7 @@ mixnet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   names(base) <- names(meta) <- paste0("y",seq_len(q))
   info <- data.frame(q=q,p=p,family=family,type.measure=type.measure)
   list <- list(base=base,meta=meta,info=info)
-  class(list) <- "mixnet"
+  class(list) <- "joinet"
   return(list)
 }
 
@@ -209,7 +209,7 @@ mixnet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   }
 }
 
-#--- Methods for class "mixnet" -----------------------------------------------
+#--- Methods for class "joinet" -----------------------------------------------
 
 #' @export
 #' @title
@@ -219,7 +219,7 @@ mixnet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
 #' Predicts outcome from features with stacked model.
 #' 
 #' @param object
-#' \link[mixnet]{mixnet} object
+#' \link[joinet]{joinet} object
 #' 
 #' @param newx
 #' covariates\strong{:}
@@ -238,10 +238,10 @@ mixnet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
 #' Y <- matrix(rbinom(n=n*q,size=1,prob=0.5),nrow=n,ncol=q)
 #' #Y <- matrix(rpois(n=n*q,lambda=4),nrow=n,ncol=q)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-#' object <- mixnet(Y=Y,X=X,family="binomial")
+#' object <- joinet(Y=Y,X=X,family="binomial")
 #' y_hat <- predict(object,newx=X)
 #' 
-predict.mixnet <- function(object,newx,type="response",...){
+predict.joinet <- function(object,newx,type="response",...){
   if(length(list(...))!=0){warning("Ignoring argument.",call.=FALSE)}
   
   x <- object; rm(object)
@@ -292,7 +292,7 @@ predict.mixnet <- function(object,newx,type="response",...){
 #' the coefficients from the base learners.)
 #' 
 #' @param object
-#' \link[mixnet]{mixnet} object
+#' \link[joinet]{joinet} object
 #' 
 #' @param ...
 #' further arguments (not applicable)
@@ -301,10 +301,10 @@ predict.mixnet <- function(object,newx,type="response",...){
 #' n <- 30; q <- 2; p <- 20
 #' Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-#' object <- mixnet(Y=Y,X=X)
+#' object <- joinet(Y=Y,X=X)
 #' coef <- coef(object)
 #' 
-coef.mixnet <- function(object,...){
+coef.joinet <- function(object,...){
   if(length(list(...))!=0){warning("Ignoring argument.",call.=FALSE)}
   
   # base coefficients
@@ -316,7 +316,7 @@ coef.mixnet <- function(object,...){
   
   # meta coefficients
   meta <- list()
-  weights <- weights.mixnet(object)
+  weights <- weights.joinet(object)
   meta$alpha <- weights[1,]
   meta$beta <- weights[-1,]
   
@@ -351,7 +351,7 @@ coef.mixnet <- function(object,...){
 #' i.e. the weights for the base learners.
 #' 
 #' @param object
-#' \link[mixnet]{mixnet} object
+#' \link[joinet]{joinet} object
 #' 
 #' @param ...
 #' further arguments (not applicable)
@@ -360,10 +360,10 @@ coef.mixnet <- function(object,...){
 #' n <- 30; q <- 2; p <- 20
 #' Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-#' object <- mixnet(Y=Y,X=X)
+#' object <- joinet(Y=Y,X=X)
 #' weights(object)
 #' 
-weights.mixnet <- function(object,...){
+weights.joinet <- function(object,...){
   if(length(list(...))!=0){warning("Ignoring argument.",call.=FALSE)}
   x <- object$meta
   coef <- lapply(object$meta,function(x) glmnet::coef.glmnet(object=x,s=x$lambda.min))
@@ -373,8 +373,8 @@ weights.mixnet <- function(object,...){
   return(coef)
 }
 
-print.mixnet <- function(x,...){
-  cat(paste0("mixnet object"),"\n")
+print.joinet <- function(x,...){
+  cat(paste0("joinet object"),"\n")
 }
 
 #--- Manuscript functions ------------------------------------------------------
@@ -386,7 +386,7 @@ print.mixnet <- function(x,...){
 #' @description
 #' Compares univariate and multivariate regression
 #' 
-#' @inheritParams mixnet
+#' @inheritParams joinet
 #' 
 #' @param nfolds.ext
 #' number of external folds
@@ -417,9 +417,9 @@ print.mixnet <- function(x,...){
 #' n <- 40; q <- 2; p <- 20
 #' Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-#' cv.mixnet(Y=Y,X=X)
+#' cv.joinet(Y=Y,X=X)
 #' 
-cv.mixnet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,sier=FALSE,mrce=FALSE,...){
+cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,sier=FALSE,mrce=FALSE,...){
   
   n <- nrow(Y)
   q <- ncol(Y)
@@ -458,8 +458,8 @@ cv.mixnet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
     }
     
     # base and meta learners
-    fit <- mixnet(Y=Y0,X=X0,family=family,type.measure=type.measure,alpha.base=alpha.base,alpha.meta=alpha.meta,foldid=foldid) # add ,...
-    temp <- predict.mixnet(fit,newx=X1)
+    fit <- joinet(Y=Y0,X=X0,family=family,type.measure=type.measure,alpha.base=alpha.base,alpha.meta=alpha.meta,foldid=foldid) # add ,...
+    temp <- predict.joinet(fit,newx=X1)
     pred$base[foldid.ext==i,] <- temp$base
     pred$meta[foldid.ext==i,] <- temp$meta
     
@@ -506,7 +506,7 @@ cv.mixnet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   }
   
   #--- model refit ---
-  #fit <- mixnet(Y=Y,X=X,family=family,type.measure=type.measure,alpha.base=alpha.base,alpha.meta=alpha.meta) # add ,...
+  #fit <- joinet(Y=Y,X=X,family=family,type.measure=type.measure,alpha.base=alpha.base,alpha.meta=alpha.meta) # add ,...
   #list <- list(loss=loss,fit=fit)
   
   return(loss)

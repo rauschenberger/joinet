@@ -15,17 +15,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Installation
 
-Install the current release from [CRAN](https://CRAN.R-project.org/package=mixnet):
+Install the current release from [CRAN](https://CRAN.R-project.org/package=joinet):
 
 ```{r,eval=FALSE}
-install.packages("mixnet")
+install.packages("joinet")
 ```
 
-or the latest development version from [GitHub](https://github.com/rauschenberger/mixnet):
+or the latest development version from [GitHub](https://github.com/rauschenberger/joinet):
 
 ```{r,eval=FALSE}
 #install.packages("devtools")
-devtools::install_github("rauschenberger/mixnet")
+devtools::install_github("rauschenberger/joinet")
 ```
 
 ```{r,eval=FALSE}
@@ -33,7 +33,7 @@ devtools::install_github("rauschenberger/mixnet")
 data(Ecoli,package="plsgenomics")
 X <- Ecoli$CONNECdata
 Y <- Ecoli$GEdata
-loss <- mixnet:::cv.mixnet(Y=Y,X=X)
+loss <- joinet:::cv.joinet(Y=Y,X=X)
 ```
 
 ```{r,eval=FALSE}
@@ -43,7 +43,7 @@ data(liver.toxicity,package="mixOmics")
 X <- liver.toxicity$gene
 Y <- liver.toxicity$clinic
 Y$Cholesterol.mg.dL. <- -Y$Cholesterol.mg.dL.
-loss <- mixnet:::cv.mixnet(Y=Y,X=X)
+loss <- joinet:::cv.joinet(Y=Y,X=X)
 ```
 
 Armin Rauschenberger and Enrico Glaab (2019).

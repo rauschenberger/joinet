@@ -1,4 +1,4 @@
-Package: mixnet
+Package: joinet
 Version: 0.0.1
 Title: Multivariate Regression
 Description: Implements high-dimensional multivariate regression by stacking (Rauschenberger et al. 2019).

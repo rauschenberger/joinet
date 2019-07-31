@@ -1,5 +1,5 @@
 ---
-pagetitle: mixnet
+pagetitle: joinet
 output: github_document
 editor_options: 
   chunk_output_type: console
@@ -15,9 +15,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-[![Travis-CI Build Status](https://travis-ci.org/rauschenberger/mixnet.svg)](https://travis-ci.org/rauschenberger/mixnet)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/rauschenberger/mixnet?svg=true)](https://ci.appveyor.com/project/rauschenberger/mixnet)
-[![Coverage Status](https://codecov.io/github/rauschenberger/mixnet/coverage.svg?branch=master)](https://codecov.io/github/rauschenberger/mixnet)
+[![Travis-CI Build Status](https://travis-ci.org/rauschenberger/joinet.svg)](https://travis-ci.org/rauschenberger/joinet)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/rauschenberger/joinet?svg=true)](https://ci.appveyor.com/project/rauschenberger/joinet)
+[![Coverage Status](https://codecov.io/github/rauschenberger/joinet/coverage.svg?branch=master)](https://codecov.io/github/rauschenberger/joinet)
 
 ## Scope
 
@@ -25,19 +25,21 @@ Stacked Elastic Net Regression (extending [glmnet](https://CRAN.R-project.org/pa
 
 ## Installation
 
-Install the current release from [CRAN](https://CRAN.R-project.org/package=mixnet):
+Install the current release from [CRAN](https://CRAN.R-project.org/package=joinet):
 
 ```{r,eval=FALSE}
-install.packages("mixnet")
+install.packages("joinet")
 ```
 
-or the latest development version from [GitHub](https://github.com/rauschenberger/mixnet):
+or the latest development version from [GitHub](https://github.com/rauschenberger/joinet):
 
 ```{r,eval=FALSE}
 #install.packages("devtools")
-devtools::install_github("rauschenberger/mixnet")
+devtools::install_github("rauschenberger/joinet")
 ```
 
 ## Reference
 
+Armin Rauschenberger and Enrico Glaab (2019).
+"Multivariate regression through stacked generalisation".
 *Manuscript in preparation.*

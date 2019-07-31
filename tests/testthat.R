@@ -1,4 +1,4 @@
 library(testthat)
-library(mixnet)
+library(joinet)
 
-testthat::test_check(package="mixnet",stop_on_warning=FALSE)
+testthat::test_check(package="joinet",stop_on_warning=FALSE)
