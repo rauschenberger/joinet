@@ -9,6 +9,16 @@ X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 family <- c("gaussian","binomial","poisson")
 foldid <- palasso:::.folds(y=Y[,2],nfolds=5)
 
+testthat::test_that("link-mean",{
+  x <- stats::rnorm(n=100)
+  for(family in c("gaussian","binomial","poisson")){
+    mean <- joinet:::.mean.function(x,family=family)
+    link <- joinet:::.link.function(mean,family=family)
+    cond <- all(abs(x-link)<1e-06)
+    testthat::expect_true(cond)
+  }
+})
+
 for(alpha in c(0.05,0.95)){
   
   object <- joinet::joinet(Y=Y,X=X,family=family,alpha.base=alpha,foldid=foldid)

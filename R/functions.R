@@ -201,8 +201,10 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   if(family=="gaussian"){
     return(x)
   } else if(family=="binomial"){
-    return(log(1/(1-x)))
+    if(any(x<0|x>1)){stop("Invalid!",call.=FALSE)}
+    return(log(x/(1-x)))
   } else if(family=="poisson"){
+    if(any(x<0)){stop("Invalid!",call.=FALSE)}
     return(log(x))
   } else {
     stop("Family not implemented.",call.=FALSE)

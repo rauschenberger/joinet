@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-The `mixnet` manuscript is in preparation. Click [here](https://CRAN.R-project.org/package=mixnet) for the R package.
+The `joinet` manuscript is in preparation. Click [here](https://CRAN.R-project.org/package=joinet) for the R package.
 
 ## Reference
 
