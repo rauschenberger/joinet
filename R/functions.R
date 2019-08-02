@@ -447,7 +447,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   
   #--- cross-validated predictions ---
   
-  models <- c("base","meta","spls"[spls],"mnorm"[mnorm],"sier"[sier],"mrce"[mrce],"none")
+  models <- c("base","meta","mnorm"[mnorm],"spls"[spls],"sier"[sier],"mrce"[mrce],"none")
   pred <- lapply(X=models,function(x) matrix(data=NA,nrow=n,ncol=q))
   names(pred) <- models
   
@@ -491,6 +491,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       pred$sier[foldid.ext==i,] <- SiER::pred.SiER(cv.fit=object,X.new=X1)
     }
     if(mrce){
+      # bug?
       lam1 <- rev(10^seq(from=-2,to=0,by=0.5))
       lam2 <- rev(10^seq(from=-2,to=0,by=0.5))
       object <- MRCE::mrce(X=x0,Y=y0,lam1.vec=lam1,lam2.vec=lam2,method="cv")
