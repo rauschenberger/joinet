@@ -120,7 +120,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>joinet</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>, <span class='kw'>nfolds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>, <span class='kw'>alpha.base</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>alpha.meta</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>, <span class='kw'>alpha.base</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>alpha.meta</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -177,21 +177,32 @@ numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>This function returns an object of class <code>joinet</code>.
+Available methods include
+<code><a href='predict.joinet.html'>predict</a></code>,
+<code><a href='coef.joinet.html'>coef</a></code>,
+and <code><a href='weights.joinet.html'>weights</a></code>.
+The slots <code>base</code> and <code>meta</code> each contain
+\(q\) <code><a href='https://www.rdocumentation.org/packages/glmnet/topics/cv.glmnet'>cv.glmnet</a></code>-like objects.</p>
+    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The \(q\) outcomes should be positively correlated.
+    <p><strong>correlation:</strong>
+The \(q\) outcomes should be positively correlated.
 Avoid negative correlations by changing the sign of the variable.</p>
-<p>elastic net mixing parameters:
+<p><strong>elastic net:</strong>
 <code>alpha.base</code> controls input-output effects,
 <code>alpha.meta</code> controls output-output effects;
-ridge (\(0\)) renders dense models,
-lasso (\(1\)) renders sparse models</p>
+lasso renders sparse models (<code>alpha</code>\(=1\)),
+ridge renders dense models (<code>alpha</code>\(=0\))</p>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>A Rauschenberger, E Glaab (2019)
+    <p>Armin Rauschenberger, Enrico Glaab (2019)
 "Multivariate elastic net regression through stacked generalisation"
-<em>Manuscript in preparation.</em></p>
+<em>Manuscript in preparation</em>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -205,6 +216,8 @@ lasso (\(1\)) renders sparse models</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#value">Value</a></li>
+
       <li><a href="#details">Details</a></li>
 
       <li><a href="#references">References</a></li>

@@ -6,7 +6,7 @@
 \title{Multivariate Elastic Net Regression}
 \usage{
 joinet(Y, X, family = "gaussian", nfolds = 10, foldid = NULL,
-  type.measure = "deviance", alpha.base = 0, alpha.meta = 0, ...)
+  type.measure = "deviance", alpha.base = 1, alpha.meta = 0, ...)
 }
 \arguments{
 \item{Y}{outputs\strong{:}
@@ -41,18 +41,28 @@ numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
 \item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}}
 }
+\value{
+This function returns an object of class \code{joinet}.
+Available methods include
+\code{\link[=predict.joinet]{predict}},
+\code{\link[=coef.joinet]{coef}},
+and \code{\link[=weights.joinet]{weights}}.
+The slots \code{base} and \code{meta} each contain
+\eqn{q} \code{\link[glmnet]{cv.glmnet}}-like objects.
+}
 \description{
 Implements multivariate elastic net regression.
 }
 \details{
+\strong{correlation:}
 The \eqn{q} outcomes should be positively correlated.
 Avoid negative correlations by changing the sign of the variable.
 
-elastic net mixing parameters:
+\strong{elastic net:}
 \code{alpha.base} controls input-output effects,
 \code{alpha.meta} controls output-output effects;
-ridge (\eqn{0}) renders dense models,
-lasso (\eqn{1}) renders sparse models
+lasso renders sparse models (\code{alpha}\eqn{=1}),
+ridge renders dense models (\code{alpha}\eqn{=0})
 }
 \examples{
 n <- 30; q <- 2; p <- 20
@@ -62,7 +72,7 @@ object <- joinet(Y=Y,X=X)
 
 }
 \references{
-A Rauschenberger, E Glaab (2019)
+Armin Rauschenberger, Enrico Glaab (2019)
 "Multivariate elastic net regression through stacked generalisation"
-\emph{Manuscript in preparation.}
+\emph{Manuscript in preparation}.
 }

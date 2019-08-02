@@ -49,9 +49,14 @@ numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
 \item{mnorm, spls, sier, mrce}{experimental arguments\strong{:}
-logical (install packages \code{spls}, \code{SiER}, or \code{MRCE})}
+logical (requires packages \code{spls}, \code{SiER}, or \code{MRCE})}
 
-\item{...}{further arguments passed to \code{\link[glmnet]{glmnet}} and \code{\link[glmnet]{cv.glmnet}}}
+\item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}
+and \code{\link[glmnet]{cv.glmnet}}}
+}
+\value{
+This function returns a matrix with \eqn{q} columns,
+including the cross-validated loss.
 }
 \description{
 Compares univariate and multivariate regression

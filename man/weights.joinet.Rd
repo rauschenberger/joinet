@@ -11,6 +11,14 @@
 
 \item{...}{further arguments (not applicable)}
 }
+\value{
+This function returns a matrix with
+\eqn{1+q} rows and \eqn{q} columns.
+The first row contains the intercepts,
+and the other rows contain the slopes,
+which are the effects of the outcomes
+in the row on the outcomes in the column.
+}
 \description{
 Extracts coefficients from the meta learner,
 i.e. the weights for the base learners.

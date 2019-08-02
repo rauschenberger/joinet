@@ -17,6 +17,11 @@ and \eqn{p} columns (variables)}
 
 \item{...}{further arguments (not applicable)}
 }
+\value{
+This function returns predictions from base and meta learners.
+The slots \code{base} and \code{meta} each contain a matrix
+with \eqn{n} rows (samples) and \eqn{q} columns (variables).
+}
 \description{
 Predicts outcome from features with stacked model.
 }

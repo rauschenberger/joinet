@@ -137,22 +137,33 @@ i.e. the weights for the base learners.</p>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>This function returns a matrix with
+\(1+q\) rows and \(q\) columns.
+The first row contains the intercepts,
+and the other rows contain the slopes,
+which are the effects of the outcomes
+in the row on the outcomes in the column.</p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>30</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>20</span>
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>q</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>q</span>)
 <span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
-<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Negative correlation!</span></div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/weights'>weights</a></span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                   y1         y2
-#&gt; (Intercept) 0.565532 -0.3929572
-#&gt; V1          0.000000  3.3142619
-#&gt; V2          2.494110  0.1431946</div><div class='input'>
+<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Negative correlation!</span></div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/weights'>weights</a></span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                      y1          y2
+#&gt; (Intercept) 0.065960017 -0.20281935
+#&gt; V1          0.000000000  0.05786884
+#&gt; V2          0.002141384  0.02447026</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#value">Value</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

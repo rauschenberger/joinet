@@ -11,6 +11,13 @@
 
 \item{...}{further arguments (not applicable)}
 }
+\value{
+This function returns the pooled coefficients.
+The slot \code{alpha} contains the intercepts
+in a vector of length \eqn{q},
+and the slot \code{beta} contains the slopes
+in a matrix with \eqn{p} rows (inputs) and \eqn{q} columns.
+}
 \description{
 Extracts pooled coefficients.
 (The meta learners linearly combines

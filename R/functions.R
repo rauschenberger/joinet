@@ -55,19 +55,29 @@
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
 #' 
 #' @references 
-#' A Rauschenberger, E Glaab (2019)
+#' Armin Rauschenberger, Enrico Glaab (2019)
 #' "Multivariate elastic net regression through stacked generalisation"
-#' \emph{Manuscript in preparation.}
+#' \emph{Manuscript in preparation}.
 #' 
 #' @details
+#' \strong{correlation:}
 #' The \eqn{q} outcomes should be positively correlated.
 #' Avoid negative correlations by changing the sign of the variable.
 #' 
-#' elastic net mixing parameters:
+#' \strong{elastic net:}
 #' \code{alpha.base} controls input-output effects,
 #' \code{alpha.meta} controls output-output effects;
-#' ridge (\eqn{0}) renders dense models,
-#' lasso (\eqn{1}) renders sparse models
+#' lasso renders sparse models (\code{alpha}\eqn{=1}),
+#' ridge renders dense models (\code{alpha}\eqn{=0})
+#' 
+#' @return
+#' This function returns an object of class \code{joinet}.
+#' Available methods include
+#' \code{\link[=predict.joinet]{predict}},
+#' \code{\link[=coef.joinet]{coef}},
+#' and \code{\link[=weights.joinet]{weights}}.
+#' The slots \code{base} and \code{meta} each contain
+#' \eqn{q} \code{\link[glmnet]{cv.glmnet}}-like objects.
 #' 
 #' @examples
 #' n <- 30; q <- 2; p <- 20
@@ -75,7 +85,7 @@
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' object <- joinet(Y=Y,X=X)
 #' 
-joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=0,alpha.meta=0,...){
+joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,...){
   
   #--- temporary ---
   # family <- "gaussian"; nfolds <- 10; foldid <- NULL; type.measure <- "deviance"
@@ -238,6 +248,11 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
 #' @param ...
 #' further arguments (not applicable)
 #' 
+#' @return 
+#' This function returns predictions from base and meta learners.
+#' The slots \code{base} and \code{meta} each contain a matrix
+#' with \eqn{n} rows (samples) and \eqn{q} columns (variables).
+#' 
 #' @examples
 #' n <- 30; q <- 2; p <- 20
 #' #Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
@@ -303,6 +318,13 @@ predict.joinet <- function(object,newx,type="response",...){
 #' @param ...
 #' further arguments (not applicable)
 #' 
+#' @return
+#' This function returns the pooled coefficients.
+#' The slot \code{alpha} contains the intercepts
+#' in a vector of length \eqn{q},
+#' and the slot \code{beta} contains the slopes
+#' in a matrix with \eqn{p} rows (inputs) and \eqn{q} columns.
+#' 
 #' @examples
 #' n <- 30; q <- 2; p <- 20
 #' Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
@@ -362,6 +384,14 @@ coef.joinet <- function(object,...){
 #' @param ...
 #' further arguments (not applicable)
 #' 
+#' @return
+#' This function returns a matrix with
+#' \eqn{1+q} rows and \eqn{q} columns.
+#' The first row contains the intercepts,
+#' and the other rows contain the slopes,
+#' which are the effects of the outcomes
+#' in the row on the outcomes in the column.
+#' 
 #' @examples
 #' n <- 30; q <- 2; p <- 20
 #' Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
@@ -414,10 +444,15 @@ print.joinet <- function(x,...){
 #' 
 #' @param mnorm,spls,sier,mrce
 #' experimental arguments\strong{:}
-#' logical (install packages \code{spls}, \code{SiER}, or \code{MRCE})
+#' logical (requires packages \code{spls}, \code{SiER}, or \code{MRCE})
 #' 
 #' @param ...
-#' further arguments passed to \code{\link[glmnet]{glmnet}} and \code{\link[glmnet]{cv.glmnet}}
+#' further arguments passed to \code{\link[glmnet]{glmnet}}
+#' and \code{\link[glmnet]{cv.glmnet}}
+#' 
+#' @return 
+#' This function returns a matrix with \eqn{q} columns,
+#' including the cross-validated loss.
 #' 
 #' @examples
 #' n <- 40; q <- 2; p <- 20
