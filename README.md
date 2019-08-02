@@ -10,7 +10,7 @@ Status](https://codecov.io/github/rauschenberger/joinet/coverage.svg?branch=mast
 
 ## Scope
 
-Stacked Elastic Net Regression (extending
+Multivariate Elastic Net Regression (extending
 [glmnet](https://CRAN.R-project.org/package=glmnet)).
 
 ## Installation

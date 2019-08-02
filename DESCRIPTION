@@ -1,7 +1,7 @@
 Package: joinet
 Version: 0.0.1
 Title: Multivariate Regression
-Description: Implements high-dimensional multivariate regression by stacking (Rauschenberger et al. 2019).
+Description: Implements high-dimensional multivariate regression by stacked generalisation (Wolpert 1992 <doi:10.1016/S0893-6080(05)80023-1>). For positively correlated outcomes, a single multivariate regression is typically more predictive than multiple univariate regressions. Includes functions for model fitting, extracting coefficients, outcome prediction, and performance measurement.
 Depends: R (>= 3.0.0)
 Imports: glmnet, palasso, cornet
 Suggests: knitr, testthat, MASS
