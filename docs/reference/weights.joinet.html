@@ -148,13 +148,15 @@ in the row on the outcomes in the column.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>30</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>20</span>
-<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>q</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>q</span>)
+    <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>50</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
 <span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
-<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Negative correlation!</span></div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/weights'>weights</a></span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                      y1          y2
-#&gt; (Intercept) 0.065960017 -0.20281935
-#&gt; V1          0.000000000  0.05786884
-#&gt; V2          0.002141384  0.02447026</div><div class='input'>
+<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>replicate</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>q</span>,<span class='kw'>expr</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>mean</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colSums'>rowSums</a></span>(<span class='no'>X</span>[,<span class='fl'>1</span>:<span class='fl'>5</span>])))
+<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/weights'>weights</a></span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                    y1        y2        y3
+#&gt; (Intercept) 0.4123532 0.2048455 0.3295532
+#&gt; V1          0.3347547 0.7144811 0.4977934
+#&gt; V2          0.4795655 0.1919470 0.3724097
+#&gt; V3          0.6110722 0.4751144 0.4351376</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

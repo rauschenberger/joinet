@@ -153,13 +153,117 @@ with \(n\) rows (samples) and \(q\) columns (variables).</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>30</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>20</span>
-<span class='co'>#Y &lt;- matrix(rnorm(n*q),nrow=n,ncol=q)</span>
-<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Binomial'>rbinom</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>n</span>*<span class='no'>q</span>,<span class='kw'>size</span><span class='kw'>=</span><span class='fl'>1</span>,<span class='kw'>prob</span><span class='kw'>=</span><span class='fl'>0.5</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>q</span>)
-<span class='co'>#Y &lt;- matrix(rpois(n=n*q,lambda=4),nrow=n,ncol=q)</span>
+    <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>50</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
 <span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
-<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>,<span class='kw'>family</span><span class='kw'>=</span><span class='st'>"binomial"</span>)
-<span class='no'>y_hat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>,<span class='kw'>newx</span><span class='kw'>=</span><span class='no'>X</span>)</div></pre>
+<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>replicate</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>q</span>,<span class='kw'>expr</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>mean</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colSums'>rowSums</a></span>(<span class='no'>X</span>[,<span class='fl'>1</span>:<span class='fl'>5</span>])))
+<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>,<span class='kw'>newx</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; $base
+#&gt;             [,1]        [,2]         [,3]
+#&gt;  [1,] -0.6800725 -1.21872520 -0.310657961
+#&gt;  [2,]  2.5231822  2.01759432  2.319092565
+#&gt;  [3,]  3.0147246  2.95961835  3.071353923
+#&gt;  [4,] -2.0321731 -1.16697865 -1.131585864
+#&gt;  [5,]  1.1989575  1.94542159  1.205214655
+#&gt;  [6,] -5.2181676 -4.73651108 -5.106512539
+#&gt;  [7,]  2.6630929  2.28298777  1.837353182
+#&gt;  [8,]  4.1517740  3.68154548  2.859426063
+#&gt;  [9,]  2.2255938  2.62966728  2.209039320
+#&gt; [10,] -0.1976240 -0.26331544 -0.084736597
+#&gt; [11,] -2.2848625 -2.88205673 -3.371158126
+#&gt; [12,]  0.1395562  0.12678281  1.952331938
+#&gt; [13,]  0.5319628  1.08030034  0.877379283
+#&gt; [14,] -3.2092512 -3.20808021 -5.574818243
+#&gt; [15,]  2.1373104  1.54594741  0.792750994
+#&gt; [16,]  1.3677467  0.24229789  1.303661371
+#&gt; [17,]  2.4203610  1.97149218  2.164521950
+#&gt; [18,] -1.6439085 -1.13752492 -0.148270982
+#&gt; [19,] -2.6971069 -3.21077918 -3.448781770
+#&gt; [20,]  0.4847756  1.32920669  1.045263833
+#&gt; [21,]  1.0580634  1.41141884  0.487897356
+#&gt; [22,] -0.1159397  0.33252059  1.764586212
+#&gt; [23,] -2.4576322 -2.61545228 -1.960495924
+#&gt; [24,] -2.8963417 -2.86185997 -3.306570648
+#&gt; [25,]  1.0818188  1.14369892  2.186762596
+#&gt; [26,] -3.9271814 -3.84456309 -5.731322146
+#&gt; [27,] -2.3652352 -2.86340632 -3.227402032
+#&gt; [28,] -2.1800217 -1.48891855 -2.572985868
+#&gt; [29,]  0.7460273 -0.27982198 -0.506445835
+#&gt; [30,] -0.8429611  0.13194537 -0.737426505
+#&gt; [31,] -0.7316201 -1.51707620 -1.153890045
+#&gt; [32,] -2.5021179 -1.84304055 -3.478808874
+#&gt; [33,]  0.8250113 -0.21440315  0.524465823
+#&gt; [34,]  3.0831834  2.23039182  3.727105270
+#&gt; [35,]  0.4993630 -1.34134635 -1.164539640
+#&gt; [36,]  1.6239756  0.78835676  0.528243360
+#&gt; [37,]  2.1683663  0.91851657  1.521169026
+#&gt; [38,] -0.9397605  0.08426956 -0.751842377
+#&gt; [39,] -0.2803268 -1.20184123 -0.560565492
+#&gt; [40,]  1.9729289  3.26803044  2.090648484
+#&gt; [41,]  0.7398532 -0.83577871  1.020203057
+#&gt; [42,] -1.7847439 -2.02797038 -3.409427348
+#&gt; [43,]  0.9128885  1.60609986  2.616774138
+#&gt; [44,]  1.1536491  2.16601146 -0.015506128
+#&gt; [45,]  0.6315267  0.22276528  0.985103241
+#&gt; [46,]  5.4299519  5.38132076  6.438669837
+#&gt; [47,]  1.3572642 -0.09607223 -1.249216010
+#&gt; [48,]  0.3873464  0.41138065 -0.001234302
+#&gt; [49,]  2.9278013  2.67791507  3.629988512
+#&gt; [50,] -2.4898856 -2.53479214 -3.853167277
+#&gt; 
+#&gt; $meta
+#&gt;              [,1]        [,2]       [,3]
+#&gt;  [1,] -0.59563267 -0.90002433 -0.8795599
+#&gt;  [2,]  2.67095768  2.47810147  2.5808935
+#&gt;  [3,]  3.45840247  3.30020002  3.3891269
+#&gt;  [4,] -1.46188457 -1.61687371 -1.8540286
+#&gt;  [5,]  1.63993174  1.62517210  1.4469087
+#&gt;  [6,] -5.46260433 -5.55647351 -6.0376931
+#&gt;  [7,]  2.55669035  2.49244482  2.4744017
+#&gt;  [8,]  3.95001353  3.95357827  3.9602483
+#&gt;  [9,]  2.67230496  2.60445934  2.5473784
+#&gt; [10,] -0.06333041 -0.24056875 -0.3260788
+#&gt; [11,] -3.08902202 -3.15794007 -3.4647823
+#&gt; [12,]  1.14770503  0.68919861  0.8998934
+#&gt; [13,]  1.01616716  0.90735085  0.7856638
+#&gt; [14,] -4.57317204 -4.32126018 -5.0121129
+#&gt; [15,]  1.66901306  1.65576325  1.5602187
+#&gt; [16,]  1.30059629  0.97347727  1.1517702
+#&gt; [17,]  2.54722966  2.37283946  2.4500803
+#&gt; [18,] -0.83871748 -1.15700321 -1.2025308
+#&gt; [19,] -3.35980259 -3.47252937 -3.7627773
+#&gt; [20,]  1.14619325  1.05179463  0.9069345
+#&gt; [21,]  1.10144529  1.11690231  0.9085406
+#&gt; [22,]  1.01964166  0.62895804  0.7479229
+#&gt; [23,] -2.39597908 -2.66035613 -2.7942077
+#&gt; [24,] -3.27011549 -3.34669753 -3.6958912
+#&gt; [25,]  1.86402073  1.54195928  1.6734630
+#&gt; [26,] -5.07189459 -4.90372974 -5.5570170
+#&gt; [27,] -3.04298327 -3.13330855 -3.4259584
+#&gt; [28,] -2.29854182 -2.26246106 -2.6930823
+#&gt; [29,]  0.06371202 -0.04398019 -0.1212793
+#&gt; [30,] -0.50607066 -0.50300677 -0.8264913
+#&gt; [31,] -1.10152893 -1.31322625 -1.3820411
+#&gt; [32,] -2.94579505 -2.81601879 -3.3576427
+#&gt; [33,]  0.60928985  0.33633488  0.4268274
+#&gt; [34,]  3.60951584  3.21244112  3.5572606
+#&gt; [35,] -0.62221676 -0.80139080 -0.8062647
+#&gt; [36,]  1.15893179  1.05945946  1.0229827
+#&gt; [37,]  1.86880093  1.62188578  1.7719707
+#&gt; [38,] -0.56005416 -0.56280918 -0.8874085
+#&gt; [39,] -0.57012886 -0.82870684 -0.8213634
+#&gt; [40,]  2.69250620  2.75566901  2.5358990
+#&gt; [41,]  0.65637153  0.19064789  0.4769644
+#&gt; [42,] -2.70523844 -2.61931747 -3.0558713
+#&gt; [43,]  2.13395943  1.81842962  1.9202530
+#&gt; [44,]  1.08933714  1.32199345  0.8918323
+#&gt; [45,]  0.87872139  0.60266852  0.6715000
+#&gt; [46,]  6.58840317  6.27388617  6.6620334
+#&gt; [47,] -0.03083230  0.02072140 -0.1677526
+#&gt; [48,]  0.36265531  0.28827976  0.1348278
+#&gt; [49,]  3.62457049  3.32176166  3.5519022
+#&gt; [50,] -3.30474852 -3.23086153 -3.7021257
+#&gt; </div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

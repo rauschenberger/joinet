@@ -26,12 +26,10 @@ with \eqn{n} rows (samples) and \eqn{q} columns (variables).
 Predicts outcome from features with stacked model.
 }
 \examples{
-n <- 30; q <- 2; p <- 20
-#Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
-Y <- matrix(rbinom(n=n*q,size=1,prob=0.5),nrow=n,ncol=q)
-#Y <- matrix(rpois(n=n*q,lambda=4),nrow=n,ncol=q)
+n <- 50; q <- 3; p <- 100
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
-object <- joinet(Y=Y,X=X,family="binomial")
-y_hat <- predict(object,newx=X)
+Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
+object <- joinet(Y=Y,X=X)
+predict(object,newx=X)
 
 }

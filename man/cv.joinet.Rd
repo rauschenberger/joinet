@@ -62,9 +62,33 @@ including the cross-validated loss.
 Compares univariate and multivariate regression
 }
 \examples{
-n <- 40; q <- 2; p <- 20
-Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
+n <- 50; q <- 3; p <- 100
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
 cv.joinet(Y=Y,X=X)
+
+\dontrun{
+# correlated features
+n <- 50; q <- 3; p <- 100
+mu <- rep(0,times=p)
+Sigma <- 0.90^abs(col(diag(p))-row(diag(p)))
+X <- MASS::mvrnorm(n=n,mu=mu,Sigma=Sigma)
+mu <- rowSums(X[,sample(seq_len(p),size=5)])
+Sigma <- diag(n)
+Y <- t(MASS::mvrnorm(n=q,mu=mu,Sigma=Sigma))
+cv.joinet(Y=Y,X=X)
+}
+
+\dontrun{
+# other distributions
+n <- 50; q <- 3; p <- 100
+mu <- rep(0,times=p)
+X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+eta <- rowSums(X[,sample(seq_len(p),size=5)])
+Y <- replicate(n=q,expr=rbinom(n=n,size=1,prob=1/(1+exp(-eta))))
+cv.joinet(Y=Y,X=X,family="binomial")
+Y <- replicate(n=q,expr=rpois(n=n,lambda=exp(scale(eta))))
+cv.joinet(Y=Y,X=X,family="poisson")
+}
 
 }

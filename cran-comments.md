@@ -1,4 +1,2 @@
 
-# Notes
-
-- DOI will be added after publication.
+Thanks, I improved the description, added a DOI, and added the value fields.

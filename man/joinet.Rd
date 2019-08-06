@@ -65,9 +65,9 @@ lasso renders sparse models (\code{alpha}\eqn{=1}),
 ridge renders dense models (\code{alpha}\eqn{=0})
 }
 \examples{
-n <- 30; q <- 2; p <- 20
-Y <- matrix(rnorm(n*q),nrow=n,ncol=q)
+n <- 50; q <- 3; p <- 100
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
 object <- joinet(Y=Y,X=X)
 
 }
