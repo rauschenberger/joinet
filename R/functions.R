@@ -80,7 +80,7 @@
 #' \eqn{q} \code{\link[glmnet]{cv.glmnet}}-like objects.
 #' 
 #' @seealso
-#' Type \code{browseVignettes("joinet")} for examples.
+#' \code{\link{cv.joinet}}, \code{browseVignettes("joinet")}
 #' 
 #' @examples
 #' n <- 50; p <- 100; q <- 3

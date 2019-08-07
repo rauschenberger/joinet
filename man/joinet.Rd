@@ -77,5 +77,5 @@ Armin Rauschenberger, Enrico Glaab (2019)
 \emph{Manuscript in preparation}.
 }
 \seealso{
-Type \code{browseVignettes("joinet")} for examples.
+\code{\link{cv.joinet}}, \code{browseVignettes("joinet")}
 }

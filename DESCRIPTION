@@ -1,16 +1,16 @@
 Package: joinet
-Version: 0.0.1
-Title: Multivariate Regression
+Version: 0.0.2
+Title: Multivariate Regression through Stacked Generalisation
 Description: Implements high-dimensional multivariate regression by stacked generalisation (Wolpert 1992 <doi:10.1016/S0893-6080(05)80023-1>). For positively correlated outcomes, a single multivariate regression is typically more predictive than multiple univariate regressions. Includes functions for model fitting, extracting coefficients, outcome prediction, and performance measurement.
 Depends: R (>= 3.0.0)
 Imports: glmnet, palasso, cornet
 Suggests: knitr, testthat, MASS
-Enhances: RColorBrewer, spls, SiER, MRCE
+Enhances: spls, SiER, MRCE
 Authors@R: person("Armin","Rauschenberger",email="a.rauschenberger@vumc.nl",role=c("aut","cre"))
 VignetteBuilder: knitr
 License: GPL-3
 LazyData: true
 Language: en-GB
 RoxygenNote: 6.1.1
-URL: https://github.com/rauschenberger/mixnet
-BugReports: https://github.com/rauschenberger/mixnet/issues
+URL: https://github.com/rauschenberger/joinet
+BugReports: https://github.com/rauschenberger/joinet/issues
