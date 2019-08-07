@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 ## Scope
 
-Multivariate Elastic Net Regression (extending [glmnet](https://CRAN.R-project.org/package=glmnet)).
+Multivariate Elastic Net Regression (extending the [R](https://cran.r-project.org) package [glmnet](https://CRAN.R-project.org/package=glmnet)).
 
 ## Installation
 

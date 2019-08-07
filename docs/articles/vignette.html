@@ -89,12 +89,80 @@
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>Install the current release from <a href="https://CRAN.R-project.org/package=joinet">CRAN</a>:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"joinet"</span>)</a></code></pre></div>
-<p>or the latest development version from <a href="https://github.com/rauschenberger/joinet">GitHub</a>:</p>
+<p>Or install the latest development version from <a href="https://github.com/rauschenberger/joinet">GitHub</a>:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">#install.packages("devtools")</span></a>
 <a class="sourceLine" id="cb2-2" title="2">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"rauschenberger/joinet"</span>)</a></code></pre></div>
-<p>Access the help pages with:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">?joinet</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/help">help</a></span>(joinet)</a></code></pre></div>
+</div>
+<div id="initialisation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#initialisation" class="anchor"></a>Initialisation</h2>
+<p>Load and attach the package:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(joinet)</a></code></pre></div>
+<p>And access the <a href="https://rauschenberger.github.io/joinet/">documentation</a>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">?joinet</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/help">help</a></span>(joinet)</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/browseVignettes">browseVignettes</a></span>(<span class="st">"joinet"</span>)</a></code></pre></div>
+</div>
+<div id="simulation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#simulation" class="anchor"></a>Simulation</h2>
+<p>For <code>n</code> samples, we simulate <code>p</code> inputs (features, covariates) and <code>q</code> outputs (outcomes, responses). We assume high-dimensional inputs (<code>p</code> <span class="math inline">\(\gg\)</span> <code>n</code>) and low-dimensional outputs (<code>q</code> <span class="math inline">\(\ll\)</span> <code>n</code>).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb5-2" title="2">q &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb5-3" title="3">p &lt;-<span class="st"> </span><span class="dv">500</span></a></code></pre></div>
+<p>We simulate the <code>p</code> inputs from a multivariate normal distribution. For the mean, we use the <code>p</code>-dimensional vector <code>mu</code>, where all elements equal zero. For the covariance, we use the <code>p</code> <span class="math inline">\(\times\)</span> <code>p</code> matrix <code>Sigma</code>, where the entry in row <span class="math inline">\(i\)</span> and column <span class="math inline">\(j\)</span> equals <code>rho</code><span class="math inline">\(^{|i-j|}\)</span>. The parameter <code>rho</code> determines the strength of the correlation among the inputs, with small <code>rho</code> leading weak correlations, and large <code>rho</code> leading to strong correlations (0 &lt; <code>rho</code> &lt; 1). The input matrix <code>X</code> has <code>n</code> rows and <code>p</code> columns.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">mu &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(<span class="dv">0</span>,<span class="dt">times=</span>p)</a>
+<a class="sourceLine" id="cb6-2" title="2">rho &lt;-<span class="st"> </span><span class="fl">0.90</span></a>
+<a class="sourceLine" id="cb6-3" title="3">Sigma &lt;-<span class="st"> </span>rho<span class="op">^</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">abs</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/col">col</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/diag">diag</a></span>(p))<span class="op">-</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/row">row</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/diag">diag</a></span>(p)))</a>
+<a class="sourceLine" id="cb6-4" title="4">X &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/MASS/topics/mvrnorm">mvrnorm</a></span>(<span class="dt">n=</span>n,<span class="dt">mu=</span>mu,<span class="dt">Sigma=</span>Sigma)</a></code></pre></div>
+<p>We simulate the input-output effects from independent Bernoulli distributions. The parameter <code>pi</code> determines the number of effects, with small <code>pi</code> leading to few effects, and large <code>pi</code> leading to many effects (0 &lt; <code>pi</code> &lt; 1). The scalar <code>alpha</code> represents the intercept, and the <code>p</code>-dimensional vector <code>beta</code> represents the slopes.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">pi &lt;-<span class="st"> </span><span class="fl">0.01</span></a>
+<a class="sourceLine" id="cb7-2" title="2">alpha &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb7-3" title="3">beta &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(<span class="dt">n=</span>p,<span class="dt">size=</span><span class="dv">1</span>,<span class="dt">prob=</span>pi)</a></code></pre></div>
+<p>From the intercept <code>alpha</code>, the slopes <code>beta</code> and the inputs <code>X</code>, we calculate the linear predictor, the <code>n</code>-dimensional vector <code>eta</code>. Rescale the linear predictor to make the effects weaker or stronger. Set the argument <code>family</code> to <code>"gaussian"</code>, <code>"binomial"</code>, or <code>"poisson"</code> to define the distribution. The <code>n</code> times <code>p</code> matrix <code>Y</code> represents the outputs. We assume the outcomes are <em>positively</em> correlated.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">eta &lt;-<span class="st"> </span>alpha <span class="op">+</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta</a>
+<a class="sourceLine" id="cb8-2" title="2">eta &lt;-<span class="st"> </span><span class="fl">1.5</span><span class="op">*</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/scale">scale</a></span>(eta)</a>
+<a class="sourceLine" id="cb8-3" title="3">family &lt;-<span class="st"> "gaussian"</span></a>
+<a class="sourceLine" id="cb8-4" title="4"></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="cf">if</span>(family<span class="op">==</span><span class="st">"gaussian"</span>){</a>
+<a class="sourceLine" id="cb8-6" title="6">  mean &lt;-<span class="st"> </span>eta</a>
+<a class="sourceLine" id="cb8-7" title="7">  Y &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">replicate</a></span>(<span class="dt">n=</span>q,<span class="dt">expr=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(<span class="dt">n=</span>n,<span class="dt">mean=</span>mean))</a>
+<a class="sourceLine" id="cb8-8" title="8">}</a>
+<a class="sourceLine" id="cb8-9" title="9"></a>
+<a class="sourceLine" id="cb8-10" title="10"><span class="cf">if</span>(family<span class="op">==</span><span class="st">"binomial"</span>){</a>
+<a class="sourceLine" id="cb8-11" title="11">  prob &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="op">-</span>eta))</a>
+<a class="sourceLine" id="cb8-12" title="12">  Y &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">replicate</a></span>(<span class="dt">n=</span>q,<span class="dt">expr=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(<span class="dt">n=</span>n,<span class="dt">size=</span><span class="dv">1</span>,<span class="dt">prob=</span>prob))</a>
+<a class="sourceLine" id="cb8-13" title="13">}</a>
+<a class="sourceLine" id="cb8-14" title="14"></a>
+<a class="sourceLine" id="cb8-15" title="15"><span class="cf">if</span>(family<span class="op">==</span><span class="st">"poisson"</span>){</a>
+<a class="sourceLine" id="cb8-16" title="16">  lambda &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(eta)</a>
+<a class="sourceLine" id="cb8-17" title="17">  Y &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">replicate</a></span>(<span class="dt">n=</span>q,<span class="dt">expr=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Poisson">rpois</a></span>(<span class="dt">n=</span>n,<span class="dt">lambda=</span>lambda))</a>
+<a class="sourceLine" id="cb8-18" title="18">}</a>
+<a class="sourceLine" id="cb8-19" title="19"></a>
+<a class="sourceLine" id="cb8-20" title="20"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/cor">cor</a></span>(Y)</a></code></pre></div>
+</div>
+<div id="application" class="section level2">
+<h2 class="hasAnchor">
+<a href="#application" class="anchor"></a>Application</h2>
+<p>The function <code>joinet</code> fits univariate and multivariate regression. Set the argument <code>alpha.base</code> to 0 (ridge) or 1 (lasso).</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">object &lt;-<span class="st"> </span><span class="kw"><a href="../reference/joinet.html">joinet</a></span>(<span class="dt">Y=</span>Y,<span class="dt">X=</span>X,<span class="dt">family=</span>family)</a></code></pre></div>
+<p>Standard methods are available. The function <code>predict</code> returns the predicted values from the univariate (<code>base</code>) and multivariate (<code>meta</code>) models. The function <code>coef</code> returns the estimated intercepts (<code>alpha</code>) and slopes (<code>beta</code>) from the multivariate model (input-output effects). And the function <code>weights</code> returns the weights from stacking (output-output effects).</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(object,<span class="dt">newx=</span>X)</a>
+<a class="sourceLine" id="cb10-2" title="2"></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/coef">coef</a></span>(object)</a>
+<a class="sourceLine" id="cb10-4" title="4"></a>
+<a class="sourceLine" id="cb10-5" title="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/weights">weights</a></span>(object)</a></code></pre></div>
+<p>The function <code>cv.joinet</code> compares the predictive performance of univariate (<code>base</code>) and multivariate (<code>meta</code>) regression by nested cross-validation. The argument <code>type.measure</code> determines the loss function.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw"><a href="../reference/cv.joinet.html">cv.joinet</a></span>(<span class="dt">Y=</span>Y,<span class="dt">X=</span>X,<span class="dt">family=</span>family)</a></code></pre></div>
+<pre><code>##          [,1]     [,2]
+## base 1.204741 1.523550
+## meta 1.161487 1.283678
+## none 3.206394 3.495571</code></pre>
+</div>
+<div id="reference" class="section level2">
+<h2 class="hasAnchor">
+<a href="#reference" class="anchor"></a>Reference</h2>
+<p>Armin Rauschenberger and Enrico Glaab (2019). “Multivariate regression through stacked generalisation”. <em>Manuscript in preparation.</em></p>
 <!--
 
 ```r
@@ -115,13 +183,7 @@ Y <- liver.toxicity$clinic
 Y$Cholesterol.mg.dL. <- -Y$Cholesterol.mg.dL.
 loss <- joinet:::cv.joinet(Y=Y,X=X)
 ```
-
 -->
-</div>
-<div id="reference" class="section level2">
-<h2 class="hasAnchor">
-<a href="#reference" class="anchor"></a>Reference</h2>
-<p>Armin Rauschenberger and Enrico Glaab (2019). “Multivariate regression through stacked generalisation”. <em>Manuscript in preparation.</em></p>
 </div>
   </div>
 
@@ -131,6 +193,9 @@ loss <- joinet:::cv.joinet(Y=Y,X=X)
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#installation">Installation</a></li>
+      <li><a href="#initialisation">Initialisation</a></li>
+      <li><a href="#simulation">Simulation</a></li>
+      <li><a href="#application">Application</a></li>
       <li><a href="#reference">Reference</a></li>
       </ul>
 </div>

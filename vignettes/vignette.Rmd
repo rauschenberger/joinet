@@ -11,6 +11,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+set.seed(1)
 ```
 
 ## Installation
@@ -21,19 +22,110 @@ Install the current release from [CRAN](https://CRAN.R-project.org/package=joine
 install.packages("joinet")
 ```
 
-or the latest development version from [GitHub](https://github.com/rauschenberger/joinet):
+Or install the latest development version from [GitHub](https://github.com/rauschenberger/joinet):
 
 ```{r,eval=FALSE}
 #install.packages("devtools")
 devtools::install_github("rauschenberger/joinet")
 ```
 
-Access the help pages with:
+## Initialisation
+
+Load and attach the package:
+
+```{r}
+library(joinet)
+```
+
+And access the [documentation](https://rauschenberger.github.io/joinet/):
 
 ```{r,eval=FALSE}
 ?joinet
 help(joinet)
+browseVignettes("joinet")
 ```
+
+## Simulation
+
+For `n` samples, we simulate `p` inputs (features, covariates) and `q` outputs (outcomes, responses). We assume high-dimensional inputs (`p` $\gg$ `n`) and low-dimensional outputs (`q` $\ll$ `n`).
+
+```{r}
+n <- 100
+q <- 2
+p <- 500
+```
+
+We simulate the `p` inputs from a multivariate normal distribution. For the mean, we use the `p`-dimensional vector `mu`, where all elements equal zero. For the covariance, we use the `p` $\times$ `p` matrix `Sigma`, where the entry in row $i$ and column $j$ equals `rho`$^{|i-j|}$. The parameter `rho`  determines the strength of the correlation among the inputs, with small `rho` leading weak correlations, and large `rho` leading to strong correlations (0 < `rho` < 1). The input matrix `X` has `n` rows and `p` columns.
+
+```{r}
+mu <- rep(0,times=p)
+rho <- 0.90
+Sigma <- rho^abs(col(diag(p))-row(diag(p)))
+X <- MASS::mvrnorm(n=n,mu=mu,Sigma=Sigma)
+```
+
+We simulate the input-output effects from independent Bernoulli distributions. The parameter `pi` determines the number of effects, with small `pi` leading to few effects, and large `pi` leading to many effects (0 < `pi` < 1). The scalar `alpha` represents the intercept, and the `p`-dimensional vector `beta` represents the slopes.
+
+```{r}
+pi <- 0.01
+alpha <- 0
+beta <- rbinom(n=p,size=1,prob=pi)
+```
+
+From the intercept `alpha`, the slopes `beta` and the inputs `X`, we calculate the linear predictor, the `n`-dimensional vector `eta`. Rescale the linear predictor to make the effects weaker or stronger. Set the argument `family` to `"gaussian"`, `"binomial"`, or `"poisson"` to define the distribution. The `n` times `p` matrix `Y` represents the outputs. We assume the outcomes are *positively* correlated.
+
+```{r,results="hide"}
+eta <- alpha + X %*% beta
+eta <- 1.5*scale(eta)
+family <- "gaussian"
+
+if(family=="gaussian"){
+  mean <- eta
+  Y <- replicate(n=q,expr=rnorm(n=n,mean=mean))
+}
+
+if(family=="binomial"){
+  prob <- 1/(1+exp(-eta))
+  Y <- replicate(n=q,expr=rbinom(n=n,size=1,prob=prob))
+}
+
+if(family=="poisson"){
+  lambda <- exp(eta)
+  Y <- replicate(n=q,expr=rpois(n=n,lambda=lambda))
+}
+
+cor(Y)
+```
+
+## Application
+
+The function `joinet` fits univariate and multivariate regression. Set the argument `alpha.base` to 0 (ridge) or 1 (lasso).
+
+```{r}
+object <- joinet(Y=Y,X=X,family=family)
+```
+
+Standard methods are available. The function `predict` returns the predicted values from the univariate (`base`) and multivariate (`meta`) models. The function `coef` returns the estimated intercepts (`alpha`) and slopes (`beta`) from the multivariate model (input-output effects). And the function `weights` returns the weights from stacking (output-output effects).
+
+```{r,eval=FALSE}
+predict(object,newx=X)
+
+coef(object)
+
+weights(object)
+```
+
+The function `cv.joinet` compares the predictive performance of univariate (`base`) and multivariate (`meta`) regression by nested cross-validation. The argument `type.measure` determines the loss function.
+
+```{r}
+cv.joinet(Y=Y,X=X,family=family)
+```
+
+## Reference
+
+Armin Rauschenberger and Enrico Glaab (2019).
+"Multivariate regression through stacked generalisation".
+*Manuscript in preparation.* 
 
 <!--
 ```{r,eval=FALSE}
@@ -53,11 +145,4 @@ Y <- liver.toxicity$clinic
 Y$Cholesterol.mg.dL. <- -Y$Cholesterol.mg.dL.
 loss <- joinet:::cv.joinet(Y=Y,X=X)
 ```
-
 -->
-
-## Reference
-
-Armin Rauschenberger and Enrico Glaab (2019).
-"Multivariate regression through stacked generalisation".
-*Manuscript in preparation.*

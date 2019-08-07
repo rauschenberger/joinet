@@ -65,7 +65,7 @@ lasso renders sparse models (\code{alpha}\eqn{=1}),
 ridge renders dense models (\code{alpha}\eqn{=0})
 }
 \examples{
-n <- 50; q <- 3; p <- 100
+n <- 50; p <- 100; q <- 3
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
 object <- joinet(Y=Y,X=X)
@@ -75,4 +75,7 @@ object <- joinet(Y=Y,X=X)
 Armin Rauschenberger, Enrico Glaab (2019)
 "Multivariate elastic net regression through stacked generalisation"
 \emph{Manuscript in preparation}.
+}
+\seealso{
+Type \code{browseVignettes("joinet")} for examples.
 }
