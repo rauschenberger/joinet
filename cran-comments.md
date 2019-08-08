@@ -1,2 +1,6 @@
 
-Thanks, I improved the description, added a DOI, and added the value fields.
+# Notes
+
+- Early update because of manuscript submission (examples, vignettes).
+
+- The maintainer email will change to armin.rauschenberger@uni.lu.

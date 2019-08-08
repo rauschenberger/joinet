@@ -10,8 +10,8 @@ Status](https://codecov.io/github/rauschenberger/joinet/coverage.svg?branch=mast
 
 ## Scope
 
-Multivariate Elastic Net Regression (extending the
-[R](https://cran.r-project.org) package
+Multivariate elastic net regression through stacked generalisation
+(extending the [R](https://cran.r-project.org) package
 [glmnet](https://CRAN.R-project.org/package=glmnet)).
 
 ## Installation
@@ -33,5 +33,6 @@ devtools::install_github("rauschenberger/joinet")
 
 ## Reference
 
-Armin Rauschenberger and Enrico Glaab (2019). “Multivariate regression
-through stacked generalisation”. *Manuscript in preparation.*
+Armin Rauschenberger and Enrico Glaab (2019). “joinet: predicting
+correlated outcomes jointly to improve clinical prognosis”. *Manuscript
+in preparation.*

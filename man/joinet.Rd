@@ -70,12 +70,16 @@ X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
 object <- joinet(Y=Y,X=X)
 
+\dontrun{
+browseVignettes("joinet") # further examples}
+
 }
 \references{
 Armin Rauschenberger, Enrico Glaab (2019)
-"Multivariate elastic net regression through stacked generalisation"
+"joinet: predicting correlated outcomes jointly
+to improve clinical prognosis"
 \emph{Manuscript in preparation}.
 }
 \seealso{
-\code{\link{cv.joinet}}, \code{browseVignettes("joinet")}
+\code{\link{cv.joinet}}, vignette
 }

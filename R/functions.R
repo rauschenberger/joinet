@@ -56,7 +56,8 @@
 #' 
 #' @references 
 #' Armin Rauschenberger, Enrico Glaab (2019)
-#' "Multivariate elastic net regression through stacked generalisation"
+#' "joinet: predicting correlated outcomes jointly
+#' to improve clinical prognosis"
 #' \emph{Manuscript in preparation}.
 #' 
 #' @details
@@ -80,13 +81,16 @@
 #' \eqn{q} \code{\link[glmnet]{cv.glmnet}}-like objects.
 #' 
 #' @seealso
-#' \code{\link{cv.joinet}}, \code{browseVignettes("joinet")}
+#' \code{\link{cv.joinet}}, vignette
 #' 
 #' @examples
 #' n <- 50; p <- 100; q <- 3
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
 #' object <- joinet(Y=Y,X=X)
+#' 
+#' \dontrun{
+#' browseVignettes("joinet") # further examples}
 #' 
 joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,...){
   
@@ -421,7 +425,7 @@ print.joinet <- function(x,...){
 #' Model comparison
 #'
 #' @description
-#' Compares univariate and multivariate regression
+#' Compares univariate and multivariate regression.
 #' 
 #' @inheritParams joinet
 #' 
@@ -453,7 +457,9 @@ print.joinet <- function(x,...){
 #' 
 #' @return 
 #' This function returns a matrix with \eqn{q} columns,
-#' including the cross-validated loss.
+#' including the cross-validated loss from the univariate models
+#' (\code{base}), the multivariate models (\code{meta}),
+#' and the intercept-only models (\code{none}).
 #' 
 #' @examples
 #' n <- 50; p <- 100; q <- 3

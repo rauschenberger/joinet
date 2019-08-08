@@ -56,10 +56,12 @@ and \code{\link[glmnet]{cv.glmnet}}}
 }
 \value{
 This function returns a matrix with \eqn{q} columns,
-including the cross-validated loss.
+including the cross-validated loss from the univariate models
+(\code{base}), the multivariate models (\code{meta}),
+and the intercept-only models (\code{none}).
 }
 \description{
-Compares univariate and multivariate regression
+Compares univariate and multivariate regression.
 }
 \examples{
 n <- 50; p <- 100; q <- 3
