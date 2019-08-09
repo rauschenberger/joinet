@@ -1,6 +1,5 @@
 
 # Notes
 
-- Early update because of manuscript submission (examples, vignettes).
-
-- The maintainer email will change to armin.rauschenberger@uni.lu.
+Please accept ::: calls to "palasso" and "cornet",
+as maintainer email changes for all packages.

@@ -1,12 +1,10 @@
 
-#.loss <- get(".loss",envir=asNamespace("palasso"))
-#.folds <- get(".folds",envir=asNamespace("palasso"))
-#.check <- get(".check",envir=asNamespace("cornet"))
+# import unexported functions:
+# FUNCTION <- get("FUNCTION",envir=asNamespace("PACKAGE"))
 
 #--- Main function -------------------------------------------------------------
 
 #' @export
-#' @aliases joinet-package
 #' @title
 #' Multivariate Elastic Net Regression
 #' 

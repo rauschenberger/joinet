@@ -2,7 +2,6 @@
 % Please edit documentation in R/functions.R
 \name{joinet}
 \alias{joinet}
-\alias{joinet-package}
 \title{Multivariate Elastic Net Regression}
 \usage{
 joinet(Y, X, family = "gaussian", nfolds = 10, foldid = NULL,

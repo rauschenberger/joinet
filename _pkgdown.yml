@@ -17,7 +17,7 @@ navbar:
     - text: "functions"
       href: reference/index.html
     - text: "vignette"
-      href: articles/vignette.html
+      href: articles/joinet.html
     - text: "article"
       href: articles/article.html
     - text: "news"
@@ -29,12 +29,11 @@ navbar:
       href: https://cran.r-project.org/package=joinet
 
 reference:
-  - title: "User functions"
+  - title: "Functions"
     contents:
       - joinet
       - predict.joinet
       - coef.joinet
       - weights.joinet
-  - title: "Internal functions"
-    contents:
       - cv.joinet
+      - joinet-package
