@@ -7,7 +7,7 @@
 cv.joinet(Y, X, family = "gaussian", nfolds.ext = 5, nfolds.int = 10,
   foldid.ext = NULL, foldid.int = NULL, type.measure = "deviance",
   alpha.base = 1, alpha.meta = 0, mnorm = FALSE, spls = FALSE,
-  sier = FALSE, mrce = FALSE, ...)
+  sier = FALSE, mrce = FALSE, cvpred = FALSE, ...)
 }
 \arguments{
 \item{Y}{outputs\strong{:}
@@ -50,6 +50,8 @@ numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
 \item{mnorm, spls, sier, mrce}{experimental arguments\strong{:}
 logical (requires packages \code{spls}, \code{SiER}, or \code{MRCE})}
+
+\item{cvpred}{return cross-validated predicition: logical}
 
 \item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}
 and \code{\link[glmnet]{cv.glmnet}}}

@@ -8,21 +8,25 @@
 
 <title>Make Predictions — predict.joinet • joinet</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -30,10 +34,11 @@
 
 
 
-<meta property="og:title" content="Make Predictions — predict.joinet" />
 
+<meta property="og:title" content="Make Predictions — predict.joinet" />
 <meta property="og:description" content="Predicts outcome from features with stacked model." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -45,6 +50,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -82,7 +88,6 @@
   <a href="../news/index.html">news</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/rauschenberger/joinet">
@@ -103,6 +108,7 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -114,14 +120,12 @@
     </div>
 
     <div class="ref-description">
-    
     <p>Predicts outcome from features with stacked model.</p>
-    
     </div>
 
     <pre class="usage"><span class='co'># S3 method for joinet</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='no'>newx</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"response"</span>, <span class='no'>...</span>)</pre>
-    
+<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>object</span>, <span class='no'>newx</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"response"</span>, <span class='no'>...</span>)</pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -144,124 +148,124 @@ and \(p\) columns (variables)</p></td>
       <td><p>further arguments (not applicable)</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>This function returns predictions from base and meta learners.
 The slots <code>base</code> and <code>meta</code> each contain a matrix
 with \(n\) rows (samples) and \(q\) columns (variables).</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>50</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
-<span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
-<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>replicate</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>q</span>,<span class='kw'>expr</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>mean</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colSums'>rowSums</a></span>(<span class='no'>X</span>[,<span class='fl'>1</span>:<span class='fl'>5</span>])))
-<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>,<span class='kw'>newx</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; $base
-#&gt;             [,1]       [,2]         [,3]
-#&gt;  [1,] -2.6382210 -2.9659453 -2.306391444
-#&gt;  [2,]  2.6552680  1.4525574  2.505892331
-#&gt;  [3,]  1.1295699  1.4181935  1.024506708
-#&gt;  [4,]  0.2566896 -1.1868062  0.770974904
-#&gt;  [5,]  0.9235359  2.1951153  1.435281993
-#&gt;  [6,]  0.7376982  1.7955112  1.613380715
-#&gt;  [7,] -0.3904051 -0.9624476 -1.305940614
-#&gt;  [8,] -4.8823206 -5.1329853 -5.632617590
-#&gt;  [9,] -2.8826967 -4.2866886 -3.319082823
-#&gt; [10,]  2.4610522  1.7177360  2.029169444
-#&gt; [11,]  0.9047337  1.7704820  0.138986055
-#&gt; [12,] -3.4383168 -3.4492442 -4.077404028
-#&gt; [13,]  0.3573390  1.0892937  0.751307437
-#&gt; [14,]  2.6856775  4.1461204  4.109918838
-#&gt; [15,] -2.5859515 -3.0620775 -3.039261367
-#&gt; [16,]  1.7188957  1.1177316  2.666496452
-#&gt; [17,] -2.8405784 -4.3156935 -3.265928842
-#&gt; [18,]  2.5205082  3.2674372  4.021626346
-#&gt; [19,]  2.4668067  2.2547918  1.521037026
-#&gt; [20,] -3.2163874 -5.1967661 -3.914674437
-#&gt; [21,] -1.8090909 -2.4841106 -2.800940136
-#&gt; [22,]  0.1219993 -0.4755235 -1.346081912
-#&gt; [23,]  0.5620446  2.9490435  0.834109773
-#&gt; [24,]  0.7231336 -0.8008719  0.006685054
-#&gt; [25,]  0.3882856 -0.4834631 -0.389710153
-#&gt; [26,]  0.8986010  0.3555128  0.582610989
-#&gt; [27,]  0.9810074  0.5822080 -0.083507593
-#&gt; [28,]  1.3495727  0.2573044  0.950629861
-#&gt; [29,]  1.5941948  1.6883281  2.610167833
-#&gt; [30,]  0.5201647 -0.4452296 -1.053437483
-#&gt; [31,]  2.5336520  3.9861323  3.091867020
-#&gt; [32,]  1.2177945  0.4127256  1.337044870
-#&gt; [33,]  2.3160903  2.8285159  2.868384803
-#&gt; [34,] -0.9393410 -0.3716184  0.146997363
-#&gt; [35,]  2.0302346  2.9987535  2.602339175
-#&gt; [36,]  2.5560019  4.2112428  2.946193469
-#&gt; [37,]  1.5872347  0.8023620  2.234054545
-#&gt; [38,]  1.1985388  1.9795947  1.730649774
-#&gt; [39,] -0.2143121  1.3476443 -0.594151486
-#&gt; [40,]  1.1493740  0.7250426  0.991941924
-#&gt; [41,] -1.8056163 -2.1610821 -2.553768773
-#&gt; [42,]  1.4862873  2.8879993  2.480084861
-#&gt; [43,]  0.4224656 -0.4430081 -0.643021999
-#&gt; [44,] -2.7067256 -2.7823989 -3.502945445
-#&gt; [45,]  5.9534870  5.9664792  5.997630680
-#&gt; [46,] -0.3503043 -0.5702642 -1.399712343
-#&gt; [47,] -2.3705833 -3.7251487 -3.201279704
-#&gt; [48,]  2.3128394  0.3872560  2.581339973
-#&gt; [49,]  1.9162032  1.5412281  2.499116776
-#&gt; [50,]  0.3627602 -0.0460838 -0.163484167
+<span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
+<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>q</span>,<span class='kw'>expr</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>mean</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>X</span>[,<span class='fl'>1</span>:<span class='fl'>5</span>])))
+<span class='no'>Y</span>[,<span class='fl'>1</span>] <span class='kw'>&lt;-</span> <span class='fl'>1</span>*(<span class='no'>Y</span>[,<span class='fl'>1</span>]<span class='kw'>&gt;</span><span class='fu'><a href='https://rdrr.io/r/stats/median.html'>median</a></span>(<span class='no'>Y</span>[,<span class='fl'>1</span>]))
+<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>,<span class='kw'>family</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"binomial"</span>,<span class='st'>"gaussian"</span>,<span class='st'>"gaussian"</span>))
+<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>object</span>,<span class='kw'>newx</span><span class='kw'>=</span><span class='no'>X</span>)</div><div class='output co'>#&gt; $base
+#&gt;             [,1]         [,2]        [,3]
+#&gt;  [1,] 0.41837245 -1.928585385 -2.49734037
+#&gt;  [2,] 0.73430703 -1.232615541 -1.92258279
+#&gt;  [3,] 0.89830295  2.189899197  1.90525393
+#&gt;  [4,] 0.89750302  2.620239322  3.16623238
+#&gt;  [5,] 0.75114829  0.007031193 -0.17521804
+#&gt;  [6,] 0.14470451 -2.282808008 -2.29598057
+#&gt;  [7,] 0.09766868 -1.173475809 -1.01900217
+#&gt;  [8,] 0.90945310  3.743238898  3.54799601
+#&gt;  [9,] 0.80093334  0.020539090  0.66028304
+#&gt; [10,] 0.41399970 -2.478399066 -2.17809084
+#&gt; [11,] 0.87769011  3.710699246  3.43305524
+#&gt; [12,] 0.10649510 -0.594219557 -0.26688072
+#&gt; [13,] 0.07607328 -4.684823994 -4.25280223
+#&gt; [14,] 0.20653264  0.507040407  0.46010982
+#&gt; [15,] 0.22855559 -0.707175402 -0.50492476
+#&gt; [16,] 0.77487110 -1.108208462 -0.97986741
+#&gt; [17,] 0.22673908 -1.104045322 -0.53058056
+#&gt; [18,] 0.88702215 -0.008662017  0.05825129
+#&gt; [19,] 0.44743009  1.637425052  0.93757078
+#&gt; [20,] 0.39800750 -2.875874417 -3.01614676
+#&gt; [21,] 0.16726717 -0.589831578 -0.90077905
+#&gt; [22,] 0.64835839 -0.667092621 -0.74610665
+#&gt; [23,] 0.75523423 -0.829522996  0.17771580
+#&gt; [24,] 0.11655731 -0.337081023  0.12605514
+#&gt; [25,] 0.08593514 -3.783144741 -3.78084340
+#&gt; [26,] 0.60801411  1.738083231  2.02830016
+#&gt; [27,] 0.31502035 -1.667382334 -2.04750083
+#&gt; [28,] 0.91002966  2.406116563  1.79844125
+#&gt; [29,] 0.08608203 -3.935505412 -3.55307761
+#&gt; [30,] 0.16252154 -3.458884133 -4.05879847
+#&gt; [31,] 0.78128831  1.328059672  0.88936337
+#&gt; [32,] 0.83275586  0.090645605  0.79816444
+#&gt; [33,] 0.57741370  0.248453011  0.72755333
+#&gt; [34,] 0.30918554 -0.226150688 -0.24999979
+#&gt; [35,] 0.18514098 -2.839059766 -3.48961345
+#&gt; [36,] 0.77872138  1.585662558  1.89663933
+#&gt; [37,] 0.31999646 -1.471891490 -2.30443277
+#&gt; [38,] 0.23445394 -1.237596437 -2.02415725
+#&gt; [39,] 0.93005087  2.285273037  2.71846176
+#&gt; [40,] 0.73774300  0.642560288  1.00153549
+#&gt; [41,] 0.17295702 -1.548693979 -0.99259618
+#&gt; [42,] 0.75888127  0.944554378  0.64050854
+#&gt; [43,] 0.60958826 -0.254105578 -0.54161539
+#&gt; [44,] 0.38532271 -1.029882728 -2.25850892
+#&gt; [45,] 0.62974890 -0.089590037 -0.18848433
+#&gt; [46,] 0.84637050  1.692734994  1.24297687
+#&gt; [47,] 0.40207150 -0.545823224 -1.07908874
+#&gt; [48,] 0.25251723 -2.482347877 -2.62104545
+#&gt; [49,] 0.77840583  0.140319746 -0.48219207
+#&gt; [50,] 0.32655598 -1.650189753 -0.59297402
 #&gt; 
 #&gt; $meta
 #&gt;              [,1]        [,2]        [,3]
-#&gt;  [1,] -2.90192230 -3.02584785 -3.50908027
-#&gt;  [2,]  2.39542048  2.26318849  2.57981667
-#&gt;  [3,]  1.37995658  1.19161184  1.36859232
-#&gt;  [4,] -0.10442969 -0.23788611 -0.32773037
-#&gt;  [5,]  1.84127467  1.54923364  1.76924250
-#&gt;  [6,]  1.68959674  1.38037917  1.55660905
-#&gt;  [7,] -1.02530473 -1.06748357 -1.20876200
-#&gt;  [8,] -5.80753317 -5.79847237 -6.65125141
-#&gt;  [9,] -3.96775247 -3.96123175 -4.56926765
-#&gt; [10,]  2.26723347  2.13877182  2.45557415
-#&gt; [11,]  1.11434304  0.95739165  1.13565036
-#&gt; [12,] -4.05024482 -4.09067752 -4.68827456
-#&gt; [13,]  0.92384601  0.68180221  0.76833239
-#&gt; [14,]  4.25942013  3.84395646  4.37299303
-#&gt; [15,] -3.23289184 -3.28042333 -3.77139025
-#&gt; [16,]  2.07323424  1.82898732  2.04401186
-#&gt; [17,] -3.94797334 -3.93937069 -4.54568065
-#&gt; [18,]  3.79066368  3.40995693  3.85973520
-#&gt; [19,]  2.29800875  2.18617512  2.53967040
-#&gt; [20,] -4.70238788 -4.63546058 -5.34255615
-#&gt; [21,] -2.67936429 -2.68297837 -3.06494899
-#&gt; [22,] -0.69449828 -0.69598034 -0.75890084
-#&gt; [23,]  1.83606495  1.51171990  1.75323104
-#&gt; [24,] -0.12829775 -0.15732907 -0.18502812
-#&gt; [25,] -0.23621888 -0.28879849 -0.32362810
-#&gt; [26,]  0.66711512  0.54654527  0.62279211
-#&gt; [27,]  0.51467298  0.45091594  0.54623784
-#&gt; [28,]  0.89040074  0.79843332  0.90747793
-#&gt; [29,]  2.27148744  1.98600271  2.23240937
-#&gt; [30,] -0.45869532 -0.43838407 -0.46392424
-#&gt; [31,]  3.73043085  3.39471342  3.89234877
-#&gt; [32,]  1.08474130  0.93394585  1.04612756
-#&gt; [33,]  3.06877069  2.78831480  3.18080603
-#&gt; [34,] -0.30539364 -0.57573031 -0.70918733
-#&gt; [35,]  2.96169567  2.66017932  3.03963484
-#&gt; [36,]  3.77614022  3.44391387  3.95904729
-#&gt; [37,]  1.72151260  1.51618343  1.69400858
-#&gt; [38,]  1.93753572  1.66506447  1.89406000
-#&gt; [39,]  0.33845084  0.13057382  0.17943816
-#&gt; [40,]  1.06385363  0.91822780  1.04543490
-#&gt; [41,] -2.43330677 -2.47575048 -2.83188930
-#&gt; [42,]  2.72299589  2.37093229  2.69608526
-#&gt; [43,] -0.31377697 -0.34193191 -0.37265060
-#&gt; [44,] -3.33047920 -3.36708489 -3.85060303
-#&gt; [45,]  6.68096086  6.40498435  7.35340901
-#&gt; [46,] -0.87950676 -0.92959495 -1.03920314
-#&gt; [47,] -3.53887755 -3.50967340 -4.03278950
-#&gt; [48,]  1.86583928  1.74202850  1.95196853
-#&gt; [49,]  2.24286807  2.01498151  2.27657781
-#&gt; [50,]  0.04456881 -0.05474787 -0.05785603
+#&gt;  [1,] 0.120026857 -2.63552370 -2.58637745
+#&gt;  [2,] 0.311517089 -1.57742790 -1.80530334
+#&gt;  [3,] 0.970038575  2.83530787  2.50770389
+#&gt;  [4,] 0.988790465  3.94203727  3.41749124
+#&gt;  [5,] 0.702397389  0.20191699 -0.07301232
+#&gt;  [6,] 0.069874337 -3.01383050 -2.75113316
+#&gt;  [7,] 0.178293600 -1.79055373 -1.33607264
+#&gt;  [8,] 0.994417547  4.65204823  4.42063500
+#&gt;  [9,] 0.825454272  0.92712611  0.33068070
+#&gt; [10,] 0.122295626 -2.58218395 -2.83894610
+#&gt; [11,] 0.992972765  4.45732386  4.34260769
+#&gt; [12,] 0.315048704 -0.99259865 -0.55695917
+#&gt; [13,] 0.006376865 -5.52584767 -5.43421552
+#&gt; [14,] 0.604946394  0.15758601  0.59296195
+#&gt; [15,] 0.356113893 -0.95306415 -0.75195663
+#&gt; [16,] 0.496057561 -0.75220207 -1.26978360
+#&gt; [17,] 0.320794509 -1.10958000 -1.05497247
+#&gt; [18,] 0.804808814  0.64766735  0.02552338
+#&gt; [19,] 0.834600977  1.22772641  1.64662367
+#&gt; [20,] 0.062637571 -3.37591257 -3.52530885
+#&gt; [21,] 0.271715919 -1.32688363 -0.85251362
+#&gt; [22,] 0.507637975 -0.60258988 -0.83624877
+#&gt; [23,] 0.694579538  0.19562106 -0.51989858
+#&gt; [24,] 0.406609311 -0.57645076 -0.18326513
+#&gt; [25,] 0.012589218 -4.82289140 -4.55079851
+#&gt; [26,] 0.935270035  2.28086412  2.23449684
+#&gt; [27,] 0.143615352 -2.33101536 -2.18288391
+#&gt; [28,] 0.971697981  2.86526752  2.61585773
+#&gt; [29,] 0.013944811 -4.69966856 -4.55513448
+#&gt; [30,] 0.015768781 -4.71928228 -4.44410746
+#&gt; [31,] 0.891631228  1.50966480  1.39712353
+#&gt; [32,] 0.853434630  1.11696980  0.44705866
+#&gt; [33,] 0.772218415  0.74754148  0.52945800
+#&gt; [34,] 0.480168883 -0.47818857 -0.27919160
+#&gt; [35,] 0.030260125 -4.02999089 -3.72147791
+#&gt; [36,] 0.946608961  2.36236767  2.06071075
+#&gt; [37,] 0.131953701 -2.45489591 -2.16067825
+#&gt; [38,] 0.142539577 -2.28403264 -1.85682897
+#&gt; [39,] 0.985751175  3.60577123  2.96090103
+#&gt; [40,] 0.863879903  1.29591149  0.94749069
+#&gt; [41,] 0.204237405 -1.70922989 -1.59867884
+#&gt; [42,] 0.852342486  1.15387209  0.99870566
+#&gt; [43,] 0.559959816 -0.35427152 -0.43712903
+#&gt; [44,] 0.170830538 -2.18882713 -1.81502079
+#&gt; [45,] 0.639682562 -0.00439300 -0.15009278
+#&gt; [46,] 0.934408843  2.02660474  1.83111336
+#&gt; [47,] 0.358655524 -1.10381588 -0.90429501
+#&gt; [48,] 0.070055480 -3.13250260 -3.05061558
+#&gt; [49,] 0.681260321  0.05548031 -0.11998977
+#&gt; [50,] 0.317122867 -1.19819266 -1.48472862
 #&gt; </div><div class='input'>
 </div></pre>
   </div>
@@ -269,14 +273,13 @@ with \(n\) rows (samples) and \(q\) columns (variables).</p>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -284,13 +287,16 @@ with \(n\) rows (samples) and \(q\) columns (variables).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

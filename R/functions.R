@@ -205,7 +205,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
 }
 
 .mean.function <- function(x,family){
-  if(family=="gaussian"){
+  if(family %in% c("gaussian","cox")){
     return(x)
   } else if(family=="binomial"){
     return(1/(1+exp(-x)))
@@ -217,7 +217,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
 }
 
 .link.function <- function(x,family){
-  if(family=="gaussian"){
+  if(family %in% c("gaussian","cox")){
     return(x)
   } else if(family=="binomial"){
     if(any(x<0|x>1)){stop("Invalid!",call.=FALSE)}
@@ -262,7 +262,8 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
 #' n <- 50; p <- 100; q <- 3
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
-#' object <- joinet(Y=Y,X=X)
+#' Y[,1] <- 1*(Y[,1]>median(Y[,1]))
+#' object <- joinet(Y=Y,X=X,family=c("binomial","gaussian","gaussian"))
 #' predict(object,newx=X)
 #' 
 predict.joinet <- function(object,newx,type="response",...){
@@ -279,8 +280,8 @@ predict.joinet <- function(object,newx,type="response",...){
   
   # base learners
   for(i in seq_len(q)){
-    #base[,i] <- as.numeric(stats::predict(object=x$base[[i]]$glmnet.fit,newx=newx,s=x$base[[i]]$lambda.min,type="link"))
-    base[,i] <- as.numeric(glmnet::predict.cv.glmnet(object=x$base[[i]],newx=newx,s="lambda.min",type="link"))
+    base[,i] <- as.numeric(stats::predict(object=x$base[[i]]$glmnet.fit,newx=newx,s=x$base[[i]]$lambda.min,type="link"))
+    #base[,i] <- as.numeric(glmnet:::predict.cv.glmnet(object=x$base[[i]],newx=newx,s="lambda.min",type="link"))
     # check whether fine for "binomial" family
   }
   
@@ -340,7 +341,7 @@ coef.joinet <- function(object,...){
   
   # base coefficients
   base <- list()
-  coef <- sapply(object$base,function(x) glmnet::coef.glmnet(object=x$glmnet.fit,s=x$lambda.min))
+  coef <- sapply(object$base,function(x) stats::coef(object=x$glmnet.fit,s=x$lambda.min))
   base$alpha <- sapply(coef,function(x) x[1,])
   base$beta <- sapply(coef,function(x) x[-1,])
   names(base$alpha) <- colnames(base$beta) <- names(object$base)
@@ -405,7 +406,7 @@ coef.joinet <- function(object,...){
 weights.joinet <- function(object,...){
   if(length(list(...))!=0){warning("Ignoring argument.",call.=FALSE)}
   x <- object$meta
-  coef <- lapply(object$meta,function(x) glmnet::coef.glmnet(object=x,s=x$lambda.min))
+  coef <- lapply(object$meta,function(x) stats::coef(object=x,s=x$lambda.min))
   coef <- do.call(what="cbind",args=coef)
   coef <- as.matrix(coef)
   colnames(coef) <- names(object$meta)
@@ -448,6 +449,9 @@ print.joinet <- function(x,...){
 #' @param mnorm,spls,sier,mrce
 #' experimental arguments\strong{:}
 #' logical (requires packages \code{spls}, \code{SiER}, or \code{MRCE})
+#' 
+#' @param cvpred
+#' return cross-validated predicition: logical
 #' 
 #' @param ...
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
@@ -504,7 +508,7 @@ print.joinet <- function(x,...){
 #' set.seed(1)
 #' cv.joinet(Y=Y,X=X,alpha.base=0) # ridge}
 #' 
-cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,sier=FALSE,mrce=FALSE,...){
+cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,sier=FALSE,mrce=FALSE,cvpred=FALSE,...){
   
   n <- nrow(Y)
   q <- ncol(Y)
@@ -557,7 +561,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
     
     if(mnorm){
       net <- glmnet::cv.glmnet(x=X0,y=y0,family="mgaussian",foldid=foldid,...) # ellipsis
-      pred$mnorm[foldid.ext==i,] <- glmnet::predict.cv.glmnet(object=net,newx=X1,s="lambda.min",type="response")
+      pred$mnorm[foldid.ext==i,] <- stats::predict(object=net,newx=X1,s="lambda.min",type="response")
     }
     if(spls){
       cv.spls <- spls::cv.spls(x=x0,y=y0,fold=nfolds.int,K=seq_len(10),
@@ -594,6 +598,10 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   #--- model refit ---
   #fit <- joinet(Y=Y,X=X,family=family,type.measure=type.measure,alpha.base=alpha.base,alpha.meta=alpha.meta) # add ,...
   #list <- list(loss=loss,fit=fit)
+  
+  if(cvpred){
+    loss <- list(loss=loss,cvpred=pred$meta)
+  }
   
   return(loss)
 }

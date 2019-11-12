@@ -29,7 +29,8 @@ Predicts outcome from features with stacked model.
 n <- 50; p <- 100; q <- 3
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
-object <- joinet(Y=Y,X=X)
+Y[,1] <- 1*(Y[,1]>median(Y[,1]))
+object <- joinet(Y=Y,X=X,family=c("binomial","gaussian","gaussian"))
 predict(object,newx=X)
 
 }
