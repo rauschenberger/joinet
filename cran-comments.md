@@ -1,4 +1,6 @@
 
 # Notes
 
-- Package runs without errors with palasso 0.0.6 (pending manual inspection).
+- new author email for palasso, cornet and joinet
+
+- package runs without errors with palasso 0.0.6
