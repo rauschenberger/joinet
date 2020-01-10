@@ -173,6 +173,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
     base[[i]]$cvm <- palasso:::.loss(y=Y[cond,i],fit=fit[cond,],
                                      family=family[i],type.measure=type.measure)[[1]]
     base[[i]]$lambda.min <- base[[i]]$lambda[which.min(base[[i]]$cvm)]
+    class(base[[i]]) <- "cv.glmnet" # trial 2020-01-10
   }
   
   #--- predictions ---
@@ -604,4 +605,68 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   }
   
   return(loss)
+}
+
+
+
+plot.matrix <- function (X, margin = 0, labels = TRUE, las = 1, cex = 1, range = NULL, cutoff = 0, digits=2) {
+  #margin <- 0; labels <- TRUE; las <- 1; cex <- 1; range <- NULL; cutoff <- 0; digits <- 2
+  
+  if(is.vector(X)){X <- as.matrix(X,ncol=1)}
+  
+  n <- nrow(X)
+  p <- ncol(X)
+  if(is.null(rownames(X))&n!=1){rownames(X) <- seq_len(n)}
+  if(is.null(colnames(X))&p!=1){colnames(X) <- seq_len(p)}
+  v <- ifelse(n==1,1,0.5/(n - 1))
+  h <- ifelse(p==1,1,0.5/(p - 1))
+  
+  graphics::plot.new()
+  graphics::plot.window(xlim = c(-h, 1 + h), ylim = c(-v, 1 + v))
+  par_usr <- graphics::par()$usr
+  graphics::par(usr = c(-h, 1 + h, -v, 1 + v))
+  
+  at <- (seq(nrow(X)) - 1)/(nrow(X) - 1)
+  graphics::mtext(text = rev(rownames(X)), at = at, side = 2, las = las, cex = cex,line=0.1)
+  at <- (seq(ncol(X)) - 1)/(ncol(X) - 1)
+  graphics::mtext(text = colnames(X), at = at , side = 3, las = las, cex = cex,line=0.1)
+  
+  if(is.null(range)){range <- range(X,-X,na.rm=TRUE)}
+  if(any(X<min(range),na.rm=TRUE)){stop("Invalid.")}
+  if(any(X>max(range),na.rm=TRUE)){stop("Invalid.")}
+  breaks <- c(seq(from=min(range),to=cutoff,length.out=101),
+              seq(from=cutoff,to=max(range),length.out=101)[-1])
+  col <- c(grDevices::colorRampPalette(c("darkblue","blue","white"))(100),
+           grDevices::colorRampPalette(c("white","red","darkred"))(100))
+
+  
+  image <- t(X)[, seq(from = n, to = 1, by = -1),drop=FALSE]
+  graphics::image(x = image, breaks=breaks, col=col, add = TRUE)
+  
+  if (any(margin==1)){
+    graphics::segments(x0 = -h,
+                       x1 = 1 + h,
+                       y0 = seq(from = -v, to = 1 + v, by = 2 * v),
+                       col = "white",
+                       lwd = 3)
+  }
+  if (any(margin==2)){
+    graphics::segments(x0 = seq(from = -h, to = 1 + h, by = 2 * h),
+                       y0 = 1 + v,
+                       y1 = 0 - v,
+                       col = "white",
+                       lwd = 3)
+  }
+  if (labels) {
+    labels <- round(as.numeric(X), digits = digits)
+    is.na <- is.na(labels)
+    labels <- format(labels, digits = digits)
+    labels[is.na] <- ""
+    xs <- rep(seq_len(p), each = n)
+    ys <- rep(seq_len(n), times = p)
+    if(p==1){x <- 0.5}else{x <- (xs - 1)/(p - 1)}
+    if(n==1){y <- 0.5}else{y <- (n - ys)/(n - 1)}
+    graphics::text(x = x, y = y, labels = labels, col = "black",cex=cex)
+  }
+  graphics::par(usr = par_usr)
 }
