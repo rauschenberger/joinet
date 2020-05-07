@@ -447,9 +447,10 @@ print.joinet <- function(x,...){
 #' between \eqn{1} and \code{nfolds.int};
 #' or \code{NULL}
 #' 
-#' @param mnorm,spls,sier,mrce
+#' @param mnorm,spls,mrce,sier,mtps
 #' experimental arguments\strong{:}
-#' logical (requires packages \code{spls}, \code{SiER}, or \code{MRCE})
+#' logical
+#' (require packages \code{spls}, \code{MRCE}, \code{SiER} or \code{MTPS})
 #' 
 #' @param cvpred
 #' return cross-validated predicition: logical
@@ -509,7 +510,9 @@ print.joinet <- function(x,...){
 #' set.seed(1)
 #' cv.joinet(Y=Y,X=X,alpha.base=0) # ridge}
 #' 
-cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,sier=FALSE,mrce=FALSE,cvpred=FALSE,...){
+cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,mrce=FALSE,sier=FALSE,mtps=FALSE,cvpred=FALSE,...){
+  
+  # family <- "gaussian"; nfolds.ext <- 5; nfolds.int <- 10; foldid.ext <- foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- 1; alpha.meta <- 0; mnorm <- spls <- mrce <- sier <- mtps <- cvpred <- TRUE
   
   n <- nrow(Y)
   q <- ncol(Y)
@@ -529,9 +532,17 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
     stop("Invalid argument family",call.=FALSE)
   }
   
+  #--- checks ---
+  if(any(mnorm,spls,mrce,sier) & any(family!="gaussian")){
+    stop("\"mnorm\", \"spls\", \"mrce\" and \"sier\" require family \"gaussian\"",call.=FALSE)
+  }
+  if(mtps & any(!family %in% c("gaussian","binomial"))){
+    stop("\"mtps\" requires family \"gaussian\" or \"binomial\"",call.=FALSE)
+  }
+  
   #--- cross-validated predictions ---
   
-  models <- c("base","meta","mnorm"[mnorm],"spls"[spls],"sier"[sier],"mrce"[mrce],"none")
+  models <- c("base","meta","mnorm"[mnorm],"spls"[spls],"mrce"[mrce],"sier"[sier],"mtps"[mtps],"none")
   pred <- lapply(X=models,function(x) matrix(data=NA,nrow=n,ncol=q))
   names(pred) <- models
   
@@ -548,7 +559,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
     }
     
     # base and meta learners
-    fit <- joinet(Y=Y0,X=X0,family=family,type.measure=type.measure,alpha.base=alpha.base,alpha.meta=alpha.meta,foldid=foldid) # add ,...
+    fit <- joinet(Y=Y0,X=X0,family=family,type.measure=type.measure,alpha.base=alpha.base,alpha.meta=alpha.meta,foldid=foldid) # add ellipsis (...)
     temp <- predict.joinet(fit,newx=X1)
     pred$base[foldid.ext==i,] <- temp$base
     pred$meta[foldid.ext==i,] <- temp$meta
@@ -557,29 +568,48 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
     cond <- apply(X0,2,function(x) stats::sd(x)!=0)
     x0 <- X0[,cond]
     x1 <- X1[,cond]
-    y0 <- apply(X=Y0,MARGIN=2,FUN=function(x) ifelse(is.na(x),sample(x[!is.na(x)],size=1),x))
+    #y0 <- apply(X=Y0,MARGIN=2,FUN=function(x) ifelse(is.na(x),sample(x[!is.na(x)],size=1),x))
+    y0 <- apply(X=Y0,MARGIN=2,FUN=function(x) ifelse(is.na(x),stats::median(x[!is.na(x)]),x))
     all(Y0==y0,na.rm=TRUE)
     
     if(mnorm){
-      net <- glmnet::cv.glmnet(x=X0,y=y0,family="mgaussian",foldid=foldid,...) # ellipsis
+      net <- glmnet::cv.glmnet(x=X0,y=y0,family="mgaussian",foldid=foldid,alpha=alpha.base) # add ellipsis (...)
       pred$mnorm[foldid.ext==i,] <- stats::predict(object=net,newx=X1,s="lambda.min",type="response")
     }
     if(spls){
+      # check!
       cv.spls <- spls::cv.spls(x=x0,y=y0,fold=nfolds.int,K=seq_len(10),
                                eta=seq(from=0.1,to=0.9,by=0.1),scale.x=FALSE,plot.it=FALSE)
       mspls <- spls::spls(x=x0,y=y0,K=cv.spls$K.opt,cv.spls$eta.opt,scale.x=FALSE)
       pred$spls[foldid.ext==i,] <- spls::predict.spls(object=mspls,newx=x1,type="fit")
     }
-    if(sier){
-      object <- SiER::cv.SiER(X=X0,Y=y0,K.cv=10)
-      pred$sier[foldid.ext==i,] <- SiER::pred.SiER(cv.fit=object,X.new=X1)
-    }
     if(mrce){
       # bug?
       lam1 <- rev(10^seq(from=-2,to=0,by=0.5))
       lam2 <- rev(10^seq(from=-2,to=0,by=0.5))
+      #lam1 <- lam2 <- 10^seq(from=0,to=-0.7,length.out=5)
       object <- MRCE::mrce(X=x0,Y=y0,lam1.vec=lam1,lam2.vec=lam2,method="cv")
       pred$mrce[foldid.ext==i,] <- object$muhat + x1 %*% object$Bhat
+    }
+    if(sier){
+      # slow!
+      object <- SiER::cv.SiER(X=X0,Y=y0,K.cv=10)
+      pred$sier[foldid.ext==i,] <- SiER::pred.SiER(cv.fit=object,X.new=X1)
+    }
+    if(mtps){
+      if(alpha.base==0){
+        step1 <- MTPS::glmnet.ridge
+      } else if(alpha.base==1){
+        step1 <- MTPS::glmnet.lasso
+      } else {
+        stop("MTPS requires alpha.base 0 or 1.",call.=FALSE)
+      }
+      step2 <- MTPS::rpart1
+      object <- MTPS::MTPS(xmat=X0,ymat=y0,family=family,nfold=nfolds.int,
+                           method.step1=step1,method.step2=step2)
+      pred$mtps[foldid.ext==i,] <- MTPS::predict.MTPS(object=object,newdata=X1,type="response")
+      # See paper for choice of base and meta learner!
+      # Reason for worse performance: "lambda.1se"
     }
     
     pred$none[foldid.ext==i,] <- matrix(colMeans(Y0,na.rm=TRUE),nrow=sum(foldid.ext==i),ncol=ncol(Y0),byrow=TRUE)

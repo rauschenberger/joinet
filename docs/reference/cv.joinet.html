@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">joinet</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -123,10 +123,25 @@
     <p>Compares univariate and multivariate regression.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cv.joinet</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>, <span class='kw'>nfolds.ext</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>nfolds.int</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>foldid.ext</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>foldid.int</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>,
-  <span class='kw'>alpha.base</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>alpha.meta</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>mnorm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>spls</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>sier</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>mrce</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>cvpred</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>cv.joinet</span>(
+  <span class='no'>Y</span>,
+  <span class='no'>X</span>,
+  <span class='kw'>family</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>,
+  <span class='kw'>nfolds.ext</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+  <span class='kw'>nfolds.int</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>foldid.ext</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>foldid.int</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>,
+  <span class='kw'>alpha.base</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>alpha.meta</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>mnorm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>spls</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>mrce</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>sier</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>mtps</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>cvpred</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -190,9 +205,10 @@ numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
 numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
     </tr>
     <tr>
-      <th>mnorm, spls, sier, mrce</th>
+      <th>mnorm, spls, mrce, sier, mtps</th>
       <td><p>experimental arguments<strong>:</strong>
-logical (requires packages <code>spls</code>, <code>SiER</code>, or <code>MRCE</code>)</p></td>
+logical
+(require packages <code>spls</code>, <code>MRCE</code>, <code>SiER</code> or <code>MTPS</code>)</p></td>
     </tr>
     <tr>
       <th>cvpred</th>

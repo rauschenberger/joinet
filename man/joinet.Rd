@@ -4,8 +4,17 @@
 \alias{joinet}
 \title{Multivariate Elastic Net Regression}
 \usage{
-joinet(Y, X, family = "gaussian", nfolds = 10, foldid = NULL,
-  type.measure = "deviance", alpha.base = 1, alpha.meta = 0, ...)
+joinet(
+  Y,
+  X,
+  family = "gaussian",
+  nfolds = 10,
+  foldid = NULL,
+  type.measure = "deviance",
+  alpha.base = 1,
+  alpha.meta = 0,
+  ...
+)
 }
 \arguments{
 \item{Y}{outputs\strong{:}

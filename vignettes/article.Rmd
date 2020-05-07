@@ -3,12 +3,15 @@ title: Multivariate Elastic Net Regression
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{article}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 The `joinet` manuscript is in preparation. Click [here](https://CRAN.R-project.org/package=joinet) for the R package.
 
 ## Reference
 
-Armin Rauschenberger and Enrico Glaab (2019). "joinet: predicting correlated outcomes jointly to improve clinical prognosis". *Manuscript in preparation.*
+Armin Rauschenberger and Enrico Glaab (2020). "joinet: predicting correlated outcomes jointly to improve clinical prognosis". *Manuscript in preparation.*
+

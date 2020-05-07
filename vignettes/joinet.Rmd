@@ -123,21 +123,27 @@ cv.joinet(Y=Y,X=X,family=family)
 
 ## Reference
 
-Armin Rauschenberger and Enrico Glaab (2019). "joinet: predicting correlated outcomes jointly to improve clinical prognosis". *Manuscript in preparation.* 
+Armin Rauschenberger and Enrico Glaab (2020). "joinet: predicting correlated outcomes jointly to improve clinical prognosis". *Manuscript in preparation.* 
+
 <!--
 ```{r,eval=FALSE}
+#install.packages("MTPS")
+data("HIV",package="MTPS",verbose=TRUE)
+loss1 <- cv.joinet(Y=YY,X=XX,mnorm=TRUE,mtps=TRUE)
+
 #install.packages("plsgenomics")
 data(Ecoli,package="plsgenomics")
 X <- Ecoli$CONNECdata
 Y <- Ecoli$GEdata
-loss <- cv.joinet(Y=Y,X=X)
+loss2 <- cv.joinet(Y=Y,X=X,mnorm=TRUE,mtps=TRUE)
 
 #install.packages("BiocManager")
 #BiocManager::install("mixOmics")
 data(liver.toxicity,package="mixOmics")
-X <- liver.toxicity$gene
-Y <- liver.toxicity$clinic
-Y$Cholesterol.mg.dL. <- -Y$Cholesterol.mg.dL.
-loss <- cv.joinet(Y=Y,X=X)
+X <- as.matrix(liver.toxicity$gene)
+Y <- as.matrix(liver.toxicity$clinic)
+Y[,"Cholesterol.mg.dL."] <- -Y[,"Cholesterol.mg.dL."]
+loss3 <- cv.joinet(Y=Y,X=X,mnorm=TRUE,mtps=TRUE)
 ```
 -->
+

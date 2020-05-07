@@ -1,16 +1,16 @@
 Package: joinet
-Version: 0.0.3
+Version: 0.0.4
 Title: Multivariate Elastic Net Regression
 Description: Implements high-dimensional multivariate regression by stacked generalisation (Wolpert 1992 <doi:10.1016/S0893-6080(05)80023-1>). For positively correlated outcomes, a single multivariate regression is typically more predictive than multiple univariate regressions. Includes functions for model fitting, extracting coefficients, outcome prediction, and performance measurement.
 Depends: R (>= 3.0.0)
 Imports: glmnet, palasso, cornet
 Suggests: knitr, testthat, MASS
-Enhances: spls, SiER, MRCE
+Enhances: spls, SiER, MRCE, MTPS
 Authors@R: person("Armin","Rauschenberger",email="armin.rauschenberger@uni.lu",role=c("aut","cre"))
 VignetteBuilder: knitr
 License: GPL-3
 LazyData: true
 Language: en-GB
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 URL: https://github.com/rauschenberger/joinet
 BugReports: https://github.com/rauschenberger/joinet/issues
