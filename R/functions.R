@@ -514,10 +514,10 @@ print.joinet <- function(x,...){
 #' set.seed(1)
 #' cv.joinet(Y=Y,X=X,alpha.base=0) # ridge}
 #' 
-cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,mrce=FALSE,sier=FALSE,mtps=FALSE,rmtl=FALSE,gpm=FALSE,mice=FALSE,cvpred=FALSE,...){
+cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,mnorm=FALSE,spls=FALSE,mrce=FALSE,sier=FALSE,mtps=FALSE,rmtl=FALSE,gpm=FALSE,mice=FALSE,cvpred=FALSE,...){
   
-  # family <- "gaussian"; nfolds.ext <- 5; nfolds.int <- 10; foldid.ext <- foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- 1; alpha.meta <- 0; mnorm <- spls <- mrce <- sier <- mtps <- rmtl <- gpm <- mice <- cvpred <- TRUE
-  # family <- "binomial"; nfolds.ext <- 1; foldid.ext <- fold; nfolds.int <- 10; foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- alpha.meta <- 1; mnorm <- spls <- mrce <- sier <- mtps <- rmtl <- gpm <- mice <- cvpre <- TRUE
+  # nfolds.ext <- 5; nfolds.int <- 10; foldid.ext <- foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- 1; alpha.meta <- 1; mnorm <- spls <- mrce <- sier <- mtps <- rmtl <- gpm <- mice <- cvpred <- TRUE
+  # nfolds.ext <- 1; foldid.ext <- fold; nfolds.int <- 10; foldid.int <- NULL
   
   n <- nrow(Y)
   q <- ncol(Y)
@@ -624,6 +624,18 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       } else {
         stop("MTPS requires alpha.base 0 or 1.",call.=FALSE)
       }
+      #body <- lapply(body(step1),function(x) x)
+      #body(step1) <- substitute(body)
+      #body(step1)[[6]][[3]][[2]][[3]] <- "lambda.min"
+      
+      #body <- gsub(pattern="lambda.1se",replacement="lambda.min",x=body(step1))
+      #body(step1)[[1]]
+      #body(step1) <- as.call(c(as.name("{"),body))
+      #body(step1) <- eval(parse(text=body))
+      #body(step1) <- substitute(eval(body))
+      #body(step1) <- substitute(expression(body))
+      #eval(parse(text = body))
+      
       step2 <- MTPS::rpart1
       object <- MTPS::MTPS(xmat=X0,ymat=y0,family=family,nfold=nfolds.int,
                            method.step1=step1,method.step2=step2)
@@ -633,19 +645,27 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
     if(rmtl){
       if(all(family=="gaussian")){
         type <- "Regression"
+        Y0l <- lapply(seq_len(ncol(Y0)),function(i) Y0[,i,drop=FALSE])
       } else if(all(family=="binomial")){
         type <- "Classification"
+        Y0l <- lapply(seq_len(ncol(Y0)),function(i) 2*Y0[,i,drop=FALSE]-1)
       } else {
         stop("RMTL requires either \"gaussian\" or \"binomial\".",call.=FALSE)
       }
-      Y0l <- lapply(seq_len(ncol(Y0)),function(i) 2*Y0[,i,drop=FALSE]-1)
       X0l <- lapply(seq_len(ncol(Y0)),function(i) X0)
       X1l <- lapply(seq_len(ncol(Y0)),function(i) X1)
-      #Lam2 <- 10^seq(from=0,to=-5,length.out=51)
-      #cvm <- sapply(Lam2,function(x) min(RMTL::cvMTL(X=X0l,Y=Y0l,type=type,Lam2=x)$cvm))
-      #Lam2 <- Lam2[which.min(cvm)]
       # Manually tune regularisation parameter lambda2!
-      cvMTL <- RMTL::cvMTL(X=X0l,Y=Y0l,type=type) #,Lam2=Lam2)
+      # cv lambda2 start
+      Lam2_seq <- 10^seq(from=2,to=-5,length.out=101)
+      cvm <- numeric()
+      for(j in seq_along(Lam2_seq)){
+        set.seed(1)
+        cvm[j] <- min(RMTL::cvMTL(X=X0l,Y=Y0l,type=type,Lam1=0,Lam2=Lam2_seq[j])$cvm)
+      }
+      graphics::plot(Lam2_seq,cvm)
+      Lam2 <- Lam2_seq[which.min(cvm)]
+      # cv lambda2 end
+      cvMTL <- RMTL::cvMTL(X=X0l,Y=Y0l,type=type,Lam2=Lam2)
       MTL <- RMTL::MTL(X=X0l,Y=Y0l,type=type,Lam1=cvMTL$Lam1.min)
       temp <- RMTL:::predict.MTL(object=MTL,newX=X1l)
       pred$rmtl[foldid.ext==i,] <- do.call(what="cbind",args=temp)
@@ -756,3 +776,172 @@ plot.matrix <- function (X, margin = 0, labels = TRUE, las = 1, cex = 1, range =
   }
   graphics::par(usr = par_usr)
 }
+
+# 
+# MTPS.MTPS <- function (xmat, ymat, family, cv = FALSE, residual = TRUE, nfold = 5, 
+#           method.step1, method.step2, resid.type = c("deviance", 
+#                                                      "pearson", "raw"), resid.std = FALSE) 
+# {
+#   resid.type <- match.arg(resid.type)
+#   ny <- ncol(ymat)
+#   if (length(family) == 1) {
+#     if (!family %in% c("gaussian", "binomial")) {
+#       stop("family must be gaussian or binomial")
+#     }
+#     if (family == "gaussian") {
+#       family = rep("gaussian", ny)
+#     }
+#     else if (family == "binomial") {
+#       family = rep("binomial", ny)
+#     }
+#   }
+#   if (length(family) != ny) {
+#     stop("length of family must be consistent with response")
+#   }
+#   if (sum(family %in% c("gaussian", "binomial")) != 
+#       ny) {
+#     stop("family must be gaussian or binomial or their combination")
+#   }
+#   if (length(method.step1) == 1) {
+#     method.step1 <- rep(list(method.step1), ny)
+#   }
+#   if (length(method.step2) == 1) {
+#     method.step2 <- rep(list(method.step2), ny)
+#   }
+#   if (length(method.step1) != ny) {
+#     stop("length of method.step1 must be 1 or the same as response column")
+#   }
+#   if (length(method.step2) != ny) {
+#     stop("length of method.step2 must be 1 or the same as response column")
+#   }
+#   #for (ii in 1:ny) {
+#   #  if (!check.match(family[ii], FUN = method.step1[[ii]])) {
+#   #    stop("method.step1 must be consistent with response category")
+#   #  }
+#   #}
+#   if (!residual) {
+#     for (ii in 1:ny) {
+#       if (!MTPS::check.match(family[ii], FUN = method.step2[[ii]])) {
+#         stop("method.step2 must be consistent with response category")
+#       }
+#     }
+#   }
+#   else {
+#     for (ii in 1:ny) {
+#       if (!MTPS::check.match("gaussian", FUN = method.step2[[ii]])) {
+#         stop("residual stacking does not allow binary outcome model in second step")
+#       }
+#     }
+#   }
+#   if (cv) {
+#     fit1 <- MTPS::cv.multiFit(xmat = xmat, ymat = ymat, nfold = nfold, 
+#                         method = method.step1, family = family)
+#   }
+#   else {
+#     fit1 <- MTPS.multiFit(xmat = xmat, ymat = ymat, method = method.step1, 
+#                      family = family)
+#   }
+#   pred1 <- fit1$y.fitted
+#   if (residual) {
+#     fit2 <- MTPS::rs.multiFit(yhat = pred1, ymat = ymat, xmat = xmat, 
+#                         family = family, resid.type = resid.type, resid.std = resid.std, 
+#                         method = method.step2)
+#   }
+#   else {
+#     fit2 <- MTPS.multiFit(xmat = pred1, ymat = ymat, method = method.step2, 
+#                      family = family)
+#   }
+#   fit <- list(fit1 = fit1, fit2 = fit2, cv = cv, residual = residual)
+#   class(fit) <- "MTPS"
+#   return(fit)
+# }
+# 
+# MTPS.multiFit <- function (xmat, ymat, method, family = family) 
+# {
+#   ny <- ncol(ymat)
+#   nx <- ncol(xmat)
+#   if (length(family) == 1) {
+#     if (!family %in% c("gaussian", "binomial")) {
+#       stop("family must be gaussian or binomial")
+#     }
+#     if (family == "gaussian") {
+#       family = rep("gaussian", ny)
+#     }
+#     else if (family == "binomial") {
+#       family = rep("binomial", ny)
+#     }
+#   }
+#   if (length(family) != ny) {
+#     stop("length of family must be consistent with response")
+#   }
+#   if (sum(family %in% c("gaussian", "binomial")) != 
+#       ny) {
+#     stop("each family must be gaussian or binomial")
+#   }
+#   if (length(method) == 1) {
+#     method <- rep(list(method), ny)
+#   }
+#   if (length(method) != ny) {
+#     stop("length of method.step1 must be 1 or the same as response column")
+#   }
+#   #for (ii in 1:ny) {
+#   #  if (!check.match(family[ii], FUN = method[[ii]])) {
+#   #    stop("method.step1 must be consistent with response category")
+#   #  }
+#   #}
+#   y.fitted <- ymat
+#   y.fitted[!is.na(y.fitted)] <- NA
+#   models <- vector("list", ny)
+#   colnames(y.fitted) <- names(models) <- colnames(ymat)
+#   fit <- vector("list", ny)
+#   colnames(xmat) <- paste0("X", 1:nx)
+#   for (kk in 1:ny) {
+#     fit[[kk]] <- method[[kk]](xmat, ymat[, kk], family = family[kk])
+#     models[[kk]] <- fit[[kk]]$model
+#     y.fitted[, kk] <- fit[[kk]]$y.fitted
+#   }
+#   multiFit.fits <- list(fit = fit, y.fitted = y.fitted, model = models, 
+#                         method = method, family = family)
+#   class(multiFit.fits) <- "multiFit"
+#   return(multiFit.fits)
+# }
+# 
+# 
+# MTPS.glmnet.ridge <- function (xmat, ymat, family, alpha = 0, ...)
+# {
+#   tmp0 <- data.frame(yy = ymat, xmat)
+#   if (family == "binomial")
+#     ymat <- factor(ymat)
+#   foldid <- MTPS::createFolds(ymat, k = 5, list = F)
+#   model <- MTPS::cv.glmnet2(xmat, ymat, alpha = alpha, foldid = foldid,
+#                       family = family, ...)
+#   coef.mat <- as.numeric(coef(model, s = "lambda.min"))
+#   y.fitted <- predict(model, xmat, s = "lambda.min",
+#                       type = "response")
+#   predFun <- function(model, xnew) {
+#     predict(model, newx = as.matrix(xnew), s = "lambda.min",
+#             type = "response")
+#   }
+#   return(list(model = model, y.fitted = y.fitted, predFun = predFun))
+# }
+# 
+# MTPS.glmnet.lasso <- function (xmat, ymat, family, alpha = 1, ...)
+# {
+#   tmp0 <- data.frame(yy = ymat, xmat)
+#   if (family == "binomial")
+#     ymat <- factor(ymat)
+#   foldid <- MTPS::createFolds(ymat, k = 5, list = F)
+#   model <- MTPS::cv.glmnet2(xmat, ymat, alpha = alpha, foldid = foldid,
+#                       family = family, ...)
+#   coef.mat <- as.numeric(coef(model, s = "lambda.min"))
+#   y.fitted <- predict(model, xmat, s = "lambda.min",
+#                       type = "response")
+#   predFun <- function(model, xnew) {
+#     predict(model, newx = as.matrix(xnew), s = "lambda.min",
+#             type = "response")
+#   }
+#   return(list(model = model, y.fitted = y.fitted, predFun = predFun))
+# }
+# 
+# 
+# 
