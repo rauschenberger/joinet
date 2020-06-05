@@ -447,13 +447,17 @@ print.joinet <- function(x,...){
 #' between \eqn{1} and \code{nfolds.int};
 #' or \code{NULL}
 #' 
-#' @param mnorm,spls,mrce,sier,mtps
+#' @param mnorm,spls,mrce,sier,mtps,rmtl,gpm
 #' experimental arguments\strong{:}
 #' logical
-#' (require packages \code{spls}, \code{MRCE}, \code{SiER} or \code{MTPS})
+#' (\code{TRUE} requires packages \code{spls}, \code{MRCE}, \code{SiER}, \code{MTPS}, \code{RMTL} or \code{GPM})
+#' 
+#' @param mice
+#' missing data imputation\strong{:}
+#' logical (\code{mice=TRUE} requires package \code{mice})
 #' 
 #' @param cvpred
-#' return cross-validated predicition: logical
+#' return cross-validated predicitions: logical
 #' 
 #' @param ...
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
@@ -510,9 +514,10 @@ print.joinet <- function(x,...){
 #' set.seed(1)
 #' cv.joinet(Y=Y,X=X,alpha.base=0) # ridge}
 #' 
-cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,mrce=FALSE,sier=FALSE,mtps=FALSE,cvpred=FALSE,...){
+cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,mnorm=FALSE,spls=FALSE,mrce=FALSE,sier=FALSE,mtps=FALSE,rmtl=FALSE,gpm=FALSE,mice=FALSE,cvpred=FALSE,...){
   
-  # family <- "gaussian"; nfolds.ext <- 5; nfolds.int <- 10; foldid.ext <- foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- 1; alpha.meta <- 0; mnorm <- spls <- mrce <- sier <- mtps <- cvpred <- TRUE
+  # family <- "gaussian"; nfolds.ext <- 5; nfolds.int <- 10; foldid.ext <- foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- 1; alpha.meta <- 0; mnorm <- spls <- mrce <- sier <- mtps <- rmtl <- gpm <- mice <- cvpred <- TRUE
+  # family <- "binomial"; nfolds.ext <- 1; foldid.ext <- fold; nfolds.int <- 10; foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- alpha.meta <- 1; mnorm <- spls <- mrce <- sier <- mtps <- rmtl <- gpm <- mice <- cvpre <- TRUE
   
   n <- nrow(Y)
   q <- ncol(Y)
@@ -522,7 +527,8 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   if(is.null(foldid.ext)){
     foldid.ext <- palasso:::.folds(y=Y[,1],nfolds=nfolds.ext) # temporary Y[,1]
   } else {
-    nfolds.ext <- length(unique(foldid.ext))
+    #nfolds.ext <- length(unique(foldid.ext))
+    nfolds.ext <- max(foldid.ext)
   }
   
   #--- family ---
@@ -533,25 +539,26 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   }
   
   #--- checks ---
-  if(any(mnorm,spls,mrce,sier) & any(family!="gaussian")){
-    stop("\"mnorm\", \"spls\", \"mrce\" and \"sier\" require family \"gaussian\"",call.=FALSE)
+  if(any(mnorm,spls,mrce,sier,gpm) & any(family!="gaussian")){
+    stop("\"mnorm\", \"spls\", \"mrce\" and \"sier\" require family \"gaussian\".",call.=FALSE)
   }
-  if(mtps & any(!family %in% c("gaussian","binomial"))){
-    stop("\"mtps\" requires family \"gaussian\" or \"binomial\"",call.=FALSE)
+  if(any(mtps,rmtl) & any(!family %in% c("gaussian","binomial"))){
+    stop("\"mtps\" and \"rmtl\" require family \"gaussian\" or \"binomial\".",call.=FALSE)
   }
   
   #--- cross-validated predictions ---
   
-  models <- c("base","meta","mnorm"[mnorm],"spls"[spls],"mrce"[mrce],"sier"[sier],"mtps"[mtps],"none")
+  models <- c("base","meta","mnorm"[mnorm],"spls"[spls],"mrce"[mrce],"sier"[sier],"mtps"[mtps],"rmtl"[rmtl],"gpm"[gpm],"none")
   pred <- lapply(X=models,function(x) matrix(data=NA,nrow=n,ncol=q))
   names(pred) <- models
   
   for(i in seq_len(nfolds.ext)){
     
     Y0 <- Y[foldid.ext!=i,,drop=FALSE]
-    Y1 <- Y[foldid.ext==i,,drop=FALSE]
+    #Y1 <- Y[foldid.ext==i,,drop=FALSE]
     X0 <- X[foldid.ext!=i,,drop=FALSE]
     X1 <- X[foldid.ext==i,,drop=FALSE]
+    # Remove constant features and impute missing values here?
     if(is.null(foldid.int)){
       foldid <- palasso:::.folds(y=Y0[,1],nfolds=nfolds.int) # temporary Y0[,1]
     } else {
@@ -564,36 +571,49 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
     pred$base[foldid.ext==i,] <- temp$base
     pred$meta[foldid.ext==i,] <- temp$meta
     
-    # other learners
+    # constant features, missing values
+    # Consider moving this upwards!
     cond <- apply(X0,2,function(x) stats::sd(x)!=0)
     x0 <- X0[,cond]
     x1 <- X1[,cond]
-    #y0 <- apply(X=Y0,MARGIN=2,FUN=function(x) ifelse(is.na(x),sample(x[!is.na(x)],size=1),x))
-    y0 <- apply(X=Y0,MARGIN=2,FUN=function(x) ifelse(is.na(x),stats::median(x[!is.na(x)]),x))
+    if(mice & any(is.na(Y0))){
+      if(requireNamespace("mice",quietly=TRUE)){
+        y0 <- as.matrix(mice::complete(data=mice::mice(Y0,m=1,method="pmm",seed=1,printFlag=FALSE),action="all")[[1]])
+      } else {
+        stop("mice=TRUE requires install.packages(\"mice\").",call.=FALSE)
+      }
+    } else {
+      #y0 <- apply(X=Y0,MARGIN=2,FUN=function(x) ifelse(is.na(x),sample(x[!is.na(x)],size=1),x))
+      y0 <- apply(X=Y0,MARGIN=2,FUN=function(x) ifelse(is.na(x),stats::median(x[!is.na(x)]),x))
+    }
     all(Y0==y0,na.rm=TRUE)
     
+    # other learners
     if(mnorm){
       net <- glmnet::cv.glmnet(x=X0,y=y0,family="mgaussian",foldid=foldid,alpha=alpha.base) # add ellipsis (...)
       pred$mnorm[foldid.ext==i,] <- stats::predict(object=net,newx=X1,s="lambda.min",type="response")
     }
     if(spls){
-      # check!
       cv.spls <- spls::cv.spls(x=x0,y=y0,fold=nfolds.int,K=seq_len(10),
-                               eta=seq(from=0.1,to=0.9,by=0.1),scale.x=FALSE,plot.it=FALSE)
-      mspls <- spls::spls(x=x0,y=y0,K=cv.spls$K.opt,cv.spls$eta.opt,scale.x=FALSE)
-      pred$spls[foldid.ext==i,] <- spls::predict.spls(object=mspls,newx=x1,type="fit")
+                               eta=seq(from=0.1,to=0.9,by=0.1),plot.it=FALSE)
+      spls <- spls::spls(x=x0,y=y0,K=cv.spls$K.opt,eta=cv.spls$eta.opt)
+      pred$spls[foldid.ext==i,] <- spls::predict.spls(object=spls,newx=x1,type="fit")
     }
     if(mrce){
-      # bug?
+      stop("MRCE not yet implemented",call.=FALSE) # bug?
       lam1 <- rev(10^seq(from=-2,to=0,by=0.5))
       lam2 <- rev(10^seq(from=-2,to=0,by=0.5))
       #lam1 <- lam2 <- 10^seq(from=0,to=-0.7,length.out=5)
-      object <- MRCE::mrce(X=x0,Y=y0,lam1.vec=lam1,lam2.vec=lam2,method="cv")
-      pred$mrce[foldid.ext==i,] <- object$muhat + x1 %*% object$Bhat
+      #lam2 <- rev(10^seq(from=0,to=2,by=0.5))
+      #lam2 <- c(2,1,0.5)
+      #lam1 <- 10^seq(from=0,to=-5,length.out=11)
+      #lam2 <- seq(from=1,to=0.1,by=-0.1)
+      object <- MRCE::mrce(X=x0,Y=y0,lam1.vec=lam1,lam2.vec=lam2,method="cv",silent=FALSE,cov.tol=0.1,tol.out=1e-10)
+      pred$mrce[foldid.ext==i,] <- matrix(object$muhat,nrow=nrow(x1),ncol=q,byrow=TRUE) + x1 %*% object$Bhat
     }
     if(sier){
-      # slow!
-      object <- SiER::cv.SiER(X=X0,Y=y0,K.cv=10)
+      stop("SiER not yet implemented",call.=FALSE) # slow!
+      object <- SiER::cv.SiER(X=X0,Y=y0,K.cv=5,thres=0.5)
       pred$sier[foldid.ext==i,] <- SiER::pred.SiER(cv.fit=object,X.new=X1)
     }
     if(mtps){
@@ -607,9 +627,45 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       step2 <- MTPS::rpart1
       object <- MTPS::MTPS(xmat=X0,ymat=y0,family=family,nfold=nfolds.int,
                            method.step1=step1,method.step2=step2)
+      # nfold has no effect for cv=FALSE (default)
       pred$mtps[foldid.ext==i,] <- MTPS::predict.MTPS(object=object,newdata=X1,type="response")
-      # See paper for choice of base and meta learner!
-      # Reason for worse performance: "lambda.1se"
+    }
+    if(rmtl){
+      if(all(family=="gaussian")){
+        type <- "Regression"
+      } else if(all(family=="binomial")){
+        type <- "Classification"
+      } else {
+        stop("RMTL requires either \"gaussian\" or \"binomial\".",call.=FALSE)
+      }
+      Y0l <- lapply(seq_len(ncol(Y0)),function(i) 2*Y0[,i,drop=FALSE]-1)
+      X0l <- lapply(seq_len(ncol(Y0)),function(i) X0)
+      X1l <- lapply(seq_len(ncol(Y0)),function(i) X1)
+      #Lam2 <- 10^seq(from=0,to=-5,length.out=51)
+      #cvm <- sapply(Lam2,function(x) min(RMTL::cvMTL(X=X0l,Y=Y0l,type=type,Lam2=x)$cvm))
+      #Lam2 <- Lam2[which.min(cvm)]
+      # Manually tune regularisation parameter lambda2!
+      cvMTL <- RMTL::cvMTL(X=X0l,Y=Y0l,type=type) #,Lam2=Lam2)
+      MTL <- RMTL::MTL(X=X0l,Y=Y0l,type=type,Lam1=cvMTL$Lam1.min)
+      temp <- RMTL:::predict.MTL(object=MTL,newX=X1l)
+      pred$rmtl[foldid.ext==i,] <- do.call(what="cbind",args=temp)
+    }
+    if(gpm){
+      if(any(family!="gaussian")){
+        stop("GPM requires \"gaussian\" family.",call.=FALSE)
+      }
+      object <- GPM::Fit(X=X0,Y=Y0)
+      pred$gpm[foldid.ext==i,] <- GPM::Predict(XF=X1,Model=object)$YF
+    }
+    
+    if(FALSE){ # bgsmtr (for SNPs only? error!)
+      temp <- bgsmtr::bgsmtr(X=t(X0),Y=t(Y0),group=rep(1,times=ncol(X0)))
+      # check dimensions of example, use group 1:p instead of rep(1,p)?
+    }
+    
+    if(FALSE){ # MGLM (for multinomial data only?)
+      MGLM::MGLMsparsereg.fit()
+      MGLM::MGLMtune()
     }
     
     pred$none[foldid.ext==i,] <- matrix(colMeans(Y0,na.rm=TRUE),nrow=sum(foldid.ext==i),ncol=ncol(Y0),byrow=TRUE)
@@ -621,7 +677,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
                  dimnames=list(models,colnames(Y)))
   for(j in models){
     for(i in seq_len(q)){
-      cond <- !is.na(Y[,i])
+      cond <- !is.na(Y[,i]) & foldid.ext!=0  # added foldid.ext!=0
       loss[j,i] <- palasso:::.loss(y=Y[cond,i],fit=pred[[j]][cond,i],family=family[i],type.measure=type.measure)[[1]]
     }
   }

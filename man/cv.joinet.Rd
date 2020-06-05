@@ -20,6 +20,9 @@ cv.joinet(
   mrce = FALSE,
   sier = FALSE,
   mtps = FALSE,
+  rmtl = FALSE,
+  gpm = FALSE,
+  mice = FALSE,
   cvpred = FALSE,
   ...
 )
@@ -63,11 +66,14 @@ numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 \item{alpha.meta}{elastic net mixing parameter for meta learner\strong{:}
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
-\item{mnorm, spls, mrce, sier, mtps}{experimental arguments\strong{:}
+\item{mnorm, spls, mrce, sier, mtps, rmtl, gpm}{experimental arguments\strong{:}
 logical
-(require packages \code{spls}, \code{MRCE}, \code{SiER} or \code{MTPS})}
+(\code{TRUE} requires packages \code{spls}, \code{MRCE}, \code{SiER}, \code{MTPS}, \code{RMTL} or \code{GPM})}
 
-\item{cvpred}{return cross-validated predicition: logical}
+\item{mice}{missing data imputation\strong{:}
+logical (\code{mice=TRUE} requires package \code{mice})}
+
+\item{cvpred}{return cross-validated predicitions: logical}
 
 \item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}
 and \code{\link[glmnet]{cv.glmnet}}}
