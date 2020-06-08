@@ -136,14 +136,8 @@
   <span class='kw'>foldid.int</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>,
   <span class='kw'>alpha.base</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>alpha.meta</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>mnorm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>spls</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>mrce</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>sier</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>mtps</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>rmtl</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>gpm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>alpha.meta</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>compare</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>mice</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>cvpred</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='no'>...</span>
@@ -211,10 +205,11 @@ numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
 numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
     </tr>
     <tr>
-      <th>mnorm, spls, mrce, sier, mtps, rmtl, gpm</th>
+      <th>compare</th>
       <td><p>experimental arguments<strong>:</strong>
-logical
-(<code>TRUE</code> requires packages <code>spls</code>, <code>MRCE</code>, <code>SiER</code>, <code>MTPS</code>, <code>RMTL</code> or <code>GPM</code>)</p></td>
+character vector with entries "mnorm", "spls", "mrce",
+"sier", "mtps", "rmtl", "gpm" and others
+(requires packages <code>spls</code>, <code>MRCE</code>, <code>SiER</code>, <code>MTPS</code>, <code>RMTL</code> or <code>GPM</code>)</p></td>
     </tr>
     <tr>
       <th>mice</th>

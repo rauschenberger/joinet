@@ -14,14 +14,8 @@ cv.joinet(
   foldid.int = NULL,
   type.measure = "deviance",
   alpha.base = 1,
-  alpha.meta = 0,
-  mnorm = FALSE,
-  spls = FALSE,
-  mrce = FALSE,
-  sier = FALSE,
-  mtps = FALSE,
-  rmtl = FALSE,
-  gpm = FALSE,
+  alpha.meta = 1,
+  compare = NULL,
   mice = FALSE,
   cvpred = FALSE,
   ...
@@ -66,9 +60,10 @@ numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 \item{alpha.meta}{elastic net mixing parameter for meta learner\strong{:}
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
-\item{mnorm, spls, mrce, sier, mtps, rmtl, gpm}{experimental arguments\strong{:}
-logical
-(\code{TRUE} requires packages \code{spls}, \code{MRCE}, \code{SiER}, \code{MTPS}, \code{RMTL} or \code{GPM})}
+\item{compare}{experimental arguments\strong{:}
+character vector with entries "mnorm", "spls", "mrce",
+"sier", "mtps", "rmtl", "gpm" and others
+(requires packages \code{spls}, \code{MRCE}, \code{SiER}, \code{MTPS}, \code{RMTL} or \code{GPM})}
 
 \item{mice}{missing data imputation\strong{:}
 logical (\code{mice=TRUE} requires package \code{mice})}
