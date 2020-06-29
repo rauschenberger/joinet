@@ -90,7 +90,7 @@
 #' \dontrun{
 #' browseVignettes("joinet") # further examples}
 #' 
-joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=1,alpha.meta=0,...){
+joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,...){
   
   #--- temporary ---
   # family <- "gaussian"; nfolds <- 10; foldid <- NULL; type.measure <- "deviance"
@@ -100,7 +100,19 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   X <- as.matrix(X)
   
   cornet:::.check(x=Y,type="matrix",miss=TRUE)
-  if(any(stats::cor(Y,use="pairwise.complete.obs")<0,na.rm=TRUE)){warning("Negative correlation!",call.=FALSE)}
+  
+  ### trial start ###
+  for(i in 1:(ncol(Y)-1)){
+    for(j in i:ncol(Y)){
+      cor <- stats::cor.test(Y[,i],Y[,j],use="pairwise.complete.obs")
+      if(cor$statistic<0 & cor$p.value<0.05){
+        warning(paste("Columns",i,"and",j,"are negatively correlated."))
+      }
+    }
+  }
+  ### trial end ###
+  
+  #if(any(stats::cor(Y,use="pairwise.complete.obs")<0,na.rm=TRUE)){warning("Negative correlation!",call.=FALSE)}
   cornet:::.check(x=X,type="matrix")
   #cornet:::.check(x=family,type="vector",values=c("gaussian","binomial","poisson"))
   if(nrow(Y)!=nrow(X)){stop("Contradictory sample size.",call.=FALSE)}
@@ -515,11 +527,15 @@ print.joinet <- function(x,...){
 #' set.seed(1)
 #' cv.joinet(Y=Y,X=X,alpha.base=0) # ridge}
 #' 
-cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,compare=NULL,mice=FALSE,cvpred=FALSE,...){
+cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,compare=NULL,mice=FALSE,cvpred=FALSE,times=FALSE,...){
   
   if(FALSE){
-  nfolds.ext <- 5; nfolds.int <- 10; foldid.ext <- foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- 1; alpha.meta <- 1; compare <- c("mnorm","spls","mars","mrf"); mice <- cvpred <- TRUE
-  nfolds.ext <- 1; foldid.ext <- fold; nfolds.int <- 10; foldid.int <- NULL
+  family <- "gaussian"; nfolds.ext <- 5; nfolds.int <- 10; foldid.ext <- foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- alpha.meta <- 1; mice <- cvpred <- times <- FALSE
+  #nfolds.ext <- 1; foldid.ext <- fold; nfolds.int <- 10; foldid.int <- NULL; compare <- TRUE
+  }
+  
+  if(!is.null(compare) && length(compare)==1 && compare){
+    compare <- c("mnorm","spls","mars","mrf","map","rmtl","mtps","mcen", "gpm","sier","mrce")
   }
   
   n <- nrow(Y)
@@ -546,7 +562,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   for(i in seq_along(compare)){
     pkg <- switch(compare[i],mnorm="glmnet",mars="earth",spls="spls",mtps="MTPS",
            rmtl="RMTL",mrf="MultivariateRandomForest",mcen="mcen",
-           map="remMap",stop("Invalid method.",call.FALSE))
+           map="remMap",sier="SiER",gpm="GPM",mrce="MRCE",ecc="MLPUGS",stop("Invalid method.",call.=FALSE))
     if(!pkg %in% pkgs){
       stop("Method \"",compare[i],"\" requires package \"",pkg,"\".",call.=FALSE)
     }
@@ -564,13 +580,22 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   
   models <- c("base","meta",compare,"none")
   pred <- lapply(X=models,function(x) matrix(data=NA,nrow=n,ncol=q))
-  names(pred) <- models
+  time <- lapply(X=models,function(x) NA)
+  names(pred) <- names(time) <- models
   
   for(i in seq_len(nfolds.ext)){
     
     Y0 <- Y[foldid.ext!=i,,drop=FALSE]
+    #Y1 <- Y[foldid.ext==i,,drop=FALSE]
     X0 <- X[foldid.ext!=i,,drop=FALSE]
     X1 <- X[foldid.ext==i,,drop=FALSE]
+    
+    # standardise features (trial)
+    #mu <- apply(X=X0,MARGIN=2,FUN=function(x) mean(x))
+    #sd <- apply(X=X0,MARGIN=2,FUN=function(x) stats::sd(x))
+    #X0 <- t((t(X0)-mu)/sd)[,sd!=0]
+    #X1 <- t((t(X1)-mu)/sd)[,sd!=0]
+    # or standardise once before cv?
     
     # remove constant features
     cond <- apply(X=X0,MARGIN=2,FUN=function(x) stats::sd(x)!=0)
@@ -583,10 +608,14 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
     }
     
     # base and meta learners
+    start <- Sys.time()
     fit <- joinet(Y=Y0,X=X0,family=family,type.measure=type.measure,alpha.base=alpha.base,alpha.meta=alpha.meta,foldid=foldid) # add ellipsis (...)
+    # also do not standardise!
     temp <- predict.joinet(fit,newx=X1)
     pred$base[foldid.ext==i,] <- temp$base
     pred$meta[foldid.ext==i,] <- temp$meta
+    end <- Sys.time()
+    time$meta <- as.numeric(difftime(end,start,units="secs"))
     
     # missing values
     if(mice & any(is.na(Y0))){
@@ -603,32 +632,54 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
     # other learners
     
     if("mnorm" %in% compare){
+      cat("mnorm"," ")
+      start <- Sys.time()
+      if(any(family!="gaussian")){
+        stop("mnorm requires \"gaussian\" family.",call.=FALSE)
+      }
       net <- glmnet::cv.glmnet(x=X0,y=y0,family="mgaussian",foldid=foldid,alpha=alpha.base) # add ellipsis (...)
       pred$mnorm[foldid.ext==i,] <- stats::predict(object=net,newx=X1,s="lambda.min",type="response")
+      end <- Sys.time()
+      time$mnorm <- as.numeric(difftime(end,start,units="secs"))
+    } else {
+      net <- glmnet::glmnet(x=X0,y=y0,family="mgaussian")
     }
     
     if("mars" %in% compare){
+      cat("mars"," ")
+      start <- Sys.time()
       if(all(family=="gaussian")){
-        object <- earth::earth(x=X0,y=y0)
+        object <- earth::earth(x=X0,y=y0,nfold=nfolds.int) # add:pmethod="cv"; new: nfolds and pmethod
+        # equivalent: object <- mda::mars(x=X0,y=y0)
       } else if(all(family=="binomial")){
-        object <- earth::earth(x=X0,y=y0,glm=list(family=binomial))
+        object <- earth::earth(x=X0,y=y0,glm=list(family=stats::binomial),nfold=nfolds.int) # add pmethod="cv", new: nfolds and pmethod
       } else {
-        stop("Invalid.",call.=FALSE)
+        stop("MARS requires either \"gaussian\" or \"binomial\" family.",call.=FALSE)
       }
       pred$mars[foldid.ext==i,] <- earth:::predict.earth(object=object,newdata=X1,type="response")
-      
-      #object <- mda::mars(x=X0,y=Y0)
-      #pred$mars[foldid.ext==i,] <- mda:::predict.mars(object=object,newdata=X1)
+      end <- Sys.time()
+      time$mars <- as.numeric(difftime(end,start,units="secs"))
+      #mean((Y-pred$mars)^2,na.rm=TRUE)
     }
     
     if("spls" %in% compare){
-      cv.spls <- spls::cv.spls(x=X0,y=y0,fold=nfolds.int,K=seq_len(10),
-                               eta=seq(from=0.1,to=0.9,by=0.1),plot.it=FALSE)
-      object <- spls::spls(x=X0,y=y0,K=cv.spls$K.opt,eta=cv.spls$eta.opt)
+      cat("spls"," ")
+      start <- Sys.time()
+      if(any(family!="gaussian")){
+        stop("spls requires \"gaussian\" family.")
+      }
+      invisible(utils::capture.output(cv.spls <- spls::cv.spls(x=X0,y=y0,fold=nfolds.int,K=seq_len(min(ncol(X0),10)),
+                               eta=seq(from=0.1,to=0.9,by=0.1),plot.it=FALSE))) #scale.x=FALSE
+      object <- spls::spls(x=X0,y=y0,K=cv.spls$K.opt,eta=cv.spls$eta.opt) #scale.x=FALSE
       pred$spls[foldid.ext==i,] <- spls::predict.spls(object=object,newx=X1,type="fit")
+      end <- Sys.time()
+      time$spls <- as.numeric(difftime(end,start,units="secs"))
     }
     
     if("mtps" %in% compare){
+      cat("mtps"," ")
+      start <- Sys.time()
+      
       if(alpha.base==0){
         step1 <- MTPS::glmnet.ridge
       } else if(alpha.base==1){
@@ -636,6 +687,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       } else {
         stop("MTPS requires alpha.base 0 or 1.",call.=FALSE)
       }
+      
       #-------------------------------
       #--- manual lambda.min start ---
       #body <- body(step1)
@@ -650,14 +702,36 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       #}
       #--- manual lambda.min end ---
       #-----------------------------
-      step2 <- MTPS::rpart1
+      
+      #---------------------------
+      #--- manual kmeans start ---
+      #fun <- MTPS::cv.multiFit
+      #body <- body(fun)
+      #body[[11]][[3]][[3]] <- nrow(unique(y0))
+      #body(fun) <- body
+      #assignInNamespace(x="cv.multiFit",value=step1,ns="MTPS")
+      #--- manual kmeans end ---
+      #-------------------------
+      
+      if(all(family=="gaussian")){
+        step2 <- MTPS::rpart1
+      } else if(all(family=="binomial")){
+        step2 <- MTPS::glm1
+      } else {
+        stop("MTPS requires family gaussian or binomial.",call.=FALSE)
+      }
+      
       object <- MTPS::MTPS(xmat=X0,ymat=y0,family=family,nfold=nfolds.int,
-                           method.step1=step1,method.step2=step2)
+                           method.step1=step1,method.step2=step2,cv=TRUE,residual=TRUE)
       pred$mtps[foldid.ext==i,] <- MTPS::predict.MTPS(object=object,newdata=X1,type="response")
-      # nfold has no effect for cv=FALSE (default)
+      end <- Sys.time()
+      time$mtps <- as.numeric(difftime(end,start,units="secs"))
+      # now using cross-validation residual stacking (CVRS) 
     }
     
     if("rmtl" %in% compare){
+      cat("rmtl"," ")
+      start <- Sys.time()
       if(all(family=="gaussian")){
         type <- "Regression"
         y0l <- lapply(seq_len(ncol(y0)),function(i) y0[,i,drop=FALSE])
@@ -671,91 +745,180 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       X1l <- lapply(seq_len(ncol(y0)),function(i) X1)
       #---------------------------
       #--- manual tuning start ---
-      Lam2_seq <- 10^seq(from=2,to=-5,length.out=101)
-      cvm <- numeric()
+      Lam1_seq <- c(10^seq(from=1,to=-4,length.out=11),0)
+      Lam2_seq <- c(10^seq(from=1,to=-4,length.out=11),0)
+      cvMTL <- list()
+      seed <- .Random.seed
       for(j in seq_along(Lam2_seq)){
-        set.seed(1)
-        cvm[j] <- min(RMTL::cvMTL(X=X0l,Y=y0l,type=type,Lam1=0,Lam2=Lam2_seq[j])$cvm)
+        .Random.seed <- seed
+        cvMTL[[j]] <- RMTL::cvMTL(X=X0l,Y=y0l,type=type,Lam1_seq=Lam1_seq,Lam2=Lam2_seq[j])
       }
-      #graphics::plot(x=Lam2_seq,y=cvm)
+      cvm <- vapply(X=cvMTL,FUN=function(x) min(x$cvm),FUN.VALUE=numeric(1))
+      Lam1 <- cvMTL[[which.min(cvm)]]$Lam1.min
       Lam2 <- Lam2_seq[which.min(cvm)]
+      #graphics::plot(x=Lam2_seq,y=cvm)
+      #cat(Lam1," ",Lam2,"\n")
       #--- manual tuning end ----
       #--------------------------
-      cvMTL <- RMTL::cvMTL(X=X0l,Y=y0l,type=type,Lam2=Lam2)
-      MTL <- RMTL::MTL(X=X0l,Y=y0l,type=type,Lam1=cvMTL$Lam1.min)
+      MTL <- RMTL::MTL(X=X0l,Y=y0l,type=type,Lam1=Lam1,Lam2=Lam2)
       temp <- RMTL:::predict.MTL(object=MTL,newX=X1l)
       pred$rmtl[foldid.ext==i,] <- do.call(what="cbind",args=temp)
+      end <- Sys.time()
+      time$rmtl <- as.numeric(difftime(end,start,units="secs"))
     }
     
     if("mrf" %in% compare){
-      pred$mrf[foldid.ext==i,] <- MultivariateRandomForest::build_forest_predict(trainX=X0,trainY=Y0,
-                              n_tree=10,m_feature=floor(ncol(X0)/3),min_leaf=5,testX=X1)
-      # use n_tree = 500
+      cat("mrf"," ")
+      start <- Sys.time()
+      if(any(family!="gaussian")){
+        stop("mrf requires \"gaussian\" family.")
+      }
+      pred$mrf[foldid.ext==i,] <- MultivariateRandomForest::build_forest_predict(trainX=X0,trainY=y0,
+                                   n_tree=100,m_feature=min(ncol(X)-1,5),min_leaf=5,testX=X1)
+      # use n_tree=500, m_feature=floor(ncol(X0)/3)
       # alternative: IntegratedMRF
-      # Check why this does not work!
+      # Check why this does not work well!
+      end <- Sys.time()
+      time$mrf <- as.numeric(difftime(end,start,units="secs"))
     }
     
     if("mcen" %in% compare){
-      if(all(family=="gaussian")){mfamily <- "mgaussian"}
-      if(all(family=="binomial")){mfamily <- "mbinomial"}
-      object <- mcen::cv.mcen(x=X0,y=y0,family=mfamily,folds=foldid,ky=1)
+      cat("mcen"," ")
+      start <- Sys.time()
+      if(all(family=="gaussian")){
+        type <- "mgaussian"
+      } else if(all(family=="binomial")){
+        type <- "mbinomial"
+      } else {
+        stop("mcen requires either \"gaussian\" or \"binomial\".",call.=FALSE)
+      }
+      object <- mcen::cv.mcen(x=X0,y=y0,family=type,folds=foldid,ky=1,
+                              gamma_y=seq(from=0.1,to=5.1,length.out=3),ndelta=3)
+      # TEMPORARY gamma_y and ndelta (for speed-up)
       temp <- mcen:::predict.cv.mcen(object=object,newx=X1)
       pred$mcen[foldid.ext==i,] <- as.matrix(temp)
-      # default returns error (thus ky=1)
+      # single cluster (ky=1) due to setting and error
+      end <- Sys.time()
+      time$mcen <- as.numeric(difftime(end,start,units="secs"))
     }
     
     if("map" %in% compare){
-      #if(alpha.base==0){
-      #  lamL1.v <- 0
-      #  lamL2.v <- fit$base$y1$lambda
-      #} else if(alpha.base==1){
-      #  lamL1.v <- fit$base$y1$lambda
-      #  lamL2.v <- 0
-      #} else {
-      #  stop("")
-      #}
+      cat("map"," ")
+      start <- Sys.time()
+      if(any(family!="gaussian")){
+        stop("map requires \"gaussian\" family.")
+      }
       mean <- colMeans(y0)
       y0s <- y0-matrix(data=mean,nrow=nrow(X0),ncol=ncol(y0),byrow=TRUE)
-      temp <- glmnet::glmnet(x=X0,y=y0s,family="mgaussian",intercept=FALSE)
-      lamL1.v <- exp(seq(from=log(min(temp$lambda)),to=log(max(temp$lambda)),length.out=30))
-      lamL2.v <- seq(from=0,to=5,by=1) # TEMPORARY
+      lamL1.v <- exp(seq(from=log(10),to=log(20),length.out=11))
+      lamL2.v <- seq(from=0,to=5,length.out=11)
       cv <- remMap::remMap.CV(X=X0,Y=y0s,lamL1.v=lamL1.v,lamL2.v=lamL2.v)
       #graphics::plot(x=lamL1.v,y=log(as.numeric(cv$ols.cv[,3])))
-      index <- which(cv$ols.cv==min(cv$ols.cv),arr.ind=TRUE)
+      index <- which(cv$ols.cv==min(cv$ols.cv),arr.ind=TRUE)[1,]
+      #cat(index,"\n")
       object <- remMap::remMap(X.m=X0,Y.m=y0s,lamL1=lamL1.v[index[1]],lamL2=lamL2.v[index[2]])
       pred$map[foldid.ext==i,] <- matrix(data=mean,nrow=nrow(X1),ncol=ncol(y0),byrow=TRUE) + X1 %*% object$phi 
       # alternative: groupRemMap
+      end <- Sys.time()
+      time$map <- as.numeric(difftime(end,start,units="secs"))
     }
     
-    if(FALSE){ #"mrce" %in% compare
-      # bug?
-      lam1 <- rev(10^seq(from=-2,to=0,by=0.5))
-      lam2 <- rev(10^seq(from=-2,to=0,by=0.5))
-      #lam1 <- lam2 <- 10^seq(from=0,to=-0.7,length.out=5)
-      #lam2 <- rev(10^seq(from=0,to=2,by=0.5))
-      #lam2 <- c(2,1,0.5)
-      #lam1 <- 10^seq(from=0,to=-5,length.out=11)
-      #lam2 <- seq(from=1,to=0.1,by=-0.1)
-      object <- MRCE::mrce(X=X0,Y=y0,lam1.vec=lam1,lam2.vec=lam2,method="cv",silent=FALSE,cov.tol=0.1,tol.out=1e-10)
-      pred$mrce[foldid.ext==i,] <- matrix(object$muhat,nrow=nrow(X1),ncol=q,byrow=TRUE) + x1 %*% object$Bhat
-    }
-    
-    if(FALSE){ # "sier" %in% compare
-      stop("SiER not yet implemented",call.=FALSE) # slow!
-      object <- SiER::cv.SiER(X=X0,Y=y0,K.cv=5,thres=0.5)
+    if("sier" %in% compare){
+      cat("sier"," ")
+      start <- Sys.time()
+      if(any(family!="gaussian")){
+        stop("SiER requires \"gaussian\" family.",call.=FALSE)
+      }
+      invisible(utils::capture.output(object <- SiER::cv.SiER(X=X0,Y=y0,K.cv=5,upper.comp=10,thres=0.01)))
+      # should be upper.comp=10 and thres=0.01
       pred$sier[foldid.ext==i,] <- SiER::pred.SiER(cv.fit=object,X.new=X1)
+      end <- Sys.time()
+      time$sier <- as.numeric(difftime(end,start,units="secs"))
     }
     
-    if(FALSE){ #"gpm" %in% compare
+    if("gpm" %in% compare){
+      cat("gpm"," ")
+      start <- Sys.time()
       if(any(family!="gaussian")){
         stop("GPM requires \"gaussian\" family.",call.=FALSE)
       }
-      object <- GPM::Fit(X=X0,Y=Y0)
+      object <- GPM::Fit(X=X0,Y=y0)
       pred$gpm[foldid.ext==i,] <- GPM::Predict(XF=X1,Model=object)$YF
       # Check why this does not work!
+      end <- Sys.time()
+      time$gpm <- as.numeric(difftime(end,start,units="secs"))
     }
     
-    if(FALSE){ "MSGLasso" %in% compare
+    if("mrce" %in% compare){
+      cat("mrce"," ")
+      start <- Sys.time()
+      if(any(family!="gaussian")){
+        stop("MRCE requires \"gaussian\" family.",call.=FALSE) # check this!
+      }
+      lam1 <- lam2 <- 10^seq(from=1,to=-4,length.out=11)
+      invisible(utils::capture.output(trials <- lapply(lam2,function(x) tryCatch(expr=MRCE::mrce(X=X0,Y=y0,lam1.vec=lam1,lam2.vec=x,method="cv"),error=function(x) NULL))))
+      cv.err <- sapply(trials,function(x) ifelse(is.null(x),Inf,min(x$cv.err)))
+      object <- trials[[which.min(cv.err)]]
+      pred$mrce[foldid.ext==i,] <- matrix(object$muhat,nrow=nrow(X1),ncol=q,byrow=TRUE) + X1 %*% object$Bhat
+      end <- Sys.time()
+      time$mrce <- as.numeric(difftime(end,start,units="secs"))
+    }
+    
+    if(!is.null(compare)){cat("\n")}
+    
+    #--- development snippets ---
+    
+    if(FALSE){ # "ecc"
+      start <- Sys.time()
+      cat("ecc"," ")
+      if(any(family!="binomial")){
+        stop("MLPUGS requires \"binomial\" family.",call.=FALSE)
+      }
+      
+      X0f <- as.data.frame(X0)
+      y0f <- as.data.frame(y0)
+      X1f <- as.data.frame(X1)
+      
+      if(FALSE){
+        # works!
+        object <- MLPUGS::ecc(x=X0f,y=y0f,.f=stats::glm.fit,family=stats::binomial(link="logit"))
+        pred_glm <- predict(object,X1f,
+                                .f = function(glm_fit, newdata) {
+                                  eta <- as.matrix(newdata) %*% glm_fit$coef
+                                  output <- glm_fit$family$linkinv(eta)
+                                  colnames(output) <- "1"
+                                  return(output)
+                                }, n.iters = 10, burn.in = 0, thin = 1)
+      }
+
+      if(FALSE){
+         # fails! respect same form for X0 and X1
+          object <- MLPUGS::ecc(x=X0,y=y0,.f=glmnet::cv.glmnet,family="binomial")
+          #temp <- MLPUGS:::predict.ECC(object,newx=X1,.f=glmnet::predict.cv.glmnet,newdata=X1)
+          pred_glm <- predict(object,X1,
+                              .f = function(fit, newdata) {
+                                newx <- as.matrix(newdata)
+                                pred <- glmnet:::predict.cv.glmnet(fit,newx=newx,s="lambda.min",type="response")
+                                return(as.matrix(pred))
+                              }, n.iters = 10, burn.in = 0, thin = 1)
+          
+      }
+
+      object <- MLPUGS::ecc(x=X0f,y=y0f,.f=randomForest::randomForest)
+      pred_ecc <- predict(object,newdata=X1f,n.iters=300,burn.in=100,thin=2,
+          .f = function(rF,newdata){randomForest:::predict.randomForest(rF, newdata, type = "prob")})
+      # works with n.iter=2 , burn.int=0 and thin=1 (bad choices!)
+      pred$ecc[foldid.ext==i,] <- summary(pred_ecc,type="prob")
+      # default seems to work, too, but might also leads to bad results in the
+      # (unrealistic) simulation
+      
+      end <- Sys.time()
+      time$ecc <- as.numeric(difftime(end,start,units="secs"))
+    }
+    
+    # if family=="binomial" test whether any pred outside unit interval
+    
+    if(FALSE){ # "MSGLasso" %in% compare
       MSGLasso::MSGLasso.cv(X=X0,Y=Y0)
       # requires many user inputs
     }
@@ -800,6 +963,9 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   
   if(cvpred){
     loss <- list(loss=loss,cvpred=pred$meta)
+  }
+  if(times){
+    loss <- list(loss=loss,time=time)
   }
   
   return(loss)

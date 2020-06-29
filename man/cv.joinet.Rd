@@ -18,6 +18,7 @@ cv.joinet(
   compare = NULL,
   mice = FALSE,
   cvpred = FALSE,
+  times = FALSE,
   ...
 )
 }

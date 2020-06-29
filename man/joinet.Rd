@@ -12,7 +12,7 @@ joinet(
   foldid = NULL,
   type.measure = "deviance",
   alpha.base = 1,
-  alpha.meta = 0,
+  alpha.meta = 1,
   ...
 )
 }

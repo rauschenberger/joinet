@@ -158,95 +158,13 @@
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="../reference/cv.joinet.html">cv.joinet</a></span>(<span class="kw">Y</span><span class="kw">=</span><span class="no">Y</span>,<span class="kw">X</span><span class="kw">=</span><span class="no">X</span>,<span class="kw">family</span><span class="kw">=</span><span class="no">family</span>)</pre></body></html></div>
 <pre><code>##          [,1]     [,2]
 ## base 1.204741 1.523550
-## meta 1.161487 1.283678
+## meta 1.185200 1.278125
 ## none 3.206394 3.495571</code></pre>
 </div>
 <div id="reference" class="section level2">
 <h2 class="hasAnchor">
 <a href="#reference" class="anchor"></a>Reference</h2>
 <p>Armin Rauschenberger and Enrico Glaab (2020). “joinet: predicting correlated outcomes jointly to improve clinical prognosis”. <em>Manuscript in preparation.</em></p>
-<!--
-
-```r
-#install.packages("MTPS")
-data("HIV",package="MTPS")
-loss1 <- cv.joinet(Y=YY,X=XX,mnorm=TRUE,spls=TRUE,mtps=TRUE)
-
-#install.packages("spls")
-data(yeast,package="spls")
-loss2 <- cv.joinet(Y=yeast$y,X=yeast$x,mnorm=TRUE,spls=TRUE,mtps=TRUE)
-
-data(mice,package="spls")
-loss3 <- cv.joinet(Y=mice$y,X=mice$x,mnorm=TRUE,spls=TRUE,mtps=TRUE)
-
-# install.packages("MRCE")
-data(stock04,package="MRCE",verbose=TRUE)
-# otherwise simulated
-
-#install.packages("SiER")
-# simulated!
-library(MASS)
-total.noise <- 0.1
-rho <- 0.3
-rho.e <- 0.2
-nvar=500
-nvarq <- 3
-sigma2 <- total.noise/nvarq
-sigmaX=0.1
-nvar.eff=150
-Sigma=matrix(0,nvar.eff,nvar.eff)
-for(i in 1:nvar.eff){
-    for(j in 1:nvar.eff){
-        Sigma[i,j]=rho^(abs(i-j))
-    }
-}
-Sigma2.y <- matrix(sigma2*rho.e,nvarq, nvarq)
-diag(Sigma2.y) <- sigma2
-betas.true <- matrix(0, nvar, 3)
-betas.true[1:15,1]=rep(1,15)/sqrt(15)
-betas.true[16:45,2]=rep(0.5,30)/sqrt(30)
-betas.true[46:105,3]=rep(0.25,60)/sqrt(60)
-ntest <- 500
-ntrain <- 90
-ntot <- ntest+ntrain
-X <- matrix(0,ntot,nvar)
-X[,1:nvar.eff] <- mvrnorm(n=ntot, rep(0, nvar.eff), Sigma)
-X[,-(1:nvar.eff)] <- matrix(sigmaX*rnorm((nvar-nvar.eff)*dim(X)[1]),
-                           dim(X)[1],(nvar-nvar.eff))
-Y <- X%*%betas.true
-Y <- Y+mvrnorm(n=ntot, rep(0,nvarq), Sigma2.y)
-fold <- rep(c(0,1),times=c(ntrain,ntest))
-loss4 <- cv.joinet(Y=Y,X=X,foldid.ext=fold,mnorm=TRUE,spls=TRUE,mtps=TRUE)
-
-#install.pacakges("GPM")
-# simulated!
-
-#install.packages("RMTL")
-# simulated!
-data <- RMTL::Create_simulated_data(Regularization="L21", #type="Regression")
-#Y <- (do.call(what="cbind",args=data$Y)+1)/2
-#X <- data$X[[1]] # example
-#loss2 <- cv.joinet(Y=Y,X=X,mnorm=TRUE,spls=TRUE,mtps=TRUE)
-```
--->
-<!--
-
-```r
-#install.packages("plsgenomics")
-data(Ecoli,package="plsgenomics")
-X <- Ecoli$CONNECdata
-Y <- Ecoli$GEdata
-loss2 <- cv.joinet(Y=Y,X=X,mnorm=TRUE,mtps=TRUE)
-
-#install.packages("BiocManager")
-#BiocManager::install("mixOmics")
-data(liver.toxicity,package="mixOmics")
-X <- as.matrix(liver.toxicity$gene)
-Y <- as.matrix(liver.toxicity$clinic)
-Y[,"Cholesterol.mg.dL."] <- -Y[,"Cholesterol.mg.dL."]
-loss3 <- cv.joinet(Y=Y,X=X,mnorm=TRUE,mtps=TRUE)
-```
--->
 </div>
   </div>
 

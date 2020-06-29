@@ -158,11 +158,11 @@ in the row on the outcomes in the column.</p>
 <span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>q</span>,<span class='kw'>expr</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>mean</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>X</span>[,<span class='fl'>1</span>:<span class='fl'>5</span>])))
 <span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)
-<span class='fu'><a href='https://rdrr.io/r/stats/weights.html'>weights</a></span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                      y1         y2        y3
-#&gt; (Intercept) -0.02352901 -0.1279338 0.1990621
-#&gt; V1           0.10704102  0.2456441 0.4650750
-#&gt; V2           0.48427425  0.5331528 0.3894352
-#&gt; V3           0.52435963  0.4199606 0.2731577</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/stats/weights.html'>weights</a></span>(<span class='no'>object</span>)</div><div class='output co'>#&gt;                      y1          y2         y3
+#&gt; (Intercept) -0.04720442 -0.15165929 0.26901703
+#&gt; V1           0.00000000  0.01158793 0.65726908
+#&gt; V2           0.55230103  0.71134918 0.45932382
+#&gt; V3           0.60228936  0.49505561 0.01764908</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
