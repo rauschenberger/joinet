@@ -534,7 +534,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   #nfolds.ext <- 1; foldid.ext <- fold; nfolds.int <- 10; foldid.int <- NULL; compare <- TRUE
   }
   
-  if(!is.null(compare) && length(compare)==1 && compare==TRUE){
+  if(length(compare)==1 && compare==TRUE){
     if(all(family=="gaussian")){
       compare <- c("mnorm","mars","spls","mrce","map","mrf","sier","mcen","gpm","rmtl","mtps")
     } else if(all(family=="binomial")){
@@ -565,13 +565,16 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   
   # check packages
   pkgs <- .packages(all.available=TRUE)
-  for(i in seq_along(compare)){
-    pkg <- switch(compare[i],mnorm="glmnet",mars="earth",spls="spls",
+  
+  if(length(compare)>1 || compare==TRUE){
+    for(i in seq_along(compare)){
+      pkg <- switch(compare[i],mnorm="glmnet",mars="earth",spls="spls",
                   mrce="MRCE",map="remMap",mrf="MultivariateRandomForest",
                   sier="SiER",mcen="mcen",gpm="GPM",rmtl="RMTL",mtps="MTPS",
                   stop("Invalid method.",call.=FALSE))
-    if(!pkg %in% pkgs){
-      stop("Method \"",compare[i],"\" requires package \"",pkg,"\".",call.=FALSE)
+      if(!pkg %in% pkgs){
+        stop("Method \"",compare[i],"\" requires package \"",pkg,"\".",call.=FALSE)
+      }
     }
   }
 
