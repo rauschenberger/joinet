@@ -527,7 +527,7 @@ print.joinet <- function(x,...){
 #' set.seed(1)
 #' cv.joinet(Y=Y,X=X,alpha.base=0) # ridge}
 #' 
-cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,compare=NULL,mice=FALSE,cvpred=FALSE,times=FALSE,...){
+cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,compare=FALSE,mice=FALSE,cvpred=FALSE,times=FALSE,...){
   
   if(FALSE){
   family <- "gaussian"; nfolds.ext <- 5; nfolds.int <- 10; foldid.ext <- foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- alpha.meta <- 1; mice <- cvpred <- times <- FALSE
@@ -676,7 +676,6 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       }
       invisible(utils::capture.output(cv.spls <- spls::cv.spls(x=X0,y=y0,fold=nfolds.int,K=seq_len(min(ncol(X0),10)),
                                eta=seq(from=0.0,to=0.9,by=0.1),plot.it=FALSE))) #scale.x=FALSE
-      # consider using from 0 to 1 by 0.1 #was: seq(from=0.1,to=0.9,by=0.1)
       object <- spls::spls(x=X0,y=y0,K=cv.spls$K.opt,eta=cv.spls$eta.opt) #scale.x=FALSE
       pred$spls[foldid.ext==i,] <- spls::predict.spls(object=object,newx=X1,type="fit")
       end <- Sys.time()

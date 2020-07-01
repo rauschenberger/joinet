@@ -15,7 +15,7 @@ cv.joinet(
   type.measure = "deviance",
   alpha.base = 1,
   alpha.meta = 1,
-  compare = NULL,
+  compare = FALSE,
   mice = FALSE,
   cvpred = FALSE,
   times = FALSE,
