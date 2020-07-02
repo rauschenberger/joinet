@@ -566,7 +566,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   # check packages
   pkgs <- .packages(all.available=TRUE)
   
-  if(length(compare)>1 || compare==TRUE){
+  if(is.character(compare)){
     for(i in seq_along(compare)){
       pkg <- switch(compare[i],mnorm="glmnet",mars="earth",spls="spls",
                   mrce="MRCE",map="remMap",mrf="MultivariateRandomForest",
@@ -666,6 +666,13 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       } else {
         stop("MARS requires either \"gaussian\" or \"binomial\" family.",call.=FALSE)
       }
+      
+      ## nk = min(200, max(20, 2 * ncol(x))) + 1
+      ## nprune <- seq(from=2,to=nk,length.out=10)
+      ## i.e. run earth/mars with tryCatch for each nprune
+      ## and select run with best cvm (here gcv)
+      # tune nprune (use default nk)!
+      
       pred$mars[foldid.ext==i,] <- earth:::predict.earth(object=object,newdata=X1,type="response")
       end <- Sys.time()
       time$mars <- as.numeric(difftime(end,start,units="secs"))
@@ -692,7 +699,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
         stop("MRCE requires \"gaussian\" family.",call.=FALSE)
       }
       lam1 <- lam2 <- 10^seq(from=1,to=-4,length.out=11)
-      invisible(utils::capture.output(trials <- lapply(lam2,function(x) tryCatch(expr=MRCE::mrce(X=X0,Y=y0,lam1.vec=lam1,lam2.vec=x,method="cv"),error=function(x) NULL))))
+      invisible(utils::capture.output(trials <- lapply(lam2,function(x) tryCatch(expr=MRCE::mrce(X=X0,Y=y0,lam1.vec=lam1,lam2.vec=x,method="cv",kfold=nfolds.int),error=function(x) NULL))))
       cv.err <- sapply(trials,function(x) ifelse(is.null(x),Inf,min(x$cv.err)))
       object <- trials[[which.min(cv.err)]]
       pred$mrce[foldid.ext==i,] <- matrix(object$muhat,nrow=nrow(X1),ncol=q,byrow=TRUE) + X1 %*% object$Bhat
@@ -708,9 +715,10 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       }
       mean <- colMeans(y0)
       y0s <- y0-matrix(data=mean,nrow=nrow(X0),ncol=ncol(y0),byrow=TRUE)
-      lamL1.v <- exp(seq(from=log(10),to=log(20),length.out=11))
+      #lamL1.v <- exp(seq(from=log(10),to=log(20),length.out=11)) # original
+      lamL1.v <- seq(from=0,to=20,length.out=11) # trial
       lamL2.v <- seq(from=0,to=5,length.out=11)
-      cv <- remMap::remMap.CV(X=X0,Y=y0s,lamL1.v=lamL1.v,lamL2.v=lamL2.v)
+      cv <- remMap::remMap.CV(X=X0,Y=y0s,lamL1.v=lamL1.v,lamL2.v=lamL2.v,fold=nfolds.int)
       #graphics::plot(x=lamL1.v,y=log(as.numeric(cv$ols.cv[,3])))
       index <- which(cv$ols.cv==min(cv$ols.cv),arr.ind=TRUE)[1,]
       object <- remMap::remMap(X.m=X0,Y.m=y0s,lamL1=lamL1.v[index[1]],lamL2=lamL2.v[index[2]])
@@ -740,7 +748,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       if(any(family!="gaussian")){
         stop("SiER requires \"gaussian\" family.",call.=FALSE)
       }
-      invisible(utils::capture.output(object <- SiER::cv.SiER(X=X0,Y=y0,K.cv=3,upper.comp=10,thres=0.01)))
+      invisible(utils::capture.output(object <- SiER::cv.SiER(X=X0,Y=y0,K.cv=3)))
       # trial with K.cv=3 (for spped-up)
       # use upper.comp=10 and thres=0.01  (changed for speed-up)
       pred$sier[foldid.ext==i,] <- SiER::pred.SiER(cv.fit=object,X.new=X1)
@@ -802,7 +810,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       seed <- .Random.seed
       for(j in seq_along(Lam2_seq)){
         .Random.seed <- seed
-        cvMTL[[j]] <- RMTL::cvMTL(X=X0l,Y=y0l,type=type,Lam1_seq=Lam1_seq,Lam2=Lam2_seq[j])
+        cvMTL[[j]] <- RMTL::cvMTL(X=X0l,Y=y0l,type=type,Lam1_seq=Lam1_seq,Lam2=Lam2_seq[j],nfolds=nfolds.int)
       }
       cvm <- vapply(X=cvMTL,FUN=function(x) min(x$cvm),FUN.VALUE=numeric(1))
       Lam1 <- cvMTL[[which.min(cvm)]]$Lam1.min
@@ -873,7 +881,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       # now using cross-validation residual stacking (CVRS) 
     }
     
-    if(!is.null(compare)){cat("\n")}
+    if(length(compare)>1){cat("\n")} # was !is.null(compare)
     
     # --- development ---
     
