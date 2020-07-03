@@ -530,8 +530,10 @@ print.joinet <- function(x,...){
 cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ext=NULL,foldid.int=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,compare=FALSE,mice=FALSE,cvpred=FALSE,times=FALSE,...){
   
   if(FALSE){
+  fold <- foldid.ext
   family <- "gaussian"; nfolds.ext <- 5; nfolds.int <- 10; foldid.ext <- foldid.int <- NULL; type.measure <- "deviance"; alpha.base <- alpha.meta <- 1; mice <- cvpred <- times <- FALSE
-  #nfolds.ext <- 1; foldid.ext <- fold; nfolds.int <- 10; foldid.int <- NULL; compare <- TRUE
+  foldid.ext <- fold; nfolds.ext <- 1
+  #nfolds.ext <- 1; nfolds.int <- 10; foldid.int <- NULL; compare <- TRUE
   }
   
   if(length(compare)==1 && compare==TRUE){
@@ -659,19 +661,28 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       cat("mars"," ")
       start <- Sys.time()
       if(all(family=="gaussian")){
-        object <- earth::earth(x=X0,y=y0) # add:pmethod="cv"nfold=nfolds.int
+        object <- earth::earth(x=X0,y=y0)
         # equivalent: object <- mda::mars(x=X0,y=y0)
       } else if(all(family=="binomial")){
-        object <- earth::earth(x=X0,y=y0,glm=list(family=stats::binomial)) # add pmethod="cv",nfold=nfolds.int
+        object <- earth::earth(x=X0,y=y0,glm=list(family=stats::binomial))
       } else {
         stop("MARS requires either \"gaussian\" or \"binomial\" family.",call.=FALSE)
       }
+      # pmethod="cv" not available for multivariate outputs
       
-      ## nk = min(200, max(20, 2 * ncol(x))) + 1
-      ## nprune <- seq(from=2,to=nk,length.out=10)
+      ### start trial ###
+      if(FALSE){
+      #nk <- min(200, max(20, 2 * ncol(X0))) + 1
+      #nprune <- round(seq(from=2,to=nk,length.out=10))
+      #object <- list()
+      #for(j in seq_along(nprune)){
+      #  object[[j]] <- earth::earth(x=X0,y=y0,nprune=nprune[j],pmethod="cv",nfold=nfolds.int)
+      #}
+      #sapply(object,function(x) x$gcv)
       ## i.e. run earth/mars with tryCatch for each nprune
       ## and select run with best cvm (here gcv)
       # tune nprune (use default nk)!
+      }
       
       pred$mars[foldid.ext==i,] <- earth:::predict.earth(object=object,newdata=X1,type="response")
       end <- Sys.time()
@@ -715,13 +726,17 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       }
       mean <- colMeans(y0)
       y0s <- y0-matrix(data=mean,nrow=nrow(X0),ncol=ncol(y0),byrow=TRUE)
-      #lamL1.v <- exp(seq(from=log(10),to=log(20),length.out=11)) # original
-      lamL1.v <- seq(from=0,to=20,length.out=11) # trial
-      lamL2.v <- seq(from=0,to=5,length.out=11)
+      lamL1.v <- lamL2.v <- exp(seq(from=0,to=5,length.out=11))
       cv <- remMap::remMap.CV(X=X0,Y=y0s,lamL1.v=lamL1.v,lamL2.v=lamL2.v,fold=nfolds.int)
       #graphics::plot(x=lamL1.v,y=log(as.numeric(cv$ols.cv[,3])))
-      index <- which(cv$ols.cv==min(cv$ols.cv),arr.ind=TRUE)[1,]
-      object <- remMap::remMap(X.m=X0,Y.m=y0s,lamL1=lamL1.v[index[1]],lamL2=lamL2.v[index[2]])
+      pick <- which.min(as.vector(cv$ols.cv))
+      lamL1 <- cv$l.index[1,pick]
+      lamL2 <- cv$l.index[2,pick]
+      # index <- which(cv$ols.cv==min(cv$ols.cv),arr.ind=TRUE)[1,]
+      # rev(lamL1.v)[index[1]]
+      # rev(lamL2.v)[index[2]]
+      ##cat("lam1:",lamL1,", lam2:",lamL2)
+      object <- remMap::remMap(X.m=X0,Y.m=y0s,lamL1=lamL1,lamL2=lamL2)
       pred$map[foldid.ext==i,] <- matrix(data=mean,nrow=nrow(X1),ncol=ncol(y0),byrow=TRUE) + X1 %*% object$phi
       end <- Sys.time()
       time$map <- as.numeric(difftime(end,start,units="secs"))
@@ -881,7 +896,7 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       # now using cross-validation residual stacking (CVRS) 
     }
     
-    if(length(compare)>1){cat("\n")} # was !is.null(compare)
+    if(is.character(compare)){cat("\n")}
     
     # --- development ---
     
