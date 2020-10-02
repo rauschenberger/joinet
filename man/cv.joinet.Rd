@@ -71,6 +71,9 @@ logical (\code{mice=TRUE} requires package \code{mice})}
 
 \item{cvpred}{return cross-validated predicitions: logical}
 
+\item{times}{measure computation time\strong{:}
+logical}
+
 \item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}
 and \code{\link[glmnet]{cv.glmnet}}}
 }

@@ -52,8 +52,8 @@ loss <- cv.joinet(Y=Y,X=X)
 
 }
 \references{
-Armin Rauschenberger and Enrico Glaab (2019).
-"joinet: predicting correlated outcomes jointly to improve clinical prognosis".
+Armin Rauschenberger and Enrico Glaab (2020).
+"Predicting correlated outcomes from molecular data".
 \emph{Manuscript in preparation}.
 
 \email{armin.rauschenberger@uni.lu}

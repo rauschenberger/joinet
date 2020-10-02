@@ -33,9 +33,8 @@ devtools::install_github("rauschenberger/joinet")
 
 ## Reference
 
-Armin Rauschenberger and Enrico Glaab (2019). “Predicting correlated
-outcomes jointly to improve clinical prognosis”. *Manuscript in
-preparation.*
+Armin Rauschenberger and Enrico Glaab (2020). “Predicting correlated
+outcomes from molecular data”. *Manuscript in preparation.*
 
 [![CRAN
 version](https://www.r-pkg.org/badges/version/joinet)](https://CRAN.R-project.org/package=joinet)

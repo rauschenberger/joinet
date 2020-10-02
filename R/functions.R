@@ -53,9 +53,8 @@
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
 #' 
 #' @references 
-#' Armin Rauschenberger, Enrico Glaab (2019)
-#' "joinet: predicting correlated outcomes jointly
-#' to improve clinical prognosis"
+#' Armin Rauschenberger, Enrico Glaab (2020)
+#' "Predicting correlated outcomes from molecular data"
 #' \emph{Manuscript in preparation}.
 #' 
 #' @details
@@ -472,6 +471,10 @@ print.joinet <- function(x,...){
 #' @param cvpred
 #' return cross-validated predicitions: logical
 #' 
+#' @param times
+#' measure computation time\strong{:}
+#' logical
+#' 
 #' @param ...
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
 #' and \code{\link[glmnet]{cv.glmnet}}
@@ -684,7 +687,8 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       # tune nprune (use default nk)!
       }
       
-      pred$mars[foldid.ext==i,] <- earth:::predict.earth(object=object,newdata=X1,type="response")
+      #pred$mars[foldid.ext==i,] <- earth:::predict.earth(object=object,newdata=X1,type="response") # original
+      pred$mars[foldid.ext==i,] <- stats::predict(object=object,newdata=X1,type="response") # trial
       end <- Sys.time()
       time$mars <- as.numeric(difftime(end,start,units="secs"))
     }
@@ -784,7 +788,8 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       object <- mcen::cv.mcen(x=X0,y=y0,family=type,folds=foldid,ky=1,
                               gamma_y=seq(from=0.1,to=5.1,by=1),ndelta=5)
       # TEMPORARY gamma_y=seq(from=0.1,to=5.1,length.out=3) and ndelta=3 (for speed-up)
-      temp <- mcen:::predict.cv.mcen(object=object,newx=X1)
+      #temp <- mcen:::predict.cv.mcen(object=object,newx=X1) # original
+      temp <- stats::predict(object=object,newx=X1) # trial
       pred$mcen[foldid.ext==i,] <- as.matrix(temp)
       # single cluster (ky=1) due to setting and error
       end <- Sys.time()
@@ -835,7 +840,8 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
       #--- manual tuning end ----
       #--------------------------
       MTL <- RMTL::MTL(X=X0l,Y=y0l,type=type,Lam1=Lam1,Lam2=Lam2)
-      temp <- RMTL:::predict.MTL(object=MTL,newX=X1l)
+      #temp <- RMTL:::predict.MTL(object=MTL,newX=X1l) # original
+      temp <- stats::predict(object=MTL,newX=X1l)
       pred$rmtl[foldid.ext==i,] <- do.call(what="cbind",args=temp)
       end <- Sys.time()
       time$rmtl <- as.numeric(difftime(end,start,units="secs"))
@@ -901,25 +907,25 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
     # --- development ---
     
     if(FALSE){
-      # --- MLPUGS --- (binary outcome only)
-      X0f <- as.data.frame(X0)
-      y0f <- as.data.frame(y0)
-      X1f <- as.data.frame(X1)
-      object <- MLPUGS::ecc(x=X0f,y=y0f,.f=randomForest::randomForest)
-      pred_ecc <- predict(object,newdata=X1f,n.iters=300,burn.in=100,thin=2,
-          .f = function(rF,newdata){randomForest:::predict.randomForest(rF, newdata, type = "prob")})
-      pred$ecc[foldid.ext==i,] <- summary(pred_ecc,type="prob")
-      # --- MSGLasso --- (many user inputs)
-      MSGLasso::MSGLasso.cv(X=X0,Y=Y0)
-      # --- PMA --- (not for prediction?)
-      # --- MSP --- (not for hd data?)
-      object <- MBSP::mbsp.tpbn(X=X0,Y=Y0)
-      X1 %*% object$B # adjust for intercept
-      # --- bgsmtr --- (for SNPs only?)
-      temp <- bgsmtr::bgsmtr(X=t(X0),Y=t(Y0),group=rep(1,times=ncol(X0)))
-      # --- MGLM --- (for multinomial data only?)
-      MGLM::MGLMsparsereg.fit()
-      MGLM::MGLMtune()
+      ## --- MLPUGS --- (binary outcome only)
+      #X0f <- as.data.frame(X0)
+      #y0f <- as.data.frame(y0)
+      #X1f <- as.data.frame(X1)
+      #object <- MLPUGS::ecc(x=X0f,y=y0f,.f=randomForest::randomForest)
+      #pred_ecc <- predict(object,newdata=X1f,n.iters=300,burn.in=100,thin=2,
+      #    .f = function(rF,newdata){randomForest:::predict.randomForest(rF, newdata, type = "prob")})
+      #pred$ecc[foldid.ext==i,] <- summary(pred_ecc,type="prob")
+      ## --- MSGLasso --- (many user inputs)
+      #MSGLasso::MSGLasso.cv(X=X0,Y=Y0)
+      ## --- PMA --- (not for prediction?)
+      ## --- MSP --- (not for hd data?)
+      #object <- MBSP::mbsp.tpbn(X=X0,Y=Y0)
+      #X1 %*% object$B # adjust for intercept
+      ## --- bgsmtr --- (for SNPs only?)
+      #temp <- bgsmtr::bgsmtr(X=t(X0),Y=t(Y0),group=rep(1,times=ncol(X0)))
+      ## --- MGLM --- (for multinomial data only?)
+      #MGLM::MGLMsparsereg.fit()
+      #MGLM::MGLMtune()
     }
     
     pred$none[foldid.ext==i,] <- matrix(colMeans(Y0,na.rm=TRUE),nrow=sum(foldid.ext==i),ncol=ncol(Y0),byrow=TRUE)
@@ -949,8 +955,6 @@ cv.joinet <- function(Y,X,family="gaussian",nfolds.ext=5,nfolds.int=10,foldid.ex
   
   return(loss)
 }
-
-
 
 plot.matrix <- function (X, margin = 0, labels = TRUE, las = 1, cex = 1, range = NULL, cutoff = 0, digits=2) {
   #margin <- 0; labels <- TRUE; las <- 1; cex <- 1; range <- NULL; cutoff <- 0; digits <- 2
