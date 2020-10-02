@@ -69,7 +69,7 @@ character vector with entries "mnorm", "spls", "mrce",
 \item{mice}{missing data imputation\strong{:}
 logical (\code{mice=TRUE} requires package \code{mice})}
 
-\item{cvpred}{return cross-validated predicitions: logical}
+\item{cvpred}{return cross-validated predictions: logical}
 
 \item{times}{measure computation time\strong{:}
 logical}

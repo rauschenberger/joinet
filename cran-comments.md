@@ -1,2 +1,2 @@
 
-# Notes
+Thanks for updating the package.
