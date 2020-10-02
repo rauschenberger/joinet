@@ -469,7 +469,7 @@ print.joinet <- function(x,...){
 #' logical (\code{mice=TRUE} requires package \code{mice})
 #' 
 #' @param cvpred
-#' return cross-validated predicitions: logical
+#' return cross-validated predictions: logical
 #' 
 #' @param times
 #' measure computation time\strong{:}
