@@ -160,6 +160,7 @@ to open the vignette.</p>
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>q</span>,<span class='kw'>expr</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>mean</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>X</span>[,<span class='fl'>1</span>:<span class='fl'>5</span>])))
 <span class='co'># n samples, p inputs, q outputs</span>
 
+<span class='kw'>if</span>(!<span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grepl</a></span>(<span class='st'>'SunOS'</span>,<span class='fu'><a href='https://rdrr.io/r/base/Sys.info.html'>Sys.info</a></span>()[<span class='st'>'sysname'</span>])){
 <span class='co'>#--- model fitting ---</span>
 <span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)
 <span class='co'># slot "base": univariate</span>
@@ -180,7 +181,8 @@ to open the vignette.</p>
 <span class='no'>loss</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='cv.joinet.html'>cv.joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)
 <span class='co'># cross-validated loss</span>
 <span class='co'># row "base": univariate</span>
-<span class='co'># row "meta": multivariate</span></div></pre>
+<span class='co'># row "meta": multivariate</span>
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -273,12 +273,14 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
 #' with \eqn{n} rows (samples) and \eqn{q} columns (variables).
 #' 
 #' @examples
+#' if(!grepl('SunOS',Sys.info()['sysname'])){
 #' n <- 50; p <- 100; q <- 3
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
 #' Y[,1] <- 1*(Y[,1]>median(Y[,1]))
 #' object <- joinet(Y=Y,X=X,family=c("binomial","gaussian","gaussian"))
 #' predict(object,newx=X)
+#' }
 #' 
 predict.joinet <- function(object,newx,type="response",...){
   if(length(list(...))!=0){warning("Ignoring argument.",call.=FALSE)}
@@ -345,7 +347,6 @@ predict.joinet <- function(object,newx,type="response",...){
 #' 
 #' @examples
 #' if(!grepl('SunOS',Sys.info()['sysname'])){
-#' 1+1
 #' n <- 50; p <- 100; q <- 3
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
@@ -414,11 +415,13 @@ coef.joinet <- function(object,...){
 #' in the row on the outcomes in the column.
 #' 
 #' @examples
+#' if(!grepl('SunOS',Sys.info()['sysname'])){
 #' n <- 50; p <- 100; q <- 3
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
 #' object <- joinet(Y=Y,X=X)
 #' weights(object)
+#' }
 #' 
 weights.joinet <- function(object,...){
   if(length(list(...))!=0){warning("Ignoring argument.",call.=FALSE)}

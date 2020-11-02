@@ -37,6 +37,7 @@
 #' Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
 #' # n samples, p inputs, q outputs
 #' 
+#' if(!grepl('SunOS',Sys.info()['sysname'])){
 #' #--- model fitting ---
 #' object <- joinet(Y=Y,X=X)
 #' # slot "base": univariate
@@ -58,6 +59,7 @@
 #' # cross-validated loss
 #' # row "base": univariate
 #' # row "meta": multivariate
+#' }
 #' 
 NULL
 
