@@ -1,4 +1,6 @@
 
+if(!grepl('SunOS',Sys.info()['sysname'])){
+
 #--- Initialisation ---
 
 set.seed(1)
@@ -95,4 +97,6 @@ for(alpha in c(0.05,0.95)){
     testthat::expect_true(cond)
   })
   
+}
+
 }
