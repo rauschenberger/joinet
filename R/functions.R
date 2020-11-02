@@ -342,11 +342,14 @@ predict.joinet <- function(object,newx,type="response",...){
 #' in a matrix with \eqn{p} rows (inputs) and \eqn{q} columns.
 #' 
 #' @examples
+#' if(!grepl('SunOS',Sys.info()['sysname'])){
+#' 1+1
 #' n <- 50; p <- 100; q <- 3
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
 #' object <- joinet(Y=Y,X=X)
 #' coef <- coef(object)
+#' }
 #' 
 coef.joinet <- function(object,...){
   if(length(list(...))!=0){warning("Ignoring argument.",call.=FALSE)}
