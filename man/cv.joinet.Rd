@@ -87,12 +87,17 @@ and the intercept-only models (\code{none}).
 Compares univariate and multivariate regression.
 }
 \examples{
+\dontshow{
 if(!grepl('SunOS',Sys.info()['sysname'])){
 n <- 50; p <- 100; q <- 3
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
-cv.joinet(Y=Y,X=X)
-}
+cv.joinet(Y=Y,X=X)}}
+\dontrun{
+n <- 50; p <- 100; q <- 3
+X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
+cv.joinet(Y=Y,X=X)}
 
 \dontrun{
 # correlated features
