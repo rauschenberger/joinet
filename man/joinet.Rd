@@ -74,7 +74,7 @@ ridge renders dense models (\code{alpha}\eqn{=0})
 }
 \examples{
 #if(!grepl('SunOS',Sys.info()['sysname'])){
-set.seed(1)
+set.seed(0)
 n <- 50; p <- 100; q <- 3
 X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
