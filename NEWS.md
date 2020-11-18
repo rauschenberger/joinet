@@ -1,4 +1,8 @@
 
+## joinet 0.0.6 (2020-11-18)
+
+* conditional execution
+
 ## joinet 0.0.5 (2020-10-02)
 
 * updated documentation
