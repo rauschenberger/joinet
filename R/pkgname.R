@@ -31,13 +31,43 @@
 #' \email{armin.rauschenberger@uni.lu}
 #'
 #' @examples
+#' \dontshow{
+#' if(!grepl('SunOS',Sys.info()['sysname'])){
 #' #--- data simulation ---
 #' n <- 50; p <- 100; q <- 3
 #' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
 #' Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
 #' # n samples, p inputs, q outputs
 #' 
-#' if(!grepl('SunOS',Sys.info()['sysname'])){
+#' #--- model fitting ---
+#' object <- joinet(Y=Y,X=X)
+#' # slot "base": univariate
+#' # slot "meta": multivariate
+#' 
+#' #--- make predictions ---
+#' y_hat <- predict(object,newx=X)
+#' # n x q matrix "base": univariate
+#' # n x q matrix "meta": multivariate 
+#' 
+#' #--- extract coefficients ---
+#' coef <- coef(object)
+#' # effects of inputs on outputs
+#' # q vector "alpha": intercepts
+#' # p x q matrix "beta": slopes
+#' 
+#' #--- model comparison ---
+#' loss <- cv.joinet(Y=Y,X=X)
+#' # cross-validated loss
+#' # row "base": univariate
+#' # row "meta": multivariate
+#' }}
+#' \dontrun{
+#' #--- data simulation ---
+#' n <- 50; p <- 100; q <- 3
+#' X <- matrix(rnorm(n*p),nrow=n,ncol=p)
+#' Y <- replicate(n=q,expr=rnorm(n=n,mean=rowSums(X[,1:5])))
+#' # n samples, p inputs, q outputs
+#' 
 #' #--- model fitting ---
 #' object <- joinet(Y=Y,X=X)
 #' # slot "base": univariate

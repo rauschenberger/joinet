@@ -154,13 +154,43 @@ to open the vignette.</p>
 <p><a href='mailto:armin.rauschenberger@uni.lu'>armin.rauschenberger@uni.lu</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>#--- data simulation ---</span>
+    <pre class="examples"><div class='input'><span class='co'># \dontshow{</span>
+<span class='kw'>if</span>(!<span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grepl</a></span>(<span class='st'>'SunOS'</span>,<span class='fu'><a href='https://rdrr.io/r/base/Sys.info.html'>Sys.info</a></span>()[<span class='st'>'sysname'</span>])){
+<span class='co'>#--- data simulation ---</span>
 <span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>50</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
 <span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>q</span>,<span class='kw'>expr</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>mean</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>X</span>[,<span class='fl'>1</span>:<span class='fl'>5</span>])))
 <span class='co'># n samples, p inputs, q outputs</span>
 
-<span class='kw'>if</span>(!<span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grepl</a></span>(<span class='st'>'SunOS'</span>,<span class='fu'><a href='https://rdrr.io/r/base/Sys.info.html'>Sys.info</a></span>()[<span class='st'>'sysname'</span>])){
+<span class='co'>#--- model fitting ---</span>
+<span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)
+<span class='co'># slot "base": univariate</span>
+<span class='co'># slot "meta": multivariate</span>
+
+<span class='co'>#--- make predictions ---</span>
+<span class='no'>y_hat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>object</span>,<span class='kw'>newx</span><span class='kw'>=</span><span class='no'>X</span>)
+<span class='co'># n x q matrix "base": univariate</span>
+<span class='co'># n x q matrix "meta": multivariate </span>
+
+<span class='co'>#--- extract coefficients ---</span>
+<span class='no'>coef</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span>(<span class='no'>object</span>)
+<span class='co'># effects of inputs on outputs</span>
+<span class='co'># q vector "alpha": intercepts</span>
+<span class='co'># p x q matrix "beta": slopes</span>
+
+<span class='co'>#--- model comparison ---</span>
+<span class='no'>loss</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='cv.joinet.html'>cv.joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)
+<span class='co'># cross-validated loss</span>
+<span class='co'># row "base": univariate</span>
+<span class='co'># row "meta": multivariate</span>
+}<span class='co'># }</span>
+<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='co'>#--- data simulation ---</span>
+<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>50</span>; <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>; <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
+<span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>*<span class='no'>p</span>),<span class='kw'>nrow</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>ncol</span><span class='kw'>=</span><span class='no'>p</span>)
+<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>q</span>,<span class='kw'>expr</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='no'>n</span>,<span class='kw'>mean</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>X</span>[,<span class='fl'>1</span>:<span class='fl'>5</span>])))
+<span class='co'># n samples, p inputs, q outputs</span>
+
 <span class='co'>#--- model fitting ---</span>
 <span class='no'>object</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='joinet.html'>joinet</a></span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>Y</span>,<span class='kw'>X</span><span class='kw'>=</span><span class='no'>X</span>)
 <span class='co'># slot "base": univariate</span>
