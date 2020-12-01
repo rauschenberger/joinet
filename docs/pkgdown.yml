@@ -4,5 +4,6 @@ pkgdown_sha: ~
 articles:
   article: article.html
   joinet: joinet.html
-last_built: 2020-11-23T12:29Z
+  script: script.html
+last_built: 2020-12-01T08:42Z
 
