@@ -11,12 +11,12 @@ editor_options:
 
 ```{r start,include=FALSE}
 knitr::opts_chunk$set(echo=TRUE,eval=FALSE)
-setwd("C:/Users/armin.rauschenberger/Desktop/joinet")
+#setwd("C:/Users/armin.rauschenberger/Desktop/joinet")
 #source("C:/Users/armin.rauschenberger/Desktop/joinet/joinet/R/functions.R")
-#pkgs <- c("devtools","missRanger","mice","mvtnorm","glmnet","earth","spls","MTPS","RMTL","MultivariateRandomForest","mcen","remMap","SiER","GPM","MLPUGS","benchmarkme")
+#pkgs <- c("devtools","missRanger","mice","mvtnorm","glmnet","earth","spls","MTPS","RMTL","MultivariateRandomForest","mcen","MRCE","remMap","SiER","GPM","MLPUGS","benchmarkme")
 #install.packages(pkgs)
 #devtools::install_github("rauschenberger/joinet")
-#devtools::intall_github("cran/MRCE")
+#devtools::intall_github("cran/MRCE"); devtools::intall_github("cran/remMap")
 #install.packages("joinet_0.0.X.tar.gz",repos=NULL,type="source")
 #library(joinet)
 ```
