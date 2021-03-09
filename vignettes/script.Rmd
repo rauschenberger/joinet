@@ -11,10 +11,12 @@ editor_options:
 
 ```{r start,include=FALSE}
 knitr::opts_chunk$set(echo=TRUE,eval=FALSE)
-#pkgs <- c("devtools","missRanger","mice","mvtnorm","glmnet","earth","spls","MRCE","MTPS","RMTL","MultivariateRandomForest","mcen","remMap","SiER","GPM","MLPUGS","benchmarkme")
+setwd("C:/Users/armin.rauschenberger/Desktop/joinet")
+#source("C:/Users/armin.rauschenberger/Desktop/joinet/joinet/R/functions.R")
+#pkgs <- c("devtools","missRanger","mice","mvtnorm","glmnet","earth","spls","MTPS","RMTL","MultivariateRandomForest","mcen","remMap","SiER","GPM","MLPUGS","benchmarkme")
 #install.packages(pkgs)
-#devtools::intall_github("cran/MRCE") # if archived
 #devtools::install_github("rauschenberger/joinet")
+#devtools::intall_github("cran/MRCE")
 #install.packages("joinet_0.0.X.tar.gz",repos=NULL,type="source")
 #library(joinet)
 ```
@@ -27,7 +29,9 @@ box <- function(x,y,w=0.2,h=0.2,labels="",col="black",turn=FALSE,...){
   graphics::text(x=x,y=y,labels=labels,col=col,srt=ifelse(turn,90,0))
 }
 
-grDevices::pdf(file="manuscript/figure_ABS.pdf",width=4,height=2.5)
+#grDevices::pdf(file="manuscript/figure_ABS.pdf",width=4,height=2.5)
+grDevices::setEPS()
+grDevices::postscript(file="manuscript/figure_ABS.eps",width=4,height=2.5)
 graphics::par(mar=c(0,0,0,0))
 graphics::plot.new()
 graphics::plot.window(xlim=c(0,2),ylim=c(-0.1,1.1))
@@ -58,7 +62,8 @@ grDevices::dev.off()
 ```
 
 ```{r figure_OUT}
-grDevices::pdf(file="manuscript/figure_OUT.pdf",width=5,height=3)
+#grDevices::pdf(file="manuscript/figure_OUT.pdf",width=5,height=3)
+grDevices::postscript(file="manuscript/figure_OUT.eps",width=5,height=3)
 
 ellipse <- function(x,y,text=NULL,a=0.5,b=0.5,border="black",col=NULL,txt.col="black",...){
     n <- max(c(length(x),length(y)))
@@ -217,7 +222,8 @@ cor <- sapply(unique(set),function(i) mean(cor[set==i]))
 
 rownames(beta)[rownames(beta)=="mnorm"] <- "mvn"
 sign <- apply(beta,2,function(x) sign(x["base"]-x))
-min <- apply(beta,2,function(x) which.min(x))
+#min <- apply(beta,2,function(x) which.min(x)) # incorrect (old)
+min <- apply(beta,2,function(x) which(x==min(x))) # correct (new)
 beta <- format(round(beta,digits=1),trim=TRUE)
 beta[sign<=0] <- paste0("\\textcolor{gray}{",beta[sign<=0],"}")
 index <- cbind(min,1:ncol(beta))
@@ -246,13 +252,13 @@ for(i in seq_len(ncol(X))){
 }
 100*mean(is.na(X)) # proportion missingness
 x <- lapply(seq_len(1),function(x) missRanger::missRanger(data=X,pmm.k=3,
-        num.trees=100,verbose=0,seed=1)) # impute multiple times!
+        num.trees=100,verbose=0,seed=1))
 x <- lapply(x,function(x) model.matrix(~.-1,data=x))
-#X <- x[[1]] # impute multiple times
 
 # genomic features
 load("data/ppmi_rnaseq_bl_pd_hc-2019-01-11.Rdata",verbose=TRUE)
 counts <- t(ppmi_rnaseq_bl_pdhc)
+mean(grepl(pattern="ENSG0000|ENSGR0000",x=colnames(counts)))
 cond <- apply(counts,2,function(x) sd(x)>0) & !grepl(pattern="ENSG0000|ENSGR0000",x=colnames(counts))
 Z <- palasso:::.prepare(counts[,cond],filter=10,cutoff="knee")$X
 
@@ -289,7 +295,8 @@ writeLines(text=capture.output(utils::sessionInfo(),cat("\n"),sessioninfo::sessi
 ```{r figure_COR}
 load("results/data.RData",verbose=TRUE)
 
-grDevices::pdf(file="manuscript/figure_COR.pdf",width=6,height=3)
+#grDevices::pdf(file="manuscript/figure_COR.pdf",width=6,height=3)
+grDevices::postscript(file="manuscript/figure_COR.eps",width=6,height=3)
 graphics::par(mar=c(0.5,3,2,0.5))
 graphics::layout(mat=matrix(c(1,2),nrow=1,ncol=2),width=c(0.2,0.8))
 
@@ -396,7 +403,8 @@ change <- t(sapply(loss,function(x) 100*(x["meta",]-x["base",])/x["base",]))
 dimnames(change) <- list(table$var,c("1st","2nd","3rd"))
 
 # overview
-grDevices::pdf(file="manuscript/figure_INT.pdf",width=6,height=3,pointsize=12)
+#grDevices::pdf(file="manuscript/figure_INT.pdf",width=6,height=3,pointsize=12)
+grDevices::postscript(file="manuscript/figure_INT.eps",width=6,height=3,pointsize=12)
 graphics::par(mfrow=c(2,3),mar=c(0.1,3,2,0.1),oma=c(0,1.1,1,0))
 for(alpha in c("lasso","ridge")){
   for(data in c("clinic","omics","both")){
@@ -430,7 +438,8 @@ change <- t(sapply(loss,function(x) 100*(x["meta",]-x["base",])/x["base",]))
 vars <- unique(c(table$var1,table$var2))
 temp <- matrix(NA,nrow=length(vars),ncol=length(vars),dimnames=list(vars,vars))
 array <- array(data=list(temp),dim=c(3,2,3),dimnames=list(data,alpha,step))
-grDevices::pdf(file="manuscript/figure_EXT.pdf",width=7.5,height=10,pointsize=14)
+#grDevices::pdf(file="manuscript/figure_EXT.pdf",width=7.5,height=10,pointsize=14)
+grDevices::postscript(file="manuscript/figure_EXT.eps",width=7.5,height=10,pointsize=14)
 graphics::par(mfrow=c(6,3),mar=c(0.1,2.5,2.5,0.1),oma=c(0,1,2,0))
 for(i in data){
   for(j in alpha){
@@ -455,7 +464,8 @@ x <- loss[[i]]
 ```
 
 ```{r figure_ALL}
-grDevices::pdf(file="manuscript/figure_ALL.pdf",height=3,width=6)
+#grDevices::pdf(file="manuscript/figure_ALL.pdf",height=3,width=6)
+grDevices::postscript(file="manuscript/figure_ALL.eps",height=3,width=6)
 
 graphics::par(mar=c(0.5,3,2,0.5))
 graphics::layout(mat=matrix(c(1,2),nrow=1,ncol=2),width=c(0.2,0.8))
@@ -472,7 +482,8 @@ grDevices::dev.off()
 ```
 
 ```{r figure_DIF}
-grDevices::pdf(file="manuscript/figure_DIF.pdf",height=1.2,width=5)
+#grDevices::pdf(file="manuscript/figure_DIF.pdf",height=1.2,width=5)
+grDevices::postscript(file="manuscript/figure_DIF.eps",height=1.2,width=5)
 
 load("results/internal.RData")
 vars <- unique(table$var)
