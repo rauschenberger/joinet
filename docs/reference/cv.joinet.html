@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">joinet</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8</span>
       </span>
     </div>
 
@@ -97,13 +97,13 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/rauschenberger/joinet">
-    <span class="fa fa-github"></span>
+    <span class="fas fa-github"></span>
      
   </a>
 </li>
 <li>
   <a href="https://cran.r-project.org/package=joinet">
-    <span class="fa fa-download"></span>
+    <span class="fas fa-download"></span>
      
   </a>
 </li>
@@ -129,23 +129,23 @@
     <p>Compares univariate and multivariate regression.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cv.joinet</span>(
-  <span class='no'>Y</span>,
-  <span class='no'>X</span>,
-  <span class='kw'>family</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>,
-  <span class='kw'>nfolds.ext</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-  <span class='kw'>nfolds.int</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>foldid.ext</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>foldid.int</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>type.measure</span> <span class='kw'>=</span> <span class='st'>"deviance"</span>,
-  <span class='kw'>alpha.base</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>alpha.meta</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>compare</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>mice</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>cvpred</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>times</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>cv.joinet</span><span class='op'>(</span>
+  <span class='va'>Y</span>,
+  <span class='va'>X</span>,
+  family <span class='op'>=</span> <span class='st'>"gaussian"</span>,
+  nfolds.ext <span class='op'>=</span> <span class='fl'>5</span>,
+  nfolds.int <span class='op'>=</span> <span class='fl'>10</span>,
+  foldid.ext <span class='op'>=</span> <span class='cn'>NULL</span>,
+  foldid.int <span class='op'>=</span> <span class='cn'>NULL</span>,
+  type.measure <span class='op'>=</span> <span class='st'>"deviance"</span>,
+  alpha.base <span class='op'>=</span> <span class='fl'>1</span>,
+  alpha.meta <span class='op'>=</span> <span class='fl'>1</span>,
+  compare <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  mice <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  cvpred <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  times <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,8 +154,7 @@
       <th>Y</th>
       <td><p>outputs<strong>:</strong>
 numeric matrix with \(n\) rows (samples)
-and \(q\) columns (variables),
-with positive correlation (see details)</p></td>
+and \(q\) columns (variables)</p></td>
     </tr>
     <tr>
       <th>X</th>
@@ -196,7 +195,7 @@ or <code>NULL</code></p></td>
       <td><p>loss function<strong>:</strong>
 vector of length \(1\) or \(q\) with entries
 <code>"deviance"</code>, <code>"class"</code>, <code>"mse"</code> or <code>"mae"</code>
-(see <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code>)</p></td>
+(see <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>)</p></td>
     </tr>
     <tr>
       <th>alpha.base</th>
@@ -205,7 +204,7 @@ numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
     </tr>
     <tr>
       <th>alpha.meta</th>
-      <td><p>elastic net mixing parameter for meta learner<strong>:</strong>
+      <td><p>elastic net mixing parameter for meta learners<strong>:</strong>
 numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
     </tr>
     <tr>
@@ -231,8 +230,8 @@ logical</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>further arguments passed to <code><a href='https://rdrr.io/pkg/glmnet/man/glmnet.html'>glmnet</a></code>
-and <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code></p></td>
+      <td><p>further arguments passed to <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code>
+and <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code></p></td>
     </tr>
     </table>
 
@@ -260,7 +259,7 @@ and the intercept-only models (<code>none</code>).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

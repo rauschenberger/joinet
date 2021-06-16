@@ -25,8 +25,7 @@ cv.joinet(
 \arguments{
 \item{Y}{outputs\strong{:}
 numeric matrix with \eqn{n} rows (samples)
-and \eqn{q} columns (variables),
-with positive correlation (see details)}
+and \eqn{q} columns (variables)}
 
 \item{X}{inputs\strong{:}
 numeric matrix with \eqn{n} rows (samples)
@@ -58,7 +57,7 @@ vector of length \eqn{1} or \eqn{q} with entries
 \item{alpha.base}{elastic net mixing parameter for base learners\strong{:}
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
-\item{alpha.meta}{elastic net mixing parameter for meta learner\strong{:}
+\item{alpha.meta}{elastic net mixing parameter for meta learners\strong{:}
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
 \item{compare}{experimental arguments\strong{:}

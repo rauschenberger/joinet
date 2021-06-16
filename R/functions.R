@@ -17,8 +17,7 @@
 #' @param Y
 #' outputs\strong{:}
 #' numeric matrix with \eqn{n} rows (samples)
-#' and \eqn{q} columns (variables),
-#' with positive correlation (see details)
+#' and \eqn{q} columns (variables)
 #' 
 #' @param X
 #' inputs\strong{:}
@@ -49,21 +48,40 @@
 #' numeric between \eqn{0} (ridge) and \eqn{1} (lasso)
 #' 
 #' @param alpha.meta
-#' elastic net mixing parameter for meta learner\strong{:}
+#' elastic net mixing parameter for meta learners\strong{:}
 #' numeric between \eqn{0} (ridge) and \eqn{1} (lasso)
+#' 
+#' @param constraint
+#' non-negativity constraints\strong{:}
+#' logical (see details)
+#' 
+#' @param weight
+#' inclusion/exclusion of variables\strong{:}
+#' logical matrix with \eqn{q} rows and \eqn{p} columns,
+#' or \code{NULL} (see details)
 #' 
 #' @param ...
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
 #' 
 #' @references 
-#' Armin Rauschenberger, Enrico Glaab (2020)
+#' Armin Rauschenberger, Enrico Glaab (2021)
 #' "Predicting correlated outcomes from molecular data"
 #' \emph{Manuscript in preparation}.
 #' 
 #' @details
-#' \strong{correlation:}
-#' The \eqn{q} outcomes should be positively correlated.
-#' Avoid negative correlations by changing the sign of the variable.
+#' \strong{non-negativity constraints:}
+#' If it is reasonable to assume that the outcomes
+#' are \emph{positively} correlated
+#' (potentially after changing the sign of some outcomes)
+#' we recommend to set \code{constraint=TRUE}.
+#' Then non-negativity constraints are imposed on the meta learner.
+#' 
+#' \strong{inclusion/exclusion of variables:}
+#' The entry in the \eqn{j}th column and the \eqn{k}th row
+#' indicates whether the \eqn{j}th feature may be used for 
+#' modelling the \eqn{k}th outcome
+#' (where \eqn{0} means \code{FALSE} and
+#' \eqn{1} means \code{TRUE}).
 #' 
 #' \strong{elastic net:}
 #' \code{alpha.base} controls input-output effects,
@@ -99,10 +117,11 @@
 #' \dontrun{
 #' browseVignettes("joinet") # further examples}
 #' 
-joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,...){
+joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,constraint=TRUE,weight=NULL,...){
+  # IMPLEMENT CODE FOR CONSTRAINT AND WEIGHT!
   
   #--- temporary ---
-  # family <- "gaussian"; nfolds <- 10; foldid <- NULL; type.measure <- "deviance"
+  # family <- "gaussian"; nfolds <- 10; foldid <- NULL; type.measure <- "deviance"; alpha.base <- alpha.meta <- 1; constraint <- TRUE; weight <- NULL
   
   #--- checks ---
   Y <- as.matrix(Y)
@@ -110,16 +129,16 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   
   cornet:::.check(x=Y,type="matrix",miss=TRUE)
   
-  ### trial start ###
-  for(i in 1:(ncol(Y)-1)){
-    for(j in i:ncol(Y)){
-      cor <- stats::cor.test(Y[,i],Y[,j],use="pairwise.complete.obs")
-      if(cor$statistic<0 & cor$p.value<0.05){
-        warning(paste("Columns",i,"and",j,"are negatively correlated."))
+  if(constraint){
+    for(i in 1:(ncol(Y)-1)){
+      for(j in i:ncol(Y)){
+        cor <- stats::cor.test(Y[,i],Y[,j],use="pairwise.complete.obs")
+        if(cor$statistic<0 & cor$p.value<0.05){
+          warning(paste("Columns",i,"and",j,"are negatively correlated. Consider using constraint=FALSE."),call.=FALSE)
+        }
       }
     }
   }
-  ### trial end ###
   
   #if(any(stats::cor(Y,use="pairwise.complete.obs")<0,na.rm=TRUE)){warning("Negative correlation!",call.=FALSE)}
   cornet:::.check(x=X,type="matrix")
@@ -130,6 +149,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   cornet:::.check(x=type.measure,type="string",values=c("deviance","class","mse","mae")) # not auc (min/max confusion)
   cornet:::.check(x=alpha.base,type="scalar",min=0,max=1)
   cornet:::.check(x=alpha.meta,type="scalar",min=0,max=1)
+  cornet:::.check(x=weight,type="matrix",min=0,max=1,null=TRUE)
   if(!is.null(c(list(...)$lower.limits,list(...)$upper.limits))){
     stop("Reserved arguments \"lower.limits\" and \"upper.limits\".",call.=FALSE)
   }
@@ -138,6 +158,12 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   n <- nrow(Y)
   q <- ncol(Y)
   p <- ncol(X)
+  
+  if(is.null(weight)){
+    pf <- matrix(1,nrow=q,ncol=p)
+  } else {
+    pf <- 1/weight
+  }
   
   #--- family ---
   if(length(family)==1){
@@ -160,7 +186,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   for(i in seq_len(q)){
     cond <- !is.na(Y[,i])
     #if(sum(cond)==0){nlambda[i] <- 0; next}
-    base[[i]]$glmnet.fit <- glmnet::glmnet(y=Y[cond,i],x=X[cond,],family=family[i],alpha=alpha.base,...) # ellipsis
+    base[[i]]$glmnet.fit <- glmnet::glmnet(y=Y[cond,i],x=X[cond,],family=family[i],alpha=alpha.base,penalty.factor=pf[i,],...) # ellipsis
     base[[i]]$lambda <- base[[i]]$glmnet.fit$lambda
     nlambda[i] <- length(base[[i]]$glmnet.fit$lambda)
   }
@@ -180,7 +206,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
     for(i in seq_len(q)){
       cond <- !is.na(Y0[,i])
       #if(sum(cond)==0){next}
-      object <- glmnet::glmnet(y=Y0[cond,i],x=X0[cond,],family=family[i],alpha=alpha.base,...) # ellipsis
+      object <- glmnet::glmnet(y=Y0[cond,i],x=X0[cond,],family=family[i],alpha=alpha.base,penalty.factor=pf[i,],...) # ellipsis
       temp <- stats::predict(object=object,newx=X1,type="link",
                              s=base[[i]]$glmnet.fit$lambda)
       link[[i]][foldid==k,seq_len(ncol(temp))] <- temp
@@ -208,7 +234,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   for(i in seq_len(q)){
     cond <- !is.na(Y[,i])
     meta[[i]] <- glmnet::cv.glmnet(y=Y[cond,i],x=hat[cond,],
-                                   lower.limits=0, # important: 0
+                                   lower.limits=ifelse(constraint,0,-Inf), # important: 0 (was lower.limits=0)
                                    upper.limits=Inf, # important: Inf
                                    foldid=foldid[cond],
                                    family=family[i],

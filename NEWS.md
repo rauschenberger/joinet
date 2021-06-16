@@ -1,4 +1,8 @@
 
+## joinet 0.0.8 (2021-06-16)
+
+* extension (with weights, without constraints)
+
 ## joinet 0.0.6 (2020-11-18)
 
 * conditional execution

@@ -13,14 +13,15 @@ joinet(
   type.measure = "deviance",
   alpha.base = 1,
   alpha.meta = 1,
+  constraint = TRUE,
+  weight = NULL,
   ...
 )
 }
 \arguments{
 \item{Y}{outputs\strong{:}
 numeric matrix with \eqn{n} rows (samples)
-and \eqn{q} columns (variables),
-with positive correlation (see details)}
+and \eqn{q} columns (variables)}
 
 \item{X}{inputs\strong{:}
 numeric matrix with \eqn{n} rows (samples)
@@ -44,8 +45,15 @@ vector of length \eqn{1} or \eqn{q} with entries
 \item{alpha.base}{elastic net mixing parameter for base learners\strong{:}
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
 
-\item{alpha.meta}{elastic net mixing parameter for meta learner\strong{:}
+\item{alpha.meta}{elastic net mixing parameter for meta learners\strong{:}
 numeric between \eqn{0} (ridge) and \eqn{1} (lasso)}
+
+\item{constraint}{non-negativity constraints\strong{:}
+logical (see details)}
+
+\item{weight}{inclusion/exclusion of variables\strong{:}
+logical matrix with \eqn{q} rows and \eqn{p} columns,
+or \code{NULL} (see details)}
 
 \item{...}{further arguments passed to \code{\link[glmnet]{glmnet}}}
 }
@@ -62,9 +70,19 @@ The slots \code{base} and \code{meta} each contain
 Implements multivariate elastic net regression.
 }
 \details{
-\strong{correlation:}
-The \eqn{q} outcomes should be positively correlated.
-Avoid negative correlations by changing the sign of the variable.
+\strong{non-negativity constraints:}
+If it is reasonable to assume that the outcomes
+are \emph{positively} correlated
+(potentially after changing the sign of some outcomes)
+we recommend to set \code{constraint=TRUE}.
+Then non-negativity constraints are imposed on the meta learner.
+
+\strong{inclusion/exclusion of variables:}
+The entry in the \eqn{j}th column and the \eqn{k}th row
+indicates whether the \eqn{j}th feature may be used for 
+modelling the \eqn{k}th outcome
+(where \eqn{0} means \code{FALSE} and
+\eqn{1} means \code{TRUE}).
 
 \strong{elastic net:}
 \code{alpha.base} controls input-output effects,
@@ -90,7 +108,7 @@ browseVignettes("joinet") # further examples}
 
 }
 \references{
-Armin Rauschenberger, Enrico Glaab (2020)
+Armin Rauschenberger, Enrico Glaab (2021)
 "Predicting correlated outcomes from molecular data"
 \emph{Manuscript in preparation}.
 }

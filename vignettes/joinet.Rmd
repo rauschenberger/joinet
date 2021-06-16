@@ -123,4 +123,4 @@ cv.joinet(Y=Y,X=X,family=family)
 
 ## Reference
 
-Armin Rauschenberger and Enrico Glaab (2020). "Predicting correlated outcomes from molecular data". *Manuscript in preparation.*
+Armin Rauschenberger and Enrico Glaab (2021). "Predicting correlated outcomes from molecular data". *Manuscript in preparation.*
