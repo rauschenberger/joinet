@@ -33,7 +33,7 @@ devtools::install_github("rauschenberger/joinet")
 
 ## Reference
 
-Armin Rauschenberger and Enrico Glaab (2020). “Predicting correlated
+Armin Rauschenberger and Enrico Glaab (2021). “Predicting correlated
 outcomes from molecular data”. *Manuscript in preparation.*
 
 [![CRAN
