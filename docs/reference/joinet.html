@@ -138,8 +138,8 @@
   type.measure <span class='op'>=</span> <span class='st'>"deviance"</span>,
   alpha.base <span class='op'>=</span> <span class='fl'>1</span>,
   alpha.meta <span class='op'>=</span> <span class='fl'>1</span>,
-  constraint <span class='op'>=</span> <span class='cn'>TRUE</span>,
   weight <span class='op'>=</span> <span class='cn'>NULL</span>,
+  sign <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -150,13 +150,13 @@
       <th>Y</th>
       <td><p>outputs<strong>:</strong>
 numeric matrix with \(n\) rows (samples)
-and \(q\) columns (variables)</p></td>
+and \(q\) columns (outputs)</p></td>
     </tr>
     <tr>
       <th>X</th>
       <td><p>inputs<strong>:</strong>
 numeric matrix with \(n\) rows (samples)
-and \(p\) columns (variables)</p></td>
+and \(p\) columns (inputs)</p></td>
     </tr>
     <tr>
       <th>family</th>
@@ -192,14 +192,18 @@ numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
 numeric between \(0\) (ridge) and \(1\) (lasso)</p></td>
     </tr>
     <tr>
-      <th>constraint</th>
-      <td><p>non-negativity constraints<strong>:</strong>
-logical (see details)</p></td>
+      <th>weight</th>
+      <td><p>input-output effects<strong>:</strong>
+matrix with \(p\) rows (inputs) and \(q\) columns (outputs)
+with entries \(0\) (exclude) and \(1\) (include),
+or <code>NULL</code> (see details)</p></td>
     </tr>
     <tr>
-      <th>weight</th>
-      <td><p>inclusion/exclusion of variables<strong>:</strong>
-logical matrix with \(q\) rows and \(p\) columns,
+      <th>sign</th>
+      <td><p>output-output effects<strong>:</strong>
+matrix with \(q\) rows ("meta-inputs") and \(q\) columns (outputs), 
+with entries \(-1\) (negative), \(0\) (none),
+\(1\) (positive) and \(NA\) (any),
 or <code>NULL</code> (see details)</p></td>
     </tr>
     <tr>
@@ -219,18 +223,44 @@ The slots <code>base</code> and <code>meta</code> each contain
 \(q\) <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>-like objects.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><strong>non-negativity constraints:</strong>
+    <p>TO BE DELETED:
+constraint
+non-negativity constraints<strong>:</strong>
+logical (see details)
+non-negativity constraints<strong>:</strong>
 If it is reasonable to assume that the outcomes
 are <em>positively</em> correlated
 (potentially after changing the sign of some outcomes)
 we recommend to set <code>constraint=TRUE</code>.
 Then non-negativity constraints are imposed on the meta learner.</p>
-<p><strong>inclusion/exclusion of variables:</strong>
-The entry in the \(j\)th column and the \(k\)th row
-indicates whether the \(j\)th feature may be used for 
-modelling the \(k\)th outcome
-(where \(0\) means <code>FALSE</code> and
-\(1\) means <code>TRUE</code>).</p>
+<p><strong>input-output relations:</strong>
+In this matrix with \(p\) rows and \(q\) columns,
+the entry in the \(j\)th row and the \(k\)th column
+indicates whether the \(j\)th input may be used for 
+modelling the \(k\)th output
+(where \(0\) means yes and
+\(1\) means no).
+By default,</p>
+<p><strong>output-output relations:</strong>
+In this matrix with \(q\) rows and \(q\) columns,
+the entry in the \(k\)th row and the \(l\)th column
+indicates how the \(k\)th output may be used for
+modelling the \(l\)th output
+(where \(-1\) means negative effect,
+\(0\) means no effect,
+\(1\) means positive effect,
+and \(NA\) means any effect).
+All entries on the diagonal must equal \(1\).
+By default (<code>sign=NULL</code>),
+Kendall correlation determines this matrix,
+with \(-1\) for significant negative, \(0\) for insignificant,
+\(1\) for significant positive correlations.
+The short-cuts <code>sign=1</code> and <code>code=NA</code> set all off-diagonal entries
+equal to \(1\) (non-negativity constraints)
+or <code>NA</code> (no constraints), respectively.
+The former short-cut is useful if all pairs of outcomes
+are assumed to be <em>positively</em> correlated
+(potentially after changing the sign of some outcomes).</p>
 <p><strong>elastic net:</strong>
 <code>alpha.base</code> controls input-output effects,
 <code>alpha.meta</code> controls output-output effects;

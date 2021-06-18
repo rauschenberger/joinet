@@ -25,11 +25,11 @@ cv.joinet(
 \arguments{
 \item{Y}{outputs\strong{:}
 numeric matrix with \eqn{n} rows (samples)
-and \eqn{q} columns (variables)}
+and \eqn{q} columns (outputs)}
 
 \item{X}{inputs\strong{:}
 numeric matrix with \eqn{n} rows (samples)
-and \eqn{p} columns (variables)}
+and \eqn{p} columns (inputs)}
 
 \item{family}{distribution\strong{:}
 vector of length \eqn{1} or \eqn{q} with entries
