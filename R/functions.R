@@ -17,12 +17,12 @@
 #' @param Y
 #' outputs\strong{:}
 #' numeric matrix with \eqn{n} rows (samples)
-#' and \eqn{q} columns (variables)
+#' and \eqn{q} columns (outputs)
 #' 
 #' @param X
 #' inputs\strong{:}
 #' numeric matrix with \eqn{n} rows (samples)
-#' and \eqn{p} columns (variables)
+#' and \eqn{p} columns (inputs)
 #'
 #' @param family
 #' distribution\strong{:}
@@ -51,13 +51,17 @@
 #' elastic net mixing parameter for meta learners\strong{:}
 #' numeric between \eqn{0} (ridge) and \eqn{1} (lasso)
 #' 
-#' @param constraint
-#' non-negativity constraints\strong{:}
-#' logical (see details)
-#' 
 #' @param weight
-#' inclusion/exclusion of variables\strong{:}
-#' logical matrix with \eqn{q} rows and \eqn{p} columns,
+#' input-output effects\strong{:}
+#' matrix with \eqn{p} rows (inputs) and \eqn{q} columns (outputs)
+#' with entries \eqn{0} (exclude) and \eqn{1} (include),
+#' or \code{NULL} (see details)
+#' 
+#' @param sign
+#' output-output effects\strong{:}
+#' matrix with \eqn{q} rows ("meta-inputs") and \eqn{q} columns (outputs), 
+#' with entries \eqn{-1} (negative), \eqn{0} (none),
+#' \eqn{1} (positive) and \eqn{NA} (any),
 #' or \code{NULL} (see details)
 #' 
 #' @param ...
@@ -69,19 +73,46 @@
 #' \emph{Manuscript in preparation}.
 #' 
 #' @details
-#' \strong{non-negativity constraints:}
+#' TO BE DELETED:
+#' constraint
+#' non-negativity constraints\strong{:}
+#' logical (see details)
+#' non-negativity constraints\strong{:}
 #' If it is reasonable to assume that the outcomes
 #' are \emph{positively} correlated
 #' (potentially after changing the sign of some outcomes)
 #' we recommend to set \code{constraint=TRUE}.
 #' Then non-negativity constraints are imposed on the meta learner.
 #' 
-#' \strong{inclusion/exclusion of variables:}
-#' The entry in the \eqn{j}th column and the \eqn{k}th row
-#' indicates whether the \eqn{j}th feature may be used for 
-#' modelling the \eqn{k}th outcome
-#' (where \eqn{0} means \code{FALSE} and
-#' \eqn{1} means \code{TRUE}).
+#' \strong{input-output relations:}
+#' In this matrix with \eqn{p} rows and \eqn{q} columns,
+#' the entry in the \eqn{j}th row and the \eqn{k}th column
+#' indicates whether the \eqn{j}th input may be used for 
+#' modelling the \eqn{k}th output
+#' (where \eqn{0} means yes and
+#' \eqn{1} means no).
+#' By default, 
+#' 
+#' \strong{output-output relations:}
+#' In this matrix with \eqn{q} rows and \eqn{q} columns,
+#' the entry in the \eqn{k}th row and the \eqn{l}th column
+#' indicates how the \eqn{k}th output may be used for
+#' modelling the \eqn{l}th output
+#' (where \eqn{-1} means negative effect,
+#' \eqn{0} means no effect,
+#' \eqn{1} means positive effect,
+#' and \eqn{NA} means any effect).
+#' All entries on the diagonal must equal \eqn{1}.
+#' By default (\code{sign=NULL}),
+#' Kendall correlation determines this matrix,
+#' with \eqn{-1} for significant negative, \eqn{0} for insignificant,
+#' \eqn{1} for significant positive correlations.
+#' The short-cuts \code{sign=1} and \code{code=NA} set all off-diagonal entries
+#' equal to \eqn{1} (non-negativity constraints)
+#' or \code{NA} (no constraints), respectively.
+#' The former short-cut is useful if all pairs of outcomes
+#' are assumed to be \emph{positively} correlated
+#' (potentially after changing the sign of some outcomes).
 #' 
 #' \strong{elastic net:}
 #' \code{alpha.base} controls input-output effects,
@@ -117,53 +148,119 @@
 #' \dontrun{
 #' browseVignettes("joinet") # further examples}
 #' 
-joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,constraint=TRUE,weight=NULL,...){
-  # IMPLEMENT CODE FOR CONSTRAINT AND WEIGHT!
+joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="deviance",alpha.base=1,alpha.meta=1,weight=NULL,sign=NULL,...){
+  # VERIFY CODE FOR WEIGHT AND SIGN!
   
   #--- temporary ---
-  # family <- "gaussian"; nfolds <- 10; foldid <- NULL; type.measure <- "deviance"; alpha.base <- alpha.meta <- 1; constraint <- TRUE; weight <- NULL
+  # family <- "gaussian"; nfolds <- 10; foldid <- NULL; type.measure <- "deviance"; alpha.base <- alpha.meta <- 1; weight <- NULL; sign <- NULL
   
   #--- checks ---
   Y <- as.matrix(Y)
   X <- as.matrix(X)
   
   cornet:::.check(x=Y,type="matrix",miss=TRUE)
-  
-  if(constraint){
-    for(i in 1:(ncol(Y)-1)){
-      for(j in i:ncol(Y)){
-        cor <- stats::cor.test(Y[,i],Y[,j],use="pairwise.complete.obs")
-        if(cor$statistic<0 & cor$p.value<0.05){
-          warning(paste("Columns",i,"and",j,"are negatively correlated. Consider using constraint=FALSE."),call.=FALSE)
-        }
-      }
-    }
-  }
-  
+  #if(constraint){
+  #  for(i in 1:(ncol(Y)-1)){
+  #    for(j in i:ncol(Y)){
+  #      cor <- stats::cor.test(Y[,i],Y[,j],use="pairwise.complete.obs")
+  #      if(cor$estimate<0 & cor$p.value<0.05){
+  #        warning(paste("Columns",i,"and",j,"are negatively correlated. Consider using constraint=FALSE."),call.=FALSE)
+  #      }
+  #    }
+  #  }
+  #}
   #if(any(stats::cor(Y,use="pairwise.complete.obs")<0,na.rm=TRUE)){warning("Negative correlation!",call.=FALSE)}
   cornet:::.check(x=X,type="matrix")
   #cornet:::.check(x=family,type="vector",values=c("gaussian","binomial","poisson"))
   if(nrow(Y)!=nrow(X)){stop("Contradictory sample size.",call.=FALSE)}
+  n <- nrow(Y); q <- ncol(Y); p <- ncol(X)
+  
   cornet:::.check(x=nfolds,type="scalar",min=3)
   cornet:::.check(x=foldid,type="vector",values=seq_len(nfolds),null=TRUE)
   cornet:::.check(x=type.measure,type="string",values=c("deviance","class","mse","mae")) # not auc (min/max confusion)
   cornet:::.check(x=alpha.base,type="scalar",min=0,max=1)
   cornet:::.check(x=alpha.meta,type="scalar",min=0,max=1)
-  cornet:::.check(x=weight,type="matrix",min=0,max=1,null=TRUE)
+  cornet:::.check(x=weight,type="matrix",min=0,max=1,null=TRUE,dim=c(p,q))
   if(!is.null(c(list(...)$lower.limits,list(...)$upper.limits))){
     stop("Reserved arguments \"lower.limits\" and \"upper.limits\".",call.=FALSE)
   }
   
-  #--- dimensionality ---
-  n <- nrow(Y)
-  q <- ncol(Y)
-  p <- ncol(X)
-  
   if(is.null(weight)){
-    pf <- matrix(1,nrow=q,ncol=p)
+    pf <- matrix(1,nrow=p,ncol=q)
   } else {
     pf <- 1/weight
   }
+  
+  #--- constraints --- 
+  null <- is.null(sign)
+  if(null){sign <- 0}
+  if(!is.matrix(sign)){
+    sign <- matrix(sign,nrow=q,ncol=q)
+    diag(sign) <- 1
+  }
+  if(any(diag(sign)!=1)){
+    warning("Matrix \"sign\" requires ones on the diagonal.",call.=FALSE)
+  }
+  temp <- sign[lower.tri(sign)|upper.tri(sign)]
+  if(!null & all(!is.na(temp)&temp==0)){
+    warning("Matrix \"sign\" only has zeros off the diagonal.",call.=FALSE)
+  }
+  for(i in seq(from=1,to=q,by=1)){
+    for(j in seq(from=i,to=q,by=1)){
+      cor <- stats::cor.test(Y[,i],Y[,j],use="pairwise.complete.obs",method="kendall")
+      if(cor$p.value>0.05){next}
+      if(null){
+        sign[i,j] <- sign[j,i] <- sign(cor$estimate)
+      } else if(!is.na(sign[i,j]) & sign[i,j]*sign(cor$estimate)==-1){
+        warning(paste("Outputs",i,"and",j,"have a significant",ifelse(sign(cor$estimate)==1,"*positive*","*negative*"),"correlation. Consider changing argument \"sign\" (e.g. sign=NULL)."),call.=FALSE)
+      }
+    }
+  }
+
+  # # long version
+  # 
+  # if(is.null(sign)){
+  #   sign <- matrix(0,nrow=q,ncol=q)
+  #   for(i in seq(from=1,to=q,by=1)){
+  #     for(j in seq(from=i,to=q,by=1)){
+  #       cor <- stats::cor.test(Y[,i],Y[,j],use="pairwise.complete.obs",method="kendall")
+  #       if(cor$p.value<0.05){
+  #         sign[i,j] <- sign[j,i] <- sign(cor$estimate)
+  #       }
+  #     }
+  #   }
+  # } else {
+  #   if(!is.matrix(sign)){
+  #     sign <- matrix(sign,nrow=q,ncol=q) # accept 1 and NA
+  #   }
+  #   for(i in seq(from=1,to=q,by=1)){
+  #     for(j in seq(from=i,to=q,by=1)){
+  #       cor <- stats::cor.test(Y[,i],Y[,j],use="pairwise.complete.obs",method="kendall")
+  #       if(!is.na(sign[i,j]) & cor$p.value<0.05 & sign[i,j]*sign(cor$estimate)==-1){
+  #         warning(paste("Outputs",i,"and",j,"have an unexpected significant correlation. Consider using sign=NULL."),call.=FALSE)
+  #       }
+  #     }
+  #   }
+  # }
+  
+  
+  ## old snippets
+  
+  #if(is.null(sign)){
+  #  sign <- 0   # 0 or NA or 1
+  #  check <- FALSE
+  #} else {
+  #  check <- TRUE
+  #}
+  #
+  #if(is.matrix(sign)){
+  #  # perform checks
+  #} if else(!is.matrix(sign) & !is.null(sign)){
+  #  sign <- matrix(sign,nrow=q,ncol=q)
+  #  # perform checks
+  #} else {  
+  #  if(is.null(sign)){sign <- 0}  # 0 or NA or 1
+  #  }
   
   #--- family ---
   if(length(family)==1){
@@ -186,7 +283,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   for(i in seq_len(q)){
     cond <- !is.na(Y[,i])
     #if(sum(cond)==0){nlambda[i] <- 0; next}
-    base[[i]]$glmnet.fit <- glmnet::glmnet(y=Y[cond,i],x=X[cond,],family=family[i],alpha=alpha.base,penalty.factor=pf[i,],...) # ellipsis
+    base[[i]]$glmnet.fit <- glmnet::glmnet(y=Y[cond,i],x=X[cond,],family=family[i],alpha=alpha.base,penalty.factor=pf[,i],...) # ellipsis
     base[[i]]$lambda <- base[[i]]$glmnet.fit$lambda
     nlambda[i] <- length(base[[i]]$glmnet.fit$lambda)
   }
@@ -206,7 +303,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
     for(i in seq_len(q)){
       cond <- !is.na(Y0[,i])
       #if(sum(cond)==0){next}
-      object <- glmnet::glmnet(y=Y0[cond,i],x=X0[cond,],family=family[i],alpha=alpha.base,penalty.factor=pf[i,],...) # ellipsis
+      object <- glmnet::glmnet(y=Y0[cond,i],x=X0[cond,],family=family[i],alpha=alpha.base,penalty.factor=pf[,i],...) # ellipsis
       temp <- stats::predict(object=object,newx=X1,type="link",
                              s=base[[i]]$glmnet.fit$lambda)
       link[[i]][foldid==k,seq_len(ncol(temp))] <- temp
@@ -232,10 +329,16 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   #--- meta cross-validation ---
   meta <- list()
   for(i in seq_len(q)){
+    # trial start
+    lower.limits <- rep(-Inf,times=q)
+    upper.limits <- rep(Inf,times=q)
+    lower.limits[sign[,i]>=0] <- 0
+    upper.limits[sign[,i]<=0] <- 0
+    # trial end
     cond <- !is.na(Y[,i])
     meta[[i]] <- glmnet::cv.glmnet(y=Y[cond,i],x=hat[cond,],
-                                   lower.limits=ifelse(constraint,0,-Inf), # important: 0 (was lower.limits=0)
-                                   upper.limits=Inf, # important: Inf
+                                   lower.limits=lower.limits, # was first lower.limits=0 and later ifelse(constraint,0,-Inf) 
+                                   upper.limits=upper.limits, # was first upper.limits=Inf
                                    foldid=foldid[cond],
                                    family=family[i],
                                    type.measure=type.measure,
