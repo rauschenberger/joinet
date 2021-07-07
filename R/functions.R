@@ -52,13 +52,13 @@
 #' numeric between \eqn{0} (ridge) and \eqn{1} (lasso)
 #' 
 #' @param weight
-#' input-output effects\strong{:}
+#' input-output relations\strong{:}
 #' matrix with \eqn{p} rows (inputs) and \eqn{q} columns (outputs)
 #' with entries \eqn{0} (exclude) and \eqn{1} (include),
 #' or \code{NULL} (see details)
 #' 
 #' @param sign
-#' output-output effects\strong{:}
+#' output-output relations\strong{:}
 #' matrix with \eqn{q} rows ("meta-inputs") and \eqn{q} columns (outputs), 
 #' with entries \eqn{-1} (negative), \eqn{0} (none),
 #' \eqn{1} (positive) and \eqn{NA} (any),
@@ -73,46 +73,36 @@
 #' \emph{Manuscript in preparation}.
 #' 
 #' @details
-#' TO BE DELETED:
-#' constraint
-#' non-negativity constraints\strong{:}
-#' logical (see details)
-#' non-negativity constraints\strong{:}
-#' If it is reasonable to assume that the outcomes
-#' are \emph{positively} correlated
-#' (potentially after changing the sign of some outcomes)
-#' we recommend to set \code{constraint=TRUE}.
-#' Then non-negativity constraints are imposed on the meta learner.
-#' 
 #' \strong{input-output relations:}
 #' In this matrix with \eqn{p} rows and \eqn{q} columns,
 #' the entry in the \eqn{j}th row and the \eqn{k}th column
 #' indicates whether the \eqn{j}th input may be used for 
 #' modelling the \eqn{k}th output
-#' (where \eqn{0} means yes and
-#' \eqn{1} means no).
-#' By default, 
+#' (where \eqn{0} means "exclude" and
+#' \eqn{1} means "include").
+#' By default (\code{sign=NULL}),
+#' all entries are set to \eqn{1}.
 #' 
 #' \strong{output-output relations:}
 #' In this matrix with \eqn{q} rows and \eqn{q} columns,
-#' the entry in the \eqn{k}th row and the \eqn{l}th column
-#' indicates how the \eqn{k}th output may be used for
-#' modelling the \eqn{l}th output
+#' the entry in the \eqn{l}th row and the \eqn{k}th column
+#' indicates how the \eqn{l}th output may be used for
+#' modelling the \eqn{k}th output
 #' (where \eqn{-1} means negative effect,
 #' \eqn{0} means no effect,
 #' \eqn{1} means positive effect,
 #' and \eqn{NA} means any effect).
-#' All entries on the diagonal must equal \eqn{1}.
-#' By default (\code{sign=NULL}),
-#' Kendall correlation determines this matrix,
-#' with \eqn{-1} for significant negative, \eqn{0} for insignificant,
-#' \eqn{1} for significant positive correlations.
-#' The short-cuts \code{sign=1} and \code{code=NA} set all off-diagonal entries
-#' equal to \eqn{1} (non-negativity constraints)
-#' or \code{NA} (no constraints), respectively.
-#' The former short-cut is useful if all pairs of outcomes
+#' 
+#' There are three short-cuts for filling up this matrix:
+#' (1) \code{sign=1} sets all entries to \eqn{1} (non-negativity constraints).
+#' This is useful if all pairs of outcomes
 #' are assumed to be \emph{positively} correlated
 #' (potentially after changing the sign of some outcomes).
+#' (2) \code{code=NA} sets all diagonal entries to \eqn{1}
+#' and all off-diagonal entries to \code{NA} (no constraints).
+#' (3) \code{sign=NULL} uses Spearman correlation to determine the entries,
+#' with \eqn{-1} for significant negative, \eqn{0} for insignificant,
+#' \eqn{1} for significant positive correlations.
 #' 
 #' \strong{elastic net:}
 #' \code{alpha.base} controls input-output effects,
@@ -199,7 +189,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
     diag(sign) <- 1
   }
   if(any(diag(sign)!=1)){
-    warning("Matrix \"sign\" requires ones on the diagonal.",call.=FALSE)
+    warning("Matrix \"sign\" has entries other than one on the diagonal.",call.=FALSE)
   }
   temp <- sign[lower.tri(sign)|upper.tri(sign)]
   if(!null & all(!is.na(temp)&temp==0)){
@@ -207,12 +197,12 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
   }
   for(i in seq(from=1,to=q,by=1)){
     for(j in seq(from=i,to=q,by=1)){
-      cor <- stats::cor.test(Y[,i],Y[,j],use="pairwise.complete.obs",method="kendall")
+      cor <- stats::cor.test(Y[,i],Y[,j],use="pairwise.complete.obs",method="spearman",exact=FALSE)
       if(cor$p.value>0.05){next}
       if(null){
         sign[i,j] <- sign[j,i] <- sign(cor$estimate)
       } else if(!is.na(sign[i,j]) & sign[i,j]*sign(cor$estimate)==-1){
-        warning(paste("Outputs",i,"and",j,"have a significant",ifelse(sign(cor$estimate)==1,"*positive*","*negative*"),"correlation. Consider changing argument \"sign\" (e.g. sign=NULL)."),call.=FALSE)
+        warning(paste("Outputs",i,"and",j,"have a significant",ifelse(sign(cor$estimate)==1,"*positive*","*negative*"),"correlation. Consider changing argument \"sign\" (e.g. sign=NA or sign=NULL)."),call.=FALSE)
       }
     }
   }

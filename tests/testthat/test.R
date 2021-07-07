@@ -100,3 +100,20 @@ for(alpha in c(0.05,0.95)){
 }
 
 }
+
+testthat::test_that("argument weight",{
+  weight <- matrix(stats::rbinom(n=p*q,size=1,prob=0.3),nrow=p,ncol=q)
+  object <- joinet(Y=Y,X=X,weight=weight,alpha.base=0,family=family)
+  coef <- sapply(object$base, function(x) as.numeric(stats::coef(object = x$glmnet.fit, s = x$lambda.min))[-1])
+  cond <- all((weight==0)==(coef==0))
+  testthat::expect_true(cond)
+})
+
+testthat::test_that("argument sign",{
+  sign <- matrix(stats::rbinom(n=q*q,size=2,prob=0.3)-1,nrow=q,ncol=q) # asymmetric
+  diag(sign) <- 1
+  object <- joinet(Y=Y,X=X,sign=sign,alpha.meta=0,family=family)
+  weights <- weights(object)[-1,]
+  cond <- all(weights[sign==-1]<=0) & all(weights[sign==0]==0) & all(weights[sign==1]>=0)
+  testthat::expect_true(cond)
+})
