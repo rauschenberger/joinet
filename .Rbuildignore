@@ -6,3 +6,4 @@
 ^appveyor\.yml$
 ^\.Rhistory$
 ^\.git$
+^DS_Store$
