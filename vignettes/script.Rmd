@@ -11,7 +11,7 @@ editor_options:
 
 ```{r start,include=FALSE}
 knitr::opts_chunk$set(echo=TRUE,eval=FALSE)
-setwd("~/Desktop/joinet")
+#setwd("~/Desktop/joinet")
 #source("~/Desktop/joinet/package/R/functions.R")
 #pkgs <- c("devtools","missRanger","mice","mvtnorm","glmnet","earth","spls","MTPS","RMTL","MultivariateRandomForest","mcen","MRCE","remMap","SiER","GPM","MLPUGS","benchmarkme")
 #install.packages(pkgs)

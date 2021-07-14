@@ -5,5 +5,5 @@
 ^cran-comments\.md$
 ^appveyor\.yml$
 ^\.Rhistory$
-^\.git$
 ^\.DS_Store$
+^\.git$
