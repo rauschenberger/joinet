@@ -99,8 +99,6 @@ for(alpha in c(0.05,0.95)){
   
 }
 
-}
-
 testthat::test_that("argument weight",{
   weight <- matrix(stats::rbinom(n=p*q,size=1,prob=0.3),nrow=p,ncol=q)
   object <- joinet(Y=Y,X=X,weight=weight,alpha.base=0,family=family)
@@ -117,3 +115,5 @@ testthat::test_that("argument sign",{
   cond <- all(weights[sign==-1]<=0) & all(weights[sign==0]==0) & all(weights[sign==1]>=0)
   testthat::expect_true(cond)
 })
+
+}
