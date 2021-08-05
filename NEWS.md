@@ -1,4 +1,8 @@
 
+## joinet 0.0.10 (2021-08-05)
+
+* udpated documentation
+
 ## joinet 0.0.8 (2021-06-16)
 
 * extension (with weights, without constraints)

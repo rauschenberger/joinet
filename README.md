@@ -34,7 +34,8 @@ devtools::install_github("rauschenberger/joinet")
 ## Reference
 
 Armin Rauschenberger and Enrico Glaab (2021). “Predicting correlated
-outcomes from molecular data”. *Manuscript in preparation.*
+outcomes from molecular data”. *Bioinformatics* btab576. [doi:
+10.1093/bioinformatics/btab576](https://doi.org/10.1093/bioinformatics/btab576).
 
 [![CRAN
 version](https://www.r-pkg.org/badges/version/joinet)](https://CRAN.R-project.org/package=joinet)

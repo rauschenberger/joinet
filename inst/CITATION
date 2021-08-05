@@ -1,0 +1,14 @@
+citHeader("To cite joinet in publications use:")
+
+citEntry(entry="Article",
+    title = "Predicting correlated outcomes from molecular data",
+    author = personList(as.person("Armin Rauschenberger"),as.person("Enrico Glaab")),
+    journal = "Bioinformatics",
+    volume= "In press",
+    year = 2021,
+    url = "https://doi.org/10.1093/bioinformatics/btab576",
+    textVersion = paste("Armin Rauschenberger and Enrico Glaab (2021).",
+		"\"Predicting correlated outcomes from molecular data\",",
+		"Bioinformatics, In press.",
+		"https://doi.org/10.1093/bioinformatics/btab576")
+)
