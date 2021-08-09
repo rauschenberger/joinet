@@ -87,7 +87,7 @@ loss <- cv.joinet(Y=Y,X=X)
 Armin Rauschenberger, Enrico Glaab (2021)
 "Predicting correlated outcomes from molecular data"
 \emph{Bioinformatics}. btab576
-\url{https://doi.org/10.1093/bioinformatics/btab576}
+\doi{10.1093/bioinformatics/btab576}
 
 \email{armin.rauschenberger@uni.lu}
 }
