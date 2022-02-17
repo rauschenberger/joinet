@@ -6,8 +6,3 @@
 ^appveyor\.yml$
 ^\.Rhistory$
 ^\.DS_Store$
-^\.git
-^\./\.git$
-^[.].*$
-^.*/[.].*$
-[.]git$
