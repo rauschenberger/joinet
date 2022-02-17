@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">joinet</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.10</span>
       </span>
     </div>
 
@@ -55,13 +57,13 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/rauschenberger/joinet">
+  <a href="https://github.com/rauschenberger/joinet" class="external-link">
     <span class="fa fa-github"></span>
      
   </a>
 </li>
 <li>
-  <a href="https://cran.r-project.org/package=joinet">
+  <a href="https://cran.r-project.org/package=joinet" class="external-link">
     <span class="fa fa-download"></span>
      
   </a>
@@ -76,45 +78,45 @@
 
       
 
-      </header><script src="joinet_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Multivariate Elastic Net Regression</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/rauschenberger/joinet/blob/master/vignettes/joinet.Rmd"><code>vignettes/joinet.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/rauschenberger/joinet/blob/HEAD/vignettes/joinet.Rmd" class="external-link"><code>vignettes/joinet.Rmd</code></a></small>
       <div class="hidden name"><code>joinet.Rmd</code></div>
 
     </div>
 
     
     
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>Install the current release from <a href="https://CRAN.R-project.org/package=joinet">CRAN</a>:</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>Install the current release from <a href="https://CRAN.R-project.org/package=joinet" class="external-link">CRAN</a>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"joinet"</span><span class="op">)</span></code></pre></div>
-<p>Or install the latest development version from <a href="https://github.com/rauschenberger/joinet">GitHub</a>:</p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"joinet"</span><span class="op">)</span></code></pre></div>
+<p>Or install the latest development version from <a href="https://github.com/rauschenberger/joinet" class="external-link">GitHub</a>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"rauschenberger/joinet"</span><span class="op">)</span></code></pre></div>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"rauschenberger/joinet"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="initialisation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#initialisation" class="anchor"></a>Initialisation</h2>
+<div class="section level2">
+<h2 id="initialisation">Initialisation<a class="anchor" aria-label="anchor" href="#initialisation"></a>
+</h2>
 <p>Load and attach the package:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rauschenberger/joinet">joinet</a></span><span class="op">)</span></code></pre></div>
-<p>And access the <a href="https://rauschenberger.github.io/joinet/">documentation</a>:</p>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rauschenberger/joinet" class="external-link">joinet</a></span><span class="op">)</span></code></pre></div>
+<p>And access the <a href="https://rauschenberger.github.io/joinet/" class="external-link">documentation</a>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">?</span><span class="va">joinet</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/help.html">help</a></span><span class="op">(</span><span class="va">joinet</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/browseVignettes.html">browseVignettes</a></span><span class="op">(</span><span class="st">"joinet"</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span><span class="va">joinet</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/browseVignettes.html" class="external-link">browseVignettes</a></span><span class="op">(</span><span class="st">"joinet"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="simulation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#simulation" class="anchor"></a>Simulation</h2>
+<div class="section level2">
+<h2 id="simulation">Simulation<a class="anchor" aria-label="anchor" href="#simulation"></a>
+</h2>
 <p>For <code>n</code> samples, we simulate <code>p</code> inputs (features, covariates) and <code>q</code> outputs (outcomes, responses). We assume high-dimensional inputs (<code>p</code> <span class="math inline">\(\gg\)</span> <code>n</code>) and low-dimensional outputs (<code>q</code> <span class="math inline">\(\ll\)</span> <code>n</code>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span>
@@ -122,64 +124,63 @@
 <span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">500</span></code></pre></div>
 <p>We simulate the <code>p</code> inputs from a multivariate normal distribution. For the mean, we use the <code>p</code>-dimensional vector <code>mu</code>, where all elements equal zero. For the covariance, we use the <code>p</code> <span class="math inline">\(\times\)</span> <code>p</code> matrix <code>Sigma</code>, where the entry in row <span class="math inline">\(i\)</span> and column <span class="math inline">\(j\)</span> equals <code>rho</code><span class="math inline">\(^{|i-j|}\)</span>. The parameter <code>rho</code> determines the strength of the correlation among the inputs, with small <code>rho</code> leading weak correlations, and large <code>rho</code> leading to strong correlations (0 &lt; <code>rho</code> &lt; 1). The input matrix <code>X</code> has <code>n</code> rows and <code>p</code> columns.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0</span>,times<span class="op">=</span><span class="va">p</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>,times<span class="op">=</span><span class="va">p</span><span class="op">)</span>
 <span class="va">rho</span> <span class="op">&lt;-</span> <span class="fl">0.90</span>
-<span class="va">Sigma</span> <span class="op">&lt;-</span> <span class="va">rho</span><span class="op">^</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/col.html">col</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html">diag</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/row.html">row</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html">diag</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html">mvrnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>,mu<span class="op">=</span><span class="va">mu</span>,Sigma<span class="op">=</span><span class="va">Sigma</span><span class="op">)</span></code></pre></div>
+<span class="va">Sigma</span> <span class="op">&lt;-</span> <span class="va">rho</span><span class="op">^</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/col.html" class="external-link">col</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/row.html" class="external-link">row</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>,mu<span class="op">=</span><span class="va">mu</span>,Sigma<span class="op">=</span><span class="va">Sigma</span><span class="op">)</span></code></pre></div>
 <p>We simulate the input-output effects from independent Bernoulli distributions. The parameter <code>pi</code> determines the number of effects, with small <code>pi</code> leading to few effects, and large <code>pi</code> leading to many effects (0 &lt; <code>pi</code> &lt; 1). The scalar <code>alpha</code> represents the intercept, and the <code>p</code>-dimensional vector <code>beta</code> represents the slopes.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pi</span> <span class="op">&lt;-</span> <span class="fl">0.01</span>
 <span class="va">alpha</span> <span class="op">&lt;-</span> <span class="fl">0</span>
-<span class="va">beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">p</span>,size<span class="op">=</span><span class="fl">1</span>,prob<span class="op">=</span><span class="va">pi</span><span class="op">)</span></code></pre></div>
+<span class="va">beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">p</span>,size<span class="op">=</span><span class="fl">1</span>,prob<span class="op">=</span><span class="va">pi</span><span class="op">)</span></code></pre></div>
 <p>From the intercept <code>alpha</code>, the slopes <code>beta</code> and the inputs <code>X</code>, we calculate the linear predictor, the <code>n</code>-dimensional vector <code>eta</code>. Rescale the linear predictor to make the effects weaker or stronger. Set the argument <code>family</code> to <code>"gaussian"</code>, <code>"binomial"</code>, or <code>"poisson"</code> to define the distribution. The <code>n</code> times <code>p</code> matrix <code>Y</code> represents the outputs. We assume the outcomes are <em>positively</em> correlated.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">eta</span> <span class="op">&lt;-</span> <span class="va">alpha</span> <span class="op">+</span> <span class="va">X</span> <span class="op">%*%</span> <span class="va">beta</span>
-<span class="va">eta</span> <span class="op">&lt;-</span> <span class="fl">1.5</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">eta</span> <span class="op">&lt;-</span> <span class="va">alpha</span> <span class="op">+</span> <span class="va">X</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">beta</span>
+<span class="va">eta</span> <span class="op">&lt;-</span> <span class="fl">1.5</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span>
 <span class="va">family</span> <span class="op">&lt;-</span> <span class="st">"gaussian"</span>
 
 <span class="kw">if</span><span class="op">(</span><span class="va">family</span><span class="op">==</span><span class="st">"gaussian"</span><span class="op">)</span><span class="op">{</span>
   <span class="va">mean</span> <span class="op">&lt;-</span> <span class="va">eta</span>
-  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">q</span>,expr<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>,mean<span class="op">=</span><span class="va">mean</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">q</span>,expr<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>,mean<span class="op">=</span><span class="va">mean</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 
 <span class="kw">if</span><span class="op">(</span><span class="va">family</span><span class="op">==</span><span class="st">"binomial"</span><span class="op">)</span><span class="op">{</span>
-  <span class="va">prob</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">eta</span><span class="op">)</span><span class="op">)</span>
-  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">q</span>,expr<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>,size<span class="op">=</span><span class="fl">1</span>,prob<span class="op">=</span><span class="va">prob</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">prob</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">eta</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">q</span>,expr<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>,size<span class="op">=</span><span class="fl">1</span>,prob<span class="op">=</span><span class="va">prob</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 
 <span class="kw">if</span><span class="op">(</span><span class="va">family</span><span class="op">==</span><span class="st">"poisson"</span><span class="op">)</span><span class="op">{</span>
-  <span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span>
-  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">q</span>,expr<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html">rpois</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>,lambda<span class="op">=</span><span class="va">lambda</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span>
+  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">q</span>,expr<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>,lambda<span class="op">=</span><span class="va">lambda</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="application" class="section level2">
-<h2 class="hasAnchor">
-<a href="#application" class="anchor"></a>Application</h2>
+<div class="section level2">
+<h2 id="application">Application<a class="anchor" aria-label="anchor" href="#application"></a>
+</h2>
 <p>The function <code>joinet</code> fits univariate and multivariate regression. Set the argument <code>alpha.base</code> to 0 (ridge) or 1 (lasso).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">object</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/joinet.html">joinet</a></span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>,X<span class="op">=</span><span class="va">X</span>,family<span class="op">=</span><span class="va">family</span><span class="op">)</span></code></pre></div>
 <p>Standard methods are available. The function <code>predict</code> returns the predicted values from the univariate (<code>base</code>) and multivariate (<code>meta</code>) models. The function <code>coef</code> returns the estimated intercepts (<code>alpha</code>) and slopes (<code>beta</code>) from the multivariate model (input-output effects). And the function <code>weights</code> returns the weights from stacking (output-output effects).</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">object</span>,newx<span class="op">=</span><span class="va">X</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>,newx<span class="op">=</span><span class="va">X</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/stats/weights.html">weights</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/stats/weights.html" class="external-link">weights</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span></code></pre></div>
 <p>The function <code>cv.joinet</code> compares the predictive performance of univariate (<code>base</code>) and multivariate (<code>meta</code>) regression by nested cross-validation. The argument <code>type.measure</code> determines the loss function.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/cv.joinet.html">cv.joinet</a></span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>,X<span class="op">=</span><span class="va">X</span>,family<span class="op">=</span><span class="va">family</span><span class="op">)</span></code></pre></div>
-<pre><code>##           [,1]     [,2]
-## base  1.318594 1.277530
-## meta  1.205659 1.209060
-## FALSE       NA       NA
-## none  3.215052 3.568613</code></pre>
+<pre><code><span class="co">##          [,1]     [,2]</span>
+<span class="co">## base 1.318594 1.277530</span>
+<span class="co">## meta 1.205659 1.209060</span>
+<span class="co">## none 3.215052 3.568613</span></code></pre>
 </div>
-<div id="reference" class="section level2">
-<h2 class="hasAnchor">
-<a href="#reference" class="anchor"></a>Reference</h2>
-<p>Armin Rauschenberger and Enrico Glaab (2021). “Predicting correlated outcomes from molecular data”. <em>Bioinformatics</em> btab576. <a href="https://doi.org/10.1093/bioinformatics/btab576">doi: 10.1093/bioinformatics/btab576</a>.</p>
+<div class="section level2">
+<h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
+</h2>
+<p>Armin Rauschenberger and Enrico Glaab (2021). “Predicting correlated outcomes from molecular data”. <em>Bioinformatics</em> btab576. <a href="https://doi.org/10.1093/bioinformatics/btab576" class="external-link">doi: 10.1093/bioinformatics/btab576</a>.</p>
 </div>
   </div>
 
@@ -194,11 +195,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://rauschenberger.github.io">Armin Rauschenberger</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://rauschenberger.github.io" class="external-link">Armin Rauschenberger</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -206,6 +209,8 @@
 
   
 
+
+  
 
   </body>
 </html>
