@@ -123,5 +123,9 @@ cv.joinet(Y=Y,X=X,family=family)
 
 ## Reference
 
-Armin Rauschenberger and Enrico Glaab (2021). "Predicting correlated outcomes from molecular data”. *Bioinformatics* 37(21):3889–3895.
+Armin Rauschenberger
+[![AR](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0001-6498-4801)
+and Enrico Glaab
+[![EG](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0003-3977-7469)
+(2021). "Predicting correlated outcomes from molecular data”. *Bioinformatics* 37(21):3889–3895.
 [doi: 10.1093/bioinformatics/btab576](https://doi.org/10.1093/bioinformatics/btab576).
