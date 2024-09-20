@@ -129,12 +129,13 @@ browseVignettes("joinet") # further examples}
 
 }
 \references{
-Armin Rauschenberger, Enrico Glaab (2021)
+\href{https://orcid.org/0000-0001-6498-4801}{Armin Rauschenberger}
+and
+\href{https://orcid.org/0000-0003-3977-7469}{Enrico Glaab}
+(2021)
 "Predicting correlated outcomes from molecular data"
 \emph{Bioinformatics} 37(21):3889–3895.
 \doi{10.1093/bioinformatics/btab576}
-
-\email{armin.rauschenberger@uni.lu}
 }
 \seealso{
 \code{\link{cv.joinet}}, vignette

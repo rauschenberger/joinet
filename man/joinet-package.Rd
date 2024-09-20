@@ -84,11 +84,24 @@ loss <- cv.joinet(Y=Y,X=X)
 
 }
 \references{
-Armin Rauschenberger, Enrico Glaab (2021)
+\href{https://orcid.org/0000-0001-6498-4801}{Armin Rauschenberger}
+and
+\href{https://orcid.org/0000-0003-3977-7469}{Enrico Glaab}
+(2021)
 "Predicting correlated outcomes from molecular data"
-\emph{Bioinformatics}. btab576
+\emph{Bioinformatics} 37(21):3889–3895.
 \doi{10.1093/bioinformatics/btab576}
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/rauschenberger/joinet}
+  \item Report bugs at \url{https://github.com/rauschenberger/joinet/issues}
+}
 
-\email{armin.rauschenberger@uni.lu}
+}
+\author{
+\strong{Maintainer}: Armin Rauschenberger \email{armin.rauschenberger@uni.lu} (\href{https://orcid.org/0000-0001-6498-4801}{ORCID})
+
 }
 \keyword{documentation}

@@ -2,6 +2,7 @@
 
 S3method(coef,joinet)
 S3method(predict,joinet)
+S3method(print,joinet)
 S3method(weights,joinet)
 export(cv.joinet)
 export(joinet)
