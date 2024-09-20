@@ -3,6 +3,8 @@
 #' @keywords documentation
 #' @docType package
 #' 
+#' @aliases joinet-package
+#' 
 #' @title
 #' Multivariate Elastic Net Regression
 #' 
@@ -93,4 +95,4 @@
 #' # row "meta": multivariate
 #' }
 #' 
-NULL
+"_PACKAGE"
