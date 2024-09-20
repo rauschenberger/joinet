@@ -1,6 +1,7 @@
 
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/rauschenberger/joinet?svg=true)](https://ci.appveyor.com/project/rauschenberger/joinet)
-[![Coverage Status](https://codecov.io/github/rauschenberger/joinet/coverage.svg?branch=master)](https://codecov.io/github/rauschenberger/joinet)
+[![R-CMD-check](https://github.com/rauschenberger/joinet/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rauschenberger/joinet/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/rauschenberger/joinet/graph/badge.svg)](https://app.codecov.io/gh/rauschenberger/joinet)
 
 ## Scope
 
