@@ -22,4 +22,5 @@ https://academic.oup.com/bioinformatics/pdf-lookup/doi/10.1093/bioinformatics/bt
 
 ## Reference
 
-Armin Rauschenberger and Enrico Glaab (2021). "Predicting correlated outcomes from molecular data". *Bioinformatics* btab576. [doi: 10.1093/bioinformatics/btab576](https://doi.org/10.1093/bioinformatics/btab576).
+Armin Rauschenberger and Enrico Glaab (2021). "Predicting correlated outcomes from molecular data”. *Bioinformatics* 37(21):3889–3895.
+[doi: 10.1093/bioinformatics/btab576](https://doi.org/10.1093/bioinformatics/btab576).
