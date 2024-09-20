@@ -9,6 +9,7 @@ Enhances: mice, earth, spls, MRCE, remMap, MultivariateRandomForest, SiER, mcen,
 Authors@R: person("Armin","Rauschenberger",email="armin.rauschenberger@uni.lu",role=c("aut","cre"),comment=c(ORCID="0000-0001-6498-4801"))
 VignetteBuilder: knitr
 License: GPL-3
+Encoding: UTF-8
 LazyData: true
 Language: en-GB
 RoxygenNote: 7.3.2
