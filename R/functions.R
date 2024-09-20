@@ -67,11 +67,7 @@
 #' @param ...
 #' further arguments passed to \code{\link[glmnet]{glmnet}}
 #' 
-#' @references 
-#' Armin Rauschenberger, Enrico Glaab (2021)
-#' "Predicting correlated outcomes from molecular data"
-#' \emph{Bioinformatics}. btab576
-#' \doi{10.1093/bioinformatics/btab576}
+#' @inherit joinet-package references
 #' 
 #' @details
 #' \strong{input-output relations:}
