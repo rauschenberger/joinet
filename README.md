@@ -20,8 +20,8 @@ or the latest development version from
 [GitHub](https://github.com/rauschenberger/joinet):
 
 ``` r
-#install.packages("devtools")
-devtools::install_github("rauschenberger/joinet")
+#install.packages("remotes")
+remotes::install_github("rauschenberger/joinet")
 ```
 
 ## Reference
