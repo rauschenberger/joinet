@@ -31,8 +31,6 @@
 #' "Predicting correlated outcomes from molecular data"
 #' \emph{Bioinformatics} 37(21):3889–3895.
 #' \doi{10.1093/bioinformatics/btab576}
-#' 
-#' \email{armin.rauschenberger@uni.lu}
 #'
 #' @examples
 #' \dontshow{
