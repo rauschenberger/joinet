@@ -576,6 +576,7 @@ weights.joinet <- function(object,...){
   return(coef)
 }
 
+#' @exportS3Method
 print.joinet <- function(x,...){
   cat(paste0("joinet object"),"\n")
 }
