@@ -1,5 +1,5 @@
 Package: joinet
-Version: 0.0.10
+Version: 1.0.0
 Title: Multivariate Elastic Net Regression
 Description: Implements high-dimensional multivariate regression by stacked generalisation (Rauschenberger 2021 <doi:10.1093/bioinformatics/btab576>). For positively correlated outcomes, a single multivariate regression is typically more predictive than multiple univariate regressions. Includes functions for model fitting, extracting coefficients, outcome prediction, and performance measurement. If required, install MRCE or remMap from GitHub (<https://github.com/cran/MRCE>, <https://github.com/cran/remMap>).
 Depends: R (>= 3.0.0)
