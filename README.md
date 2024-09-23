@@ -39,7 +39,7 @@ and Enrico Glaab
 
 ## Disclaimer
 
-The R package `joinet` implements multivariate elastic net regression through stacked generalisation ([Rauschenberger et al., 2021](https://doi.org/10.1093/bioinformatics/btab576)).
+The R package `joinet` implements multivariate elastic net regression through stacked generalisation ([Rauschenberger & Glaab, 2021](https://doi.org/10.1093/bioinformatics/btab576)).
 
 Copyright &copy; 2019 Armin Rauschenberger, University of Luxembourg, Luxembourg Centre for Systems Biomedicine (LCSB), Biomedical Data Science (BDS)
 
