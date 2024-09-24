@@ -9,18 +9,20 @@ editor_options:
   chunk_output_type: console
 ---
 
-Click [here](https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btab576/39597632/btab576.pdf) to download article.
+# Predicting correlated outcomes from molecular data
 
-<div>
-<object data="https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btab576/39597632/btab576.pdf" type="application/pdf" width="100%" height="500px">
-</object>
-</div>
+**Armin Rauschenberger**$~^{1,*}$ [![AR](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0001-6498-4801)
+and **Enrico Glaab**$~^{1}$ [![EG](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0003-3977-7469)
 
-<!--
-https://academic.oup.com/bioinformatics/pdf-lookup/doi/10.1093/bioinformatics/btab576
--->
+$^1$Luxembourg Centre for Systems Biomedicine (LCSB), University of Luxembourg, Esch-sur-Alzette, Luxembourg.
 
-## Reference
+$^{*}$To whom correspondence should be addressed.
+
+## Abstract
+
+Multivariate (multi-target) regression has the potential to outperform univariate (single-target) regression at predicting correlated outcomes, which frequently occur in biomedical and clinical research. Here we implement multivariate lasso and ridge regression using stacked generalization. Our flexible approach leads to predictive and interpretable models in high-dimensional settings, with a single estimate for each input–output effect. In the simulation, we compare the predictive performance of several state-of-the-art methods for multivariate regression. In the application, we use clinical and genomic data to predict multiple motor and non-motor symptoms in Parkinson’s disease patients. We conclude that stacked multivariate regression, with our adaptations, is a competitive method for predicting correlated outcomes. The R package joinet is available on [GitHub](https://github.com/rauschenberger/joinet) and [CRAN](https://cran.r-project.org/package=joinet).
+
+## Full text (open access)
 
 Armin Rauschenberger
 [![AR](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0001-6498-4801)
@@ -28,3 +30,4 @@ and Enrico Glaab
 [![EG](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0003-3977-7469)
 (2021). "Predicting correlated outcomes from molecular data”. *Bioinformatics* 37(21):3889–3895.
 [doi: 10.1093/bioinformatics/btab576](https://doi.org/10.1093/bioinformatics/btab576).
+(Click [here](https://academic.oup.com/bioinformatics/pdf-lookup/doi/10.1093/bioinformatics/btab576) to access PDF.)
