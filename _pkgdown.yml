@@ -1,16 +1,11 @@
+url: ~
 template:
-  params:
-    bootswatch: spacelab
-
-authors:
-  Armin Rauschenberger:
-    href: https://rauschenberger.github.io
+  bootstrap: 5
 
 home:
-   links:
-   - text: "Download package"
-     href: https://github.com/rauschenberger/joinet
-
+  sidebar:
+    structure: [links, community, citation, authors, dev]
+    
 navbar:
   title: "joinet"
   left:
