@@ -1,4 +1,11 @@
 .DS_Store
 .Rhistory
-*.html
+.RData
+*.png
 *.pdf
+*.html
+/*.tar.gz
+docs
+cran-comments.md
+CRAN-SUBMISSION
+CRAN-RELEASE
