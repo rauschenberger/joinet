@@ -19,13 +19,9 @@ navbar:
       href: articles/script.html
     - text: "news"
       href: news/index.html
-  right:
-    - icon: fa-github
-      href: https://github.com/rauschenberger/joinet
-    - icon: fa-download
-      href: https://cran.r-project.org/package=joinet
 
 reference:
+
   - title: "Functions"
     contents:
       - joinet
