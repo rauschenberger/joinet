@@ -26,7 +26,7 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           dependencies: '"hard"'
-          extra-packages: any::rcmdcheck, any::remotes, local::.
+          extra-packages: any::rcmdcheck, any::remotes
           needs: check
 
       - name: install GitHub
