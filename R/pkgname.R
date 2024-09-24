@@ -33,6 +33,9 @@
 #' "Predicting correlated outcomes from molecular data"
 #' \emph{Bioinformatics} 37(21):3889–3895.
 #' \doi{10.1093/bioinformatics/btab576}
+#' (Click
+#' \href{https://academic.oup.com/bioinformatics/article-pdf/37/21/3889/50336733/btab576.pdf}{here}
+#' to access PDF.)
 #'
 #' @examples
 #' \dontshow{
