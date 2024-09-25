@@ -304,7 +304,7 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
     base[[i]]$cvm <- palasso:::.loss(y=Y[cond,i],fit=fit[cond,],
                                      family=family[i],type.measure=type.measure)[[1]]
     base[[i]]$lambda.min <- base[[i]]$lambda[which.min(base[[i]]$cvm)]
-    object$base[[i]]$nzero <- object$base[[i]]$cvsd <- object$base[[i]]$lambda.1se <- NA
+    base[[i]]$nzero <- base[[i]]$cvsd <- base[[i]]$lambda.1se <- NA
     class(base[[i]]) <- "cv.glmnet"
   }
   
