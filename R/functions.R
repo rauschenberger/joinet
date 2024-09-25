@@ -304,7 +304,8 @@ joinet <- function(Y,X,family="gaussian",nfolds=10,foldid=NULL,type.measure="dev
     base[[i]]$cvm <- palasso:::.loss(y=Y[cond,i],fit=fit[cond,],
                                      family=family[i],type.measure=type.measure)[[1]]
     base[[i]]$lambda.min <- base[[i]]$lambda[which.min(base[[i]]$cvm)]
-    class(base[[i]]) <- "cv.glmnet" # trial 2020-01-10
+    object$base[[i]]$nzero <- object$base[[i]]$cvsd <- object$base[[i]]$lambda.1se <- NA
+    class(base[[i]]) <- "cv.glmnet"
   }
   
   #--- predictions ---
@@ -1344,6 +1345,4 @@ plot.matrix <- function (X, margin = 0, labels = TRUE, las = 1, cex = 1, range =
 #   }
 #   return(list(model = model, y.fitted = y.fitted, predFun = predFun))
 # }
-# 
-# 
-# 
+
