@@ -3,9 +3,9 @@
 [![R-CMD-check](https://github.com/rauschenberger/joinet/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rauschenberger/joinet/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/rauschenberger/joinet/graph/badge.svg)](https://app.codecov.io/gh/rauschenberger/joinet)
 
-## Scope
+# Multivariate elastic net regression
 
-Multivariate elastic net regression through stacked generalisation (extending the [R](https://cran.r-project.org) package [glmnet](https://CRAN.R-project.org/package=glmnet)).
+Implements multivariate elastic net regression through stacked generalisation (extending the R package [glmnet](https://CRAN.R-project.org/package=glmnet)).
 
 ## Installation
 
