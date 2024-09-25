@@ -98,8 +98,8 @@ to access PDF.)
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/rauschenberger/joinet}
-  \item Report bugs at \url{https://github.com/rauschenberger/joinet/issues}
+  \item \url{https://rauschenberger.github.io/joinet}
+  \item Report bugs at \url{https://github.com/rauschenberger/joinet}
 }
 
 }
