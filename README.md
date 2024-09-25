@@ -5,7 +5,7 @@
 
 # Multivariate elastic net regression
 
-Implements multivariate elastic net regression through stacked generalisation.
+Implements multivariate ("multi-target") elastic net regression through stacked generalisation (i.e., for multiple outcomes and many features).
 
 ## Installation
 
