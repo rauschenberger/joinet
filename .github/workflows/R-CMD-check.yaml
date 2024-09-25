@@ -25,13 +25,12 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          dependencies: '"hard"'
-          extra-packages: any::rcmdcheck, any::remotes
+          extra-packages: any::rcmdcheck, MRCE=?ignore, remMap=?ignore
           needs: check
 
-      - name: install GitHub
-        run: remotes::install_github(c("cran/MRCE","cran/remMap"))
-        shell: Rscript {0}
+#      - name: install GitHub
+#        run: remotes::install_github(c("cran/MRCE","cran/remMap"))
+#        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
