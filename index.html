@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Multivariate Elastic Net Regression • joinet</title>
+<title>Penalised Multivariate Regression (Multi-Target Learning) • joinet</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Multivariate Elastic Net Regression">
-<meta name="description" content="Implements high-dimensional multivariate regression by stacked generalisation (Rauschenberger and Glaab 2021 &lt;doi:10.1093/bioinformatics/btab576&gt;). For positively correlated outcomes, a single multivariate regression is typically more predictive than multiple univariate regressions. Includes functions for model fitting, extracting coefficients, outcome prediction, and performance measurement. If required, install MRCE or remMap from GitHub (&lt;https://github.com/cran/MRCE&gt;, &lt;https://github.com/cran/remMap&gt;).">
-<meta property="og:description" content="Implements high-dimensional multivariate regression by stacked generalisation (Rauschenberger and Glaab 2021 &lt;doi:10.1093/bioinformatics/btab576&gt;). For positively correlated outcomes, a single multivariate regression is typically more predictive than multiple univariate regressions. Includes functions for model fitting, extracting coefficients, outcome prediction, and performance measurement. If required, install MRCE or remMap from GitHub (&lt;https://github.com/cran/MRCE&gt;, &lt;https://github.com/cran/remMap&gt;).">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Penalised Multivariate Regression (Multi-Target Learning)">
+<meta name="description" content="Implements penalised multivariate regression (i.e., for multiple outcomes and many features) by stacked generalisation (Rauschenberger and Glaab 2021 &lt;doi:10.1093/bioinformatics/btab576&gt;). For positively correlated outcomes, a single multivariate regression is typically more predictive than multiple univariate regressions. Includes functions for model fitting, extracting coefficients, outcome prediction, and performance measurement. For optional comparisons, install MRCE or remMap from GitHub (&lt;https://github.com/cran/MRCE&gt;, &lt;https://github.com/cran/remMap&gt;).">
+<meta property="og:description" content="Implements penalised multivariate regression (i.e., for multiple outcomes and many features) by stacked generalisation (Rauschenberger and Glaab 2021 &lt;doi:10.1093/bioinformatics/btab576&gt;). For positively correlated outcomes, a single multivariate regression is typically more predictive than multiple univariate regressions. Includes functions for model fitting, extracting coefficients, outcome prediction, and performance measurement. For optional comparisons, install MRCE or remMap from GitHub (&lt;https://github.com/cran/MRCE&gt;, &lt;https://github.com/cran/remMap&gt;).">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -53,7 +53,7 @@
 <div class="section level1">
 <div class="page-header"><h1 id="multivariate-elastic-net-regression">Multivariate elastic net regression<a class="anchor" aria-label="anchor" href="#multivariate-elastic-net-regression"></a>
 </h1></div>
-<p>Implements multivariate elastic net regression through stacked generalisation.</p>
+<p>Implements multivariate (“multi-target”) elastic net regression through stacked generalisation (i.e., for multiple outcomes and many features).</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
