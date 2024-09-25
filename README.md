@@ -5,7 +5,7 @@
 
 # Multivariate elastic net regression
 
-Implements multivariate elastic net regression through stacked generalisation (extending the R package [glmnet](https://CRAN.R-project.org/package=glmnet)).
+Implements multivariate elastic net regression through stacked generalisation.
 
 ## Installation
 
