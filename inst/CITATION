@@ -1,9 +1,10 @@
 citHeader("To cite joinet in publications use:")
 
-citEntry(entry="Article",
+bibentry(
+    entry="Article",
     title = "Predicting correlated outcomes from molecular data",
     author = c(person("Armin","Rauschenberger"),
-		 person("Enrico","Glaab")),
+	       person("Enrico","Glaab")),
     journal = "Bioinformatics",
     year = 2021,
     volume = "37",
