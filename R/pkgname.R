@@ -34,7 +34,7 @@
 #' \emph{Bioinformatics} 37(21):3889–3895.
 #' \href{https://doi.org/10.1093/bioinformatics/btab576}{10.1093/bioinformatics/btab576}.
 #' (Click
-#' \href{https://academic.oup.com/bioinformatics/article-pdf/37/21/3889/50336733/btab576.pdf}{here}
+#' \href{https://academic.oup.com/bioinformatics/pdf-lookup/doi/10.1093/bioinformatics/btab576}{here}
 #' to access PDF.)
 #'
 #' @examples
