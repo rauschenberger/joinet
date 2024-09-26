@@ -133,9 +133,9 @@ browseVignettes("joinet") # further examples}
 and
 \href{https://orcid.org/0000-0003-3977-7469}{Enrico Glaab}
 (2021)
-"Predicting correlated outcomes from molecular data"
+"Predicting correlated outcomes from molecular data".
 \emph{Bioinformatics} 37(21):3889–3895.
-\doi{10.1093/bioinformatics/btab576}
+\href{https://doi.org/10.1093/bioinformatics/btab576}{10.1093/bioinformatics/btab576}.
 (Click
 \href{https://academic.oup.com/bioinformatics/article-pdf/37/21/3889/50336733/btab576.pdf}{here}
 to access PDF.)
