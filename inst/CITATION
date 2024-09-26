@@ -1,7 +1,7 @@
 citHeader("To cite joinet in publications use:")
 
 bibentry(
-    entry="Article",
+    bibtype = "Article",
     title = "Predicting correlated outcomes from molecular data",
     author = c(person("Armin","Rauschenberger"),
 	       person("Enrico","Glaab")),
