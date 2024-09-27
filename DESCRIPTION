@@ -1,7 +1,7 @@
 Package: joinet
 Version: 1.0.0
 Title: Penalised Multivariate Regression ('Multi-Target Learning')
-Description: Implements penalised multivariate regression (i.e., for multiple outcomes and many features) by stacked generalisation (<doi:10.1093/bioinformatics/btab576>). For positively correlated outcomes, a single multivariate regression is typically more predictive than multiple univariate regressions. Includes functions for model fitting, extracting coefficients, outcome prediction, and performance measurement. For optional comparisons, install remMap from GitHub (<https://github.com/cran/remMap>).
+Description: Implements penalised multivariate regression (i.e., for multiple outcomes and many features) by stacked generalisation (<doi:10.1093/bioinformatics/btab576>). For positively correlated outcomes, a single multivariate regression is typically more predictive than multiple univariate regressions. Includes functions for model fitting, extracting coefficients, outcome prediction, and performance measurement. For optional comparisons, install 'remMap' from GitHub (<https://github.com/cran/remMap>).
 Depends: R (>= 3.0.0)
 Imports: glmnet, palasso, cornet
 Suggests: knitr, rmarkdown, testthat, MASS, mice, earth, spls, MRCE, remMap, MultivariateRandomForest, SiER, mcen, GPM, RMTL, MTPS
