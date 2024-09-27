@@ -90,9 +90,9 @@ and
 (2021)
 "Predicting correlated outcomes from molecular data".
 \emph{Bioinformatics} 37(21):3889–3895.
-\href{https://doi.org/10.1093/bioinformatics/btab576}{10.1093/bioinformatics/btab576}.
+\doi{10.1093/bioinformatics/btab576}.
 (Click
-\href{https://academic.oup.com/bioinformatics/pdf-lookup/doi/10.1093/bioinformatics/btab576}{here}
+\href{https://orbilu.uni.lu/bitstream/10993/47788/1/joinet.pdf}{here}
 to access PDF.)
 }
 \seealso{
